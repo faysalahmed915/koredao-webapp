@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "contact": "Contact",
+    "profile": "Profil",
+    "login": "Connexion",
+    "register": "Commencer",
+    "dashboard": "Tableau de Bord",
+    "signOut": "Déconnexion"
+  },
+  "hero": {
+    "badge": "Modèle d'Entreprise Prêt pour la Production",
+    "titleLine1": "Conçu pour une Sécurité Maximale,",
+    "titleLine2": "Rapidité et Échelle.",
+    "description": "Un frontend Next.js App Router robuste avec sécurité en profondeur, shadcn/ui, Better-Auth et validation Zod, prêt à s'intégrer avec notre backend NestJS.",
+    "getStarted": "Démarrer Maintenant",
+    "exploreDocs": "Architecture & Documentation",
+    "viewGithub": "Voir le Répertoire"
+  },
+  "features": {
+    "sectionBadge": "Architecture Principale",
+    "sectionTitle": "Conçu pour les Logiciels d'Entreprise Haute Exigence",
+    "sectionDesc": "Chaque couche est sécurisée contre les vulnérabilités, optimisée pour la performance et conçue pour une vélocité maximale.",
+    "securityTitle": "Sécurité en Profondeur",
+    "securityDesc": "Politique de sécurité de contenu (CSP) stricte, HSTS, protection contre le clickjacking et traçabilité.",
+    "performanceTitle": "Vitesse Turbopack",
+    "performanceDesc": "Next.js App Router avec Composants Serveur, polices optimisées et zéro code JavaScript superflu.",
+    "authTitle": "Intégration Better-Auth",
+    "authDesc": "Sessions sécurisées avec cookies HTTP-only, authentification OAuth et hachage fort des mots de passe.",
+    "seoTitle": "SEO & OpenGraph Avancé",
+    "seoDesc": "Métadonnées dynamiques, schémas structurés JSON-LD, sitemap XML et directives d'exploration.",
+    "backendTitle": "Compatibilité NestJS",
+    "backendDesc": "Conçu pour consommer directement notre backend NestJS avec contrats DTO partagés.",
+    "scaleTitle": "shadcn/ui & Tailwind v4",
+    "scaleDesc": "Composants Radix UI accessibles avec variables CSS Tailwind v4 et mode sombre personnalisable."
+  },
+  "stats": {
+    "securityScore": "A+",
+    "securityScoreLabel": "Note de Sécurité",
+    "typeCoverage": "100%",
+    "typeCoverageLabel": "Rigueur TypeScript",
+    "lighthouseScore": "99+",
+    "lighthouseScoreLabel": "Score Lighthouse",
+    "productionReady": "Zéro",
+    "productionReadyLabel": "Compromis de Sécurité"
+  },
+  "cta": {
+    "title": "Prêt à lancer votre application d'entreprise ?",
+    "desc": "Clonez le modèle, configurez vos variables et déployez en toute sécurité en quelques minutes.",
+    "button": "Explorer la Documentation"
+  },
+  "footer": {
+    "tagline": "La base ultime pour les applications web cloud d'entreprise modernes.",
+    "product": "Produit",
+    "resources": "Ressources",
+    "legal": "Légal & Conformité",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "security": "Sécurité"
+  },
+  "auth": {
+    "welcomeBack": "Bon Retour",
+    "loginSubtitle": "Connectez-vous pour accéder à votre espace sécurisé",
+    "createAccount": "Créer un Compte",
+    "registerSubtitle": "Commencez à construire sur la base Next.js la plus sécurisée",
+    "emailLabel": "Email Professionnel",
+    "passwordLabel": "Mot de Passe",
+    "nameLabel": "Nom Complet",
+    "confirmPasswordLabel": "Confirmer le Mot de Passe",
+    "rememberMe": "Mémoriser cet appareil pendant 30 jours",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signInBtn": "Se Connecter avec Identifiants",
+    "signUpBtn": "Créer un Compte Entreprise",
+    "orContinueWith": "Ou continuer avec un fournisseur social",
+    "fillDemoUser": "Utilisateur Démo",
+    "fillDemoAdmin": "Admin Démo",
+    "dontHaveAccount": "Pas encore de compte ?",
+    "alreadyHaveAccount": "Déjà inscrit ?",
+    "termsAgree": "J'accepte les Conditions d'Utilisation et la Politique de Confidentialité"
+  },
+  "contact": {
+    "title": "Contactez Notre Équipe d'Ingénieurs",
+    "subtitle": "Des questions d'architecture ou des exigences sur mesure ? Envoyez-nous un message sécurisé.",
+    "name": "Nom Complet",
+    "email": "Email Professionnel",
+    "category": "Type de Demande",
+    "subject": "Objet",
+    "message": "Message / Détails",
+    "sendButton": "Envoyer le Message",
+    "fillDemoData": "Remplir Données Démo",
+    "successMessage": "Votre message a été transmis en toute sécurité.",
+    "directContact": "Canaux Directs",
+    "responseTime": "Temps de réponse moyen : < 2 heures ouvrables"
+  },
+  "about": {
+    "badge": "Standard d'Ingénierie",
+    "title": "Construit sur les Principes du Zero-Trust",
+    "subtitle": "Le logiciel moderne ne doit jamais faire de compromis entre esthétique, vélocité et sécurité.",
+    "missionTitle": "Notre Mission",
+    "missionDesc": "Offrir aux équipes un socle irréprochable qui valide les audits de sécurité les plus stricts.",
+    "principlesTitle": "Principes Directeurs",
+    "stackTitle": "Architecture Technique",
+    "teamTitle": "Conçu par des Spécialistes"
+  }
+}

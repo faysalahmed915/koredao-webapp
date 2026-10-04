@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "profile": "Profile",
+    "login": "Sign In",
+    "register": "Get Started",
+    "dashboard": "Dashboard",
+    "signOut": "Sign Out"
+  },
+  "hero": {
+    "badge": "Bangladesh's #1 Academic & Handwritten Project Platform",
+    "titleLine1": "Academic Excellence &",
+    "titleLine2": "Campus Project Marketplace",
+    "description": "Connect with verified student helpers from BUET, DU, IUT, SUST & NSU for assignments, lab reports, thesis research, and handwritten hardcopy delivery with 100% escrow protection.",
+    "getStarted": "Find Academic Helpers",
+    "exploreDocs": "Browse Services & Gigs",
+    "viewGithub": "Post an Assignment"
+  },
+  "features": {
+    "sectionBadge": "Why KoreDao",
+    "sectionTitle": "Engineered Exclusively for Bangladeshi Universities",
+    "sectionDesc": "From Curzon Hall to Palashi, Board Bazar to Sylhet — get personalized academic assistance with bank-grade escrow safety.",
+    "securityTitle": "100% Escrow Protection",
+    "securityDesc": "Funds remain securely locked in escrow and are only released 72 hours after you inspect and accept your completed project.",
+    "performanceTitle": "Handwriting Style Matcher",
+    "performanceDesc": "AI-assisted visual comparison matches your unique cursive, print, or math equation handwriting style with verified campus peers.",
+    "authTitle": "Campus Proximity Handover",
+    "authDesc": "Need physical hardcopy assignments? Match with helpers on your own campus for direct hand-delivery at Curzon, Palashi, or Badda.",
+    "seoTitle": "Dual Freelance Engine",
+    "seoDesc": "Choose between Fiverr-style instant fixed-price gigs or post customized assignment briefs for competitive Upwork-style bids.",
+    "backendTitle": "Progressive Milestone Checkpoints",
+    "backendDesc": "Inspect draft handwriting scans, schematic diagrams, and courier tracking updates before final dispatch.",
+    "scaleTitle": "Zero-Leakage AI Safety Chat",
+    "scaleDesc": "Integrated real-time workspace with built-in scam and off-platform leak protection, keeping students and helpers 100% secure."
+  },
+  "stats": {
+    "securityScore": "1,450+",
+    "securityScoreLabel": "Verified Campus Helpers",
+    "typeCoverage": "৳4.8M+",
+    "typeCoverageLabel": "Escrow Protected Payouts",
+    "lighthouseScore": "99.4%",
+    "lighthouseScoreLabel": "On-Time Delivery Rate",
+    "productionReady": "15+",
+    "productionReadyLabel": "Top Universities Active"
+  },
+  "cta": {
+    "title": "Need urgent academic assistance or hardcopy notes?",
+    "desc": "Join thousands of students from BUET, DU, IUT, and NSU getting top grades with verified peer support.",
+    "button": "Browse All Services & Gigs"
+  },
+  "footer": {
+    "tagline": "The ultimate fullstack enterprise foundation for modern cloud web applications.",
+    "product": "Product",
+    "resources": "Resources",
+    "legal": "Legal & Compliance",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "security": "Security Policy"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "loginSubtitle": "Sign in to access your secure enterprise workspace",
+    "createAccount": "Create an Account",
+    "registerSubtitle": "Start building on top of the most secured Next.js foundation",
+    "emailLabel": "Work Email",
+    "passwordLabel": "Password",
+    "nameLabel": "Full Name",
+    "confirmPasswordLabel": "Confirm Password",
+    "rememberMe": "Remember this device for 30 days",
+    "forgotPassword": "Forgot password?",
+    "signInBtn": "Sign In with Credentials",
+    "signUpBtn": "Create Enterprise Account",
+    "orContinueWith": "Or continue with social provider",
+    "fillDemoUser": "Demo User",
+    "fillDemoAdmin": "Demo Admin",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already registered?",
+    "termsAgree": "I agree to the Enterprise Terms of Service and Privacy Policy"
+  },
+  "contact": {
+    "title": "Contact Our Engineering Team",
+    "subtitle": "Have architectural questions or custom requirements? Send us a secure message.",
+    "name": "Full Name",
+    "email": "Business Email",
+    "category": "Inquiry Type",
+    "subject": "Subject",
+    "message": "Message / Details",
+    "sendButton": "Send Secure Inquiry",
+    "fillDemoData": "Fill Demo Inquiry",
+    "successMessage": "Your inquiry was transmitted securely. Reference ticket generated.",
+    "directContact": "Direct Channels",
+    "responseTime": "Average response time: < 2 business hours"
+  },
+  "about": {
+    "badge": "Engineering Standard",
+    "title": "Built on Principles of Zero-Trust and Precision",
+    "subtitle": "We believe modern web software should never compromise between top-tier aesthetics, developer velocity, and rigorous defensive security.",
+    "missionTitle": "Our Mission",
+    "missionDesc": "To provide development teams with an uncompromising starting point that passes rigorous SOC2, ISO27001, and OWASP audit checks out of the box while delighting users with pristine performance and design.",
+    "principlesTitle": "Guiding Principles",
+    "stackTitle": "Technology Architecture",
+    "teamTitle": "Engineered by Specialists"
+  }
+}

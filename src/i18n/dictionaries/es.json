@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "profile": "Perfil",
+    "login": "Iniciar Sesión",
+    "register": "Comenzar",
+    "dashboard": "Panel",
+    "signOut": "Cerrar Sesión"
+  },
+  "hero": {
+    "badge": "Plantilla Empresarial Lista para Producción",
+    "titleLine1": "Diseñado para Máxima Seguridad,",
+    "titleLine2": "Velocidad y Escala.",
+    "description": "Un frontend de Next.js App Router probado en combate con seguridad en profundidad, shadcn/ui, Better-Auth y validación estricta Zod, listo para conectarse con nuestro backend NestJS.",
+    "getStarted": "Comenzar Ahora",
+    "exploreDocs": "Arquitectura y Documentación",
+    "viewGithub": "Ver Repositorio"
+  },
+  "features": {
+    "sectionBadge": "Arquitectura Central",
+    "sectionTitle": "Creado para Software Empresarial de Alta Confianza",
+    "sectionDesc": "Cada capa está blindada contra vulnerabilidades, optimizada para rendimiento y diseñada para alta velocidad de desarrollo.",
+    "securityTitle": "Seguridad en Profundidad",
+    "securityDesc": "Política de seguridad de contenido (CSP) estricta, HSTS, protección contra clickjacking y trazabilidad.",
+    "performanceTitle": "Velocidad Turbopack",
+    "performanceDesc": "Next.js App Router con Componentes de Servidor, fuentes optimizadas y sin paquetes innecesarios.",
+    "authTitle": "Integración con Better-Auth",
+    "authDesc": "Sesiones seguras con cookies HTTP-only, autenticación social OAuth y hashing robusto de contraseñas.",
+    "seoTitle": "SEO y OpenGraph Avanzado",
+    "seoDesc": "Metadatos dinámicos, esquemas estructurados JSON-LD, mapa del sitio XML y directivas de rastreo.",
+    "backendTitle": "Sincronización con NestJS",
+    "backendDesc": "Diseñado para consumir directamente nuestro backend NestJS con contratos DTO compartidos.",
+    "scaleTitle": "shadcn/ui y Tailwind v4",
+    "scaleDesc": "Primitivas Radix UI totalmente accesibles con variables CSS de Tailwind v4 y modo oscuro."
+  },
+  "stats": {
+    "securityScore": "A+",
+    "securityScoreLabel": "Calificación de Seguridad",
+    "typeCoverage": "100%",
+    "typeCoverageLabel": "Rigurosidad TypeScript",
+    "lighthouseScore": "99+",
+    "lighthouseScoreLabel": "Rendimiento Lighthouse",
+    "productionReady": "Cero",
+    "productionReadyLabel": "Brechas de Seguridad"
+  },
+  "cta": {
+    "title": "¿Listo para lanzar su aplicación empresarial?",
+    "desc": "Clone la plantilla, configure sus variables y despliegue con confianza empresarial en minutos.",
+    "button": "Explorar Documentación"
+  },
+  "footer": {
+    "tagline": "La base definitiva para aplicaciones web empresariales modernas en la nube.",
+    "product": "Producto",
+    "resources": "Recursos",
+    "legal": "Legal y Cumplimiento",
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos del Servicio",
+    "security": "Política de Seguridad"
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de Nuevo",
+    "loginSubtitle": "Inicie sesión para acceder a su espacio de trabajo seguro",
+    "createAccount": "Crear una Cuenta",
+    "registerSubtitle": "Comience a construir sobre la base Next.js más segura",
+    "emailLabel": "Correo Electrónico de Trabajo",
+    "passwordLabel": "Contraseña",
+    "nameLabel": "Nombre Completo",
+    "confirmPasswordLabel": "Confirmar Contraseña",
+    "rememberMe": "Recordar este dispositivo por 30 días",
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "signInBtn": "Iniciar Sesión con Credenciales",
+    "signUpBtn": "Crear Cuenta Empresarial",
+    "orContinueWith": "O continuar con proveedor social",
+    "fillDemoUser": "Usuario Demo",
+    "fillDemoAdmin": "Admin Demo",
+    "dontHaveAccount": "¿No tiene una cuenta?",
+    "alreadyHaveAccount": "¿Ya está registrado?",
+    "termsAgree": "Acepto los Términos de Servicio y la Política de Privacidad"
+  },
+  "contact": {
+    "title": "Contacte a Nuestro Equipo de Ingeniería",
+    "subtitle": "¿Preguntas arquitectónicas o requerimientos a medida? Envíenos un mensaje seguro.",
+    "name": "Nombre Completo",
+    "email": "Correo Corporativo",
+    "category": "Tipo de Consulta",
+    "subject": "Asunto",
+    "message": "Mensaje / Detalles",
+    "sendButton": "Enviar Mensaje Seguro",
+    "fillDemoData": "Rellenar Datos de Prueba",
+    "successMessage": "Su mensaje fue transmitido de forma segura.",
+    "directContact": "Canales Directos",
+    "responseTime": "Tiempo promedio de respuesta: < 2 horas laborales"
+  },
+  "about": {
+    "badge": "Estándar de Ingeniería",
+    "title": "Construido bajo Principios de Confianza Cero",
+    "subtitle": "Creemos que el software moderno nunca debe comprometer la estética, la velocidad y la seguridad defensiva.",
+    "missionTitle": "Nuestra Misión",
+    "missionDesc": "Proporcionar a los equipos un punto de partida sin compromisos que supere auditorías de seguridad y ofrezca un rendimiento impecable.",
+    "principlesTitle": "Principios Rectores",
+    "stackTitle": "Arquitectura Tecnológica",
+    "teamTitle": "Diseñado por Especialistas"
+  }
+}

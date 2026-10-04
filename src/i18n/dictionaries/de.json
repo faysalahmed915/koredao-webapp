@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "profile": "Profil",
+    "login": "Anmelden",
+    "register": "Jetzt Starten",
+    "dashboard": "Dashboard",
+    "signOut": "Abmelden"
+  },
+  "hero": {
+    "badge": "Produktionsreife Enterprise-Vorlage",
+    "titleLine1": "Entwickelt für Höchste Sicherheit,",
+    "titleLine2": "Geschwindigkeit & Skalierung.",
+    "description": "Ein kampferprobtes Next.js App Router Frontend mit Defense-in-Depth, shadcn/ui, Better-Auth und Zod-Validierung – bereit für das Zusammenspiel mit unserem NestJS-Backend.",
+    "getStarted": "Jetzt Starten",
+    "exploreDocs": "Architektur & Docs",
+    "viewGithub": "Repository Ansehen"
+  },
+  "features": {
+    "sectionBadge": "Kernarchitektur",
+    "sectionTitle": "Entwickelt für High-Assurance Enterprise Software",
+    "sectionDesc": "Jede Schicht ist gegen Schwachstellen gehärtet, für maximale Leistung optimiert und auf Entwicklergeschwindigkeit ausgelegt.",
+    "securityTitle": "Defense-in-Depth Sicherheit",
+    "securityDesc": "Strenge Content Security Policy (CSP), HSTS, Clickjacking-Schutz und Request-Tracing.",
+    "performanceTitle": "Turbopack Geschwindigkeit",
+    "performanceDesc": "Next.js App Router mit Server-Komponenten, optimierten Schriftarten und minimalem JavaScript-Bundle.",
+    "authTitle": "Better-Auth Integration",
+    "authDesc": "Sitzungen mit HTTP-Only Cookies, OAuth-Authentifizierung und robustem Passwort-Hashing.",
+    "seoTitle": "Tiefes SEO & OpenGraph",
+    "seoDesc": "Dynamische Metadaten, strukturierte JSON-LD Schemas, automatische Sitemap und Crawler-Direktiven.",
+    "backendTitle": "NestJS Backend-Kopplung",
+    "backendDesc": "Entwickelt zur direkten Anbindung an unser NestJS-Enterprise-Backend mit DTO-Verträgen.",
+    "scaleTitle": "shadcn/ui & Tailwind v4",
+    "scaleDesc": "Barrierefreie Radix UI-Komponenten mit Tailwind v4 CSS-Variablen und anpassbarem Dark Mode."
+  },
+  "stats": {
+    "securityScore": "A+",
+    "securityScoreLabel": "Sicherheitsbewertung",
+    "typeCoverage": "100%",
+    "typeCoverageLabel": "TypeScript-Strenge",
+    "lighthouseScore": "99+",
+    "lighthouseScoreLabel": "Lighthouse Performance",
+    "productionReady": "Null",
+    "productionReadyLabel": "Sicherheitskompromisse"
+  },
+  "cta": {
+    "title": "Bereit für Ihre Enterprise-Anwendung?",
+    "desc": "Klonen Sie das Starter-Projekt, konfigurieren Sie die Umgebung und starten Sie in wenigen Minuten.",
+    "button": "Dokumentation Entdecken"
+  },
+  "footer": {
+    "tagline": "Das ultimative Enterprise-Fundament für moderne Cloud-Webanwendungen.",
+    "product": "Produkt",
+    "resources": "Ressourcen",
+    "legal": "Rechtliches & Compliance",
+    "rights": "Alle Rechte vorbehalten.",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "security": "Sicherheit"
+  },
+  "auth": {
+    "welcomeBack": "Willkommen Zurück",
+    "loginSubtitle": "Melden Sie sich an, um auf Ihren sicheren Arbeitsbereich zuzugreifen",
+    "createAccount": "Konto Erstellen",
+    "registerSubtitle": "Starten Sie auf der sichersten Next.js-Basis",
+    "emailLabel": "Geschäftliche E-Mail",
+    "passwordLabel": "Passwort",
+    "nameLabel": "Vollständiger Name",
+    "confirmPasswordLabel": "Passwort Bestätigen",
+    "rememberMe": "Dieses Gerät für 30 Tage merken",
+    "forgotPassword": "Passwort vergessen?",
+    "signInBtn": "Mit Zugangsdaten Anmelden",
+    "signUpBtn": "Enterprise-Konto Erstellen",
+    "orContinueWith": "Oder mit Social Provider fortfahren",
+    "fillDemoUser": "Demo Benutzer",
+    "fillDemoAdmin": "Demo Admin",
+    "dontHaveAccount": "Noch kein Konto?",
+    "alreadyHaveAccount": "Bereits registriert?",
+    "termsAgree": "Ich akzeptiere die Nutzungsbedingungen und Datenschutzrichtlinien"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie Unser Engineering-Team",
+    "subtitle": "Architekturfragen oder individuelle Anforderungen? Senden Sie uns eine sichere Nachricht.",
+    "name": "Vollständiger Name",
+    "email": "Geschäftliche E-Mail",
+    "category": "Anfragetyp",
+    "subject": "Betreff",
+    "message": "Nachricht / Details",
+    "sendButton": "Nachricht Sicher Senden",
+    "fillDemoData": "Demo-Daten Einfügen",
+    "successMessage": "Ihre Nachricht wurde sicher übertragen.",
+    "directContact": "Direkte Kanäle",
+    "responseTime": "Durchschnittliche Antwortzeit: < 2 Arbeitsstunden"
+  },
+  "about": {
+    "badge": "Engineering-Standard",
+    "title": "Entwickelt nach Zero-Trust-Prinzipien",
+    "subtitle": "Moderne Websoftware darf keine Kompromisse zwischen Ästhetik, Entwicklungsgeschwindigkeit und Sicherheit eingehen.",
+    "missionTitle": "Unsere Mission",
+    "missionDesc": "Entwicklerteams ein kompromissloses Fundament bieten, das Sicherheitsaudits sofort besteht.",
+    "principlesTitle": "Leitprinzipien",
+    "stackTitle": "Technologie-Architektur",
+    "teamTitle": "Entwickelt von Spezialisten"
+  }
+}

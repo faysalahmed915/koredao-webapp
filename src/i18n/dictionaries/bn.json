@@ -1,0 +1,107 @@
+{
+    "nav": {
+        "home": "হোম",
+        "about": "আমাদের সম্পর্কে",
+        "contact": "যোগাযোগ",
+        "profile": "প্রোফাইল",
+        "login": "সাইন ইন",
+        "register": "শুরু করুন",
+        "dashboard": "ড্যাশবোর্ড",
+        "signOut": "সাইন আউট"
+    },
+    "hero": {
+        "badge": "বাংলাদেশের শীর্ষ একাডেমিক ও হস্তলিখিত প্রজেক্ট প্ল্যাটফর্ম",
+        "titleLine1": "একাডেমিক উৎকর্ষতা ও",
+        "titleLine2": "ক্যাম্পাস প্রজেক্ট মার্কেটপ্লেস",
+        "description": "বুয়েট, ঢাবি, আইইউটি, সাস্ট ও এনএসইউ-এর ভেরিফাইড শিক্ষার্থীদের সাথে অ্যাসাইনমেন্ট, ল্যাব রিপোর্ট, থিসিস রিসার্চ ও শতভাগ এসক্রো সিকিউরিটিতে হস্তলিখিত হার্ডকপি প্রজেক্ট সমাধান করুন।",
+        "getStarted": "হেল্পার খুঁজুন",
+        "exploreDocs": "গিগ ও সার্ভিস দেখুন",
+        "viewGithub": "অ্যাসাইনমেন্ট পোস্ট করুন"
+    },
+    "features": {
+        "sectionBadge": "কেন KoreDao",
+        "sectionTitle": "বাংলাদেশের বিশ্ববিদ্যালয়গুলোর জন্য বিশেষভাবে নির্মিত",
+        "sectionDesc": "কার্জন হল থেকে পলাশী, বোর্ড বাজার থেকে সিলেট — বিশ্বস্ত এসক্রো নিরাপত্তায় পান আপনার প্রয়োজনীয় অ্যাকাডেমিক সমাধান।",
+        "securityTitle": "১০০% এসক্রো প্রটেকশন",
+        "securityDesc": "কাজ বুঝে পাওয়ার পর ৭২ ঘণ্টা রিভিউ উইন্ডো শেষে হেল্পারের কাছে পেমেন্ট রিলিজ হয়।",
+        "performanceTitle": "হ্যান্ডরাইটিং স্টাইল ম্যাচিং",
+        "performanceDesc": "কার্সিভ, প্রিন্ট বা সমীকরণ লেখার স্টাইলের সাথে হুবহু মিলিয়ে ক্যাম্পাসের সেরা হেল্পারকে খুঁজে নিন।",
+        "authTitle": "ক্যাম্পাস প্রক্সিমিটি হ্যান্ডওভার",
+        "authDesc": "হার্ডকপি অ্যাসাইনমেন্টের ক্ষেত্রে কার্জন হল, পলাশী বা বাড্ডা ক্যাম্পাসে সরাসরি হ্যান্ড-টু-হ্যান্ড ডেলিভারি সুবিধা।",
+        "seoTitle": "দ্বৈত ফ্রিল্যান্স মডেল",
+        "seoDesc": "ফাইভারের মতো ফিক্সড-প্রাইস গিগ অথবা আপওয়ার্কের মতো অ্যাসাইনমেন্ট পোস্ট করে একাধিক হেল্পারের বিড পর্যালোচনা করুন।",
+        "backendTitle": "মাইলস্টোন চেকপয়েন্ট ও ট্র্যাকিং",
+        "backendDesc": "চূড়ান্ত জমা দেওয়ার আগে ড্রাফট লেখার ছবি, সার্কিট ডায়াগ্রাম ও কুরিয়ার ট্র্যাকিং নম্বর লাইভ যাচাই করুন।",
+        "scaleTitle": "নিরাপদ লাইভ চ্যাট ও এআই ফিল্টার",
+        "scaleDesc": "শিক্ষার্থী ও হেল্পারের গোপনীয়তা এবং এসক্রো নিরাপত্তা বজায় রাখতে সমন্বিত চ্যাট ও ওয়ার্কস্পেস।"
+    },
+    "stats": {
+        "securityScore": "১,৪৫০+",
+        "securityScoreLabel": "ভেরিফাইড ক্যাম্পাস হেল্পার",
+        "typeCoverage": "৳৪৮ লাখ+",
+        "typeCoverageLabel": "এসক্রো সুরক্ষিত লেনদেন",
+        "lighthouseScore": "৯৯.৪%",
+        "lighthouseScoreLabel": "অন-টাইম ডেলিভারি রেট",
+        "productionReady": "১৫+",
+        "productionReadyLabel": "শীর্ষ বিশ্ববিদ্যালয় সংযুক্ত"
+    },
+    "cta": {
+        "title": "আপনার কি কোনো জরুরি অ্যাসাইনমেন্ট বা হার্ডকপি দরকার?",
+        "desc": "বুয়েট, ঢাবি, আইইউটি ও এনএসইউ-এর হাজারো শিক্ষার্থীর সাথে যুক্ত হয়ে একাডেমিক সাফল্য নিশ্চিত করুন।",
+        "button": "সকল গিগ ও সার্ভিস দেখুন"
+    },
+    "footer": {
+        "tagline": "আধুনিক cloud web application-এর জন্য একটি সম্পূর্ণ fullstack enterprise foundation।",
+        "product": "প্রোডাক্ট",
+        "resources": "রিসোর্স",
+        "legal": "আইনি ও কমপ্লায়েন্স",
+        "rights": "সর্বস্বত্ব সংরক্ষিত।",
+        "privacy": "গোপনীয়তা নীতি",
+        "terms": "সেবার শর্তাবলি",
+        "security": "নিরাপত্তা নীতি"
+    },
+    "auth": {
+        "welcomeBack": "আবারও স্বাগতম",
+        "loginSubtitle": "আপনার নিরাপদ enterprise workspace-এ প্রবেশ করতে সাইন ইন করুন",
+        "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+        "registerSubtitle": "সবচেয়ে নিরাপদ Next.js foundation-এর ওপর আপনার প্রজেক্ট তৈরি শুরু করুন",
+        "emailLabel": "কর্মক্ষেত্রের ইমেইল",
+        "passwordLabel": "পাসওয়ার্ড",
+        "nameLabel": "পূর্ণ নাম",
+        "confirmPasswordLabel": "পাসওয়ার্ড নিশ্চিত করুন",
+        "rememberMe": "৩০ দিনের জন্য এই ডিভাইসটি মনে রাখুন",
+        "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+        "signInBtn": "Credentials দিয়ে সাইন ইন করুন",
+        "signUpBtn": "Enterprise অ্যাকাউন্ট তৈরি করুন",
+        "orContinueWith": "অথবা social provider দিয়ে চালিয়ে যান",
+        "fillDemoUser": "Demo User",
+        "fillDemoAdmin": "Demo Admin",
+        "dontHaveAccount": "অ্যাকাউন্ট নেই?",
+        "alreadyHaveAccount": "ইতোমধ্যে নিবন্ধিত?",
+        "termsAgree": "আমি Enterprise Terms of Service এবং Privacy Policy-তে সম্মত"
+    },
+    "contact": {
+        "title": "আমাদের Engineering Team-এর সঙ্গে যোগাযোগ করুন",
+        "subtitle": "আর্কিটেকচার নিয়ে কোনো প্রশ্ন বা custom requirement আছে? আমাদের একটি নিরাপদ বার্তা পাঠান।",
+        "name": "পূর্ণ নাম",
+        "email": "ব্যবসায়িক ইমেইল",
+        "category": "জিজ্ঞাসার ধরন",
+        "subject": "বিষয়",
+        "message": "বার্তা / বিস্তারিত",
+        "sendButton": "নিরাপদ জিজ্ঞাসা পাঠান",
+        "fillDemoData": "Demo Inquiry পূরণ করুন",
+        "successMessage": "আপনার জিজ্ঞাসাটি নিরাপদভাবে পাঠানো হয়েছে। একটি reference ticket তৈরি করা হয়েছে।",
+        "directContact": "সরাসরি যোগাযোগের মাধ্যম",
+        "responseTime": "গড়ে ২ ঘণ্টার কম business hours-এর মধ্যে উত্তর দেওয়া হয়"
+    },
+    "about": {
+        "badge": "Engineering Standard",
+        "title": "Zero-Trust ও Precision-এর নীতির ওপর তৈরি",
+        "subtitle": "আমরা বিশ্বাস করি, আধুনিক web software-এর ক্ষেত্রে উন্নতমানের aesthetics, developer velocity এবং কঠোর defensive security-এর মধ্যে কোনো আপস করা উচিত নয়।",
+        "missionTitle": "আমাদের লক্ষ্য",
+        "missionDesc": "Development team-গুলোর জন্য এমন একটি uncompromising starting point প্রদান করা, যা শুরু থেকেই কঠোর SOC2, ISO27001 এবং OWASP audit checks পূরণ করতে সক্ষম এবং একইসঙ্গে অসাধারণ performance ও design-এর মাধ্যমে ব্যবহারকারীদের উন্নত অভিজ্ঞতা প্রদান করে।",
+        "principlesTitle": "আমাদের মূলনীতি",
+        "stackTitle": "Technology Architecture",
+        "teamTitle": "বিশেষজ্ঞদের দ্বারা নির্মিত"
+    }
+}

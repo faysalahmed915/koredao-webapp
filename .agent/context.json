@@ -1,0 +1,44 @@
+{
+  "name": "nextjs-enterprise-starter",
+  "version": "1.0.0",
+  "architecture": "nextjs-app-router-frontend",
+  "framework": "nextjs-16",
+  "language": "typescript-5-strict",
+  "styling": "tailwind-v4-shadcn",
+  "securityPriority": "critical",
+  "authLayer": {
+    "engine": "better-auth-client",
+    "clientPath": "src/lib/auth-client.ts",
+    "backendAuthUrl": "http://localhost:3000/api/auth",
+    "secretManagedBy": "nestjs-backend"
+  },
+  "backendIntegration": {
+    "companion": "nestjs-enterprise-starter",
+    "defaultBackendUrl": "http://localhost:3000/api/v1",
+    "authSyncPath": "http://localhost:3000/api/v1/auth"
+  },
+  "directoryStructure": {
+    "src/app": "App Router routes, pages, layouts, dynamic SEO handlers, and API endpoints",
+    "src/components/layout": "Header, Footer, ThemeToggle, LanguageToggle",
+    "src/components/providers": "ThemeProvider (next-themes), LanguageProvider (i18n)",
+    "src/components/sections": "Hero, Features, SecurityShowcase, Stats, CtaBanner",
+    "src/components/ui": "Accessible shadcn UI primitives (button, card, dialog, input, etc.)",
+    "src/config": "Zod-validated type-safe configuration (env.ts, site.ts)",
+    "src/i18n": "Multi-language dictionary system (en, es, fr, de)",
+    "src/lib": "Better-Auth instances, Zod schemas, utilities",
+    "src/proxy.ts": "Edge security proxy: CSP, HSTS, X-Frame-Options, x-correlation-id",
+    "docs": "Human and AI agent documentation matching NestJS standards"
+  },
+  "securityGuardrails": {
+    "headers": "proxy.ts enforces CSP, HSTS, X-Frame-Options: DENY, X-Content-Type-Options: nosniff",
+    "inputValidation": "Zod schema parsing on all forms and API endpoints",
+    "correlationTracing": "x-correlation-id generated and propagated across requests to NestJS",
+    "credentials": "Never commit secrets; strict fail-fast env schema in src/config/env.ts"
+  },
+  "commands": {
+    "dev": "npm run dev",
+    "build": "npm run build",
+    "start": "npm run start",
+    "lint": "npm run lint"
+  }
+}
