@@ -47,7 +47,7 @@ import {
 import { MilestoneWorkspace } from "@/components/orders/milestone-workspace";
 import { OrderChatDrawer } from "@/components/chat/order-chat-drawer";
 
-export default function OrderWorkspacePage() {
+function OrderWorkspaceContent() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
@@ -881,5 +881,19 @@ export default function OrderWorkspacePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function OrderWorkspacePage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        </div>
+      }
+    >
+      <OrderWorkspaceContent />
+    </React.Suspense>
   );
 }

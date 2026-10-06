@@ -27,7 +27,7 @@ import { loginSchema, LoginInput } from "@/lib/schemas/auth.schema";
 import { useLanguage } from "@/components/providers/language-provider";
 import { signIn, useSession } from "@/lib/auth-client";
 
-export default function LoginPage() {
+function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
@@ -276,5 +276,19 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        </div>
+      }
+    >
+      <LoginFormContent />
+    </React.Suspense>
   );
 }
