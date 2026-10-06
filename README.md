@@ -128,7 +128,7 @@ The application will start on [http://localhost:3001](http://localhost:3001).
 This frontend connects seamlessly with the backend in `../nestjs`:
 
 1. Ensure the NestJS backend is running on `http://localhost:3000`.
-2. The frontend `.env` points `NEXT_PUBLIC_BACKEND_URL="http://localhost:3000/api/v1"`.
+2. The frontend `.env` points `BACKEND_URL="http://localhost:3000/api/v1"`.
 3. The NestJS backend `CORS_ORIGIN` includes `http://localhost:3001`.
 4. Authentication sessions via Better-Auth share cookie and token contexts across services.
 

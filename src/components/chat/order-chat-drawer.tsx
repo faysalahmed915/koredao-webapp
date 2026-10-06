@@ -87,8 +87,8 @@ export function OrderChatDrawer({
   React.useEffect(() => {
     if (!conversation) return;
 
-    const wsUrl = process.env.NEXT_PUBLIC_BACKEND_URL
-      ? process.env.NEXT_PUBLIC_BACKEND_URL.replace("/api/v1", "")
+    const wsUrl = process.env.BACKEND_URL
+      ? process.env.BACKEND_URL.replace("/api/v1", "")
       : "http://localhost:3000";
 
     const socket = io(`${wsUrl}/chat`, {

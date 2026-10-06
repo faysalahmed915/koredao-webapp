@@ -3,7 +3,7 @@ export const siteConfig = {
   shortName: "NE",
   description:
     "Production-grade, highly secured Next.js starter engineered with defense-in-depth, shadcn/ui, Better-Auth, and strict Zod validation.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001",
+  url: process.env.APP_URL || "http://localhost:3001",
   ogImage: "/og.png",
   links: {
     github: "https://github.com",

@@ -97,4 +97,4 @@ This frontend is designed as the direct client counterpart to the `nestjs` enter
 | Zod form validation | `AppValidationPipe` with whitelist and mass-assignment protection |
 | `src/lib/auth-client.ts` | NestJS `AuthModule` & `AuthGuard` |
 | Port 3001 | Port 3000 (`/api/v1`) |
-| CORS origin configured in backend `.env` | Backend URL configured in frontend `NEXT_PUBLIC_BACKEND_URL` |
+| CORS origin configured in backend `.env` | Backend URL configured in frontend `BACKEND_URL` |

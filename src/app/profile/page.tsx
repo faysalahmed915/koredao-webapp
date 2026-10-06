@@ -56,7 +56,7 @@ export default function ProfilePage() {
 
   const fetchProfile = React.useCallback(async () => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+      const backendUrl = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
       const response = await fetch(`${backendUrl}/users/profile`, {
         method: "GET",
         headers: {
@@ -82,7 +82,7 @@ export default function ProfilePage() {
   React.useEffect(() => {
     let ignore = false;
     if (session?.user) {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+      const backendUrl = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
       fetch(`${backendUrl}/users/profile`, {
         method: "GET",
         headers: {

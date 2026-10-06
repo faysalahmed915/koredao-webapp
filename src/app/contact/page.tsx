@@ -329,7 +329,7 @@ export default function ContactPage() {
             <div className="space-y-2.5 text-xs text-muted-foreground">
               <div>
                 <strong className="text-foreground block">How do I pair with the NestJS backend?</strong>
-                Configure <code className="text-[11px] bg-background px-1 py-0.5 rounded">NEXT_PUBLIC_BACKEND_URL</code> in <code className="text-[11px] bg-background px-1 py-0.5 rounded">.env</code> to point to NestJS (e.g. port 3000).
+                Configure <code className="text-[11px] bg-background px-1 py-0.5 rounded">BACKEND_URL</code> in <code className="text-[11px] bg-background px-1 py-0.5 rounded">.env</code> to point to NestJS (e.g. port 3000).
               </div>
               <div>
                 <strong className="text-foreground block">Are CSP headers applied to all routes?</strong>
