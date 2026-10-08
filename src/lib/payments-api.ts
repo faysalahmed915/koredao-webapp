@@ -1,4 +1,5 @@
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export type PaymentGatewayType = "AAMARPAY" | "PIPRAPAY" | "MOCK_SANDBOX";
 
@@ -31,7 +32,7 @@ export interface VerifyPaymentResponse {
 export async function initiatePayment(
   payload: InitiatePaymentPayload,
 ): Promise<PaymentInitiationResponse> {
-  const res = await fetch(`${BACKEND_URL}/payments/initiate`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/initiate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -52,7 +53,7 @@ export async function initiatePayment(
 export async function verifyPayment(
   payload: VerifyPaymentPayload,
 ): Promise<VerifyPaymentResponse> {
-  const res = await fetch(`${BACKEND_URL}/payments/verify`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/verify`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

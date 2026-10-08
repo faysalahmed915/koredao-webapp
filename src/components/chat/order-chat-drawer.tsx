@@ -87,8 +87,8 @@ export function OrderChatDrawer({
   React.useEffect(() => {
     if (!conversation) return;
 
-    const wsUrl = process.env.BACKEND_URL
-      ? process.env.BACKEND_URL.replace("/api/v1", "")
+    const wsUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+      ? process.env.NEXT_PUBLIC_BACKEND_URL.replace("/api/v1", "")
       : "http://localhost:3000";
 
     const socket = io(`${wsUrl}/chat`, {
@@ -184,9 +184,8 @@ export function OrderChatDrawer({
 
   return (
     <div
-      className={`rounded-2xl border border-border/70 bg-card shadow-sm overflow-hidden flex flex-col transition-all ${
-        isExpanded ? "h-[680px]" : "h-[500px]"
-      }`}
+      className={`rounded-2xl border border-border/70 bg-card shadow-sm overflow-hidden flex flex-col transition-all ${isExpanded ? "h-[680px]" : "h-[500px]"
+        }`}
     >
       {/* Chat Header */}
       <div className="p-4 border-b border-border/60 bg-muted/30 flex items-center justify-between">
@@ -248,11 +247,10 @@ export function OrderChatDrawer({
                 className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed space-y-2 ${
-                    isMe
+                  className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed space-y-2 ${isMe
                       ? "bg-indigo-600 text-white rounded-br-none shadow-sm shadow-indigo-600/20"
                       : "bg-muted text-foreground rounded-bl-none border border-border/50"
-                  }`}
+                    }`}
                 >
                   {/* Sender Name (if other person) */}
                   {!isMe && (
@@ -273,11 +271,10 @@ export function OrderChatDrawer({
                           href={att}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
-                            isMe
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${isMe
                               ? "bg-white/15 text-white hover:bg-white/25"
                               : "bg-background text-indigo-600 dark:text-indigo-400 border border-border/60 hover:bg-accent"
-                          }`}
+                            }`}
                         >
                           <Paperclip className="h-3 w-3" />
                           <span>View Attachment #{aIdx + 1}</span>
@@ -289,9 +286,8 @@ export function OrderChatDrawer({
 
                   {/* Timestamp & read status */}
                   <div
-                    className={`flex items-center justify-end gap-1 text-[9px] pt-1 ${
-                      isMe ? "text-indigo-200" : "text-muted-foreground"
-                    }`}
+                    className={`flex items-center justify-end gap-1 text-[9px] pt-1 ${isMe ? "text-indigo-200" : "text-muted-foreground"
+                      }`}
                   >
                     <span>
                       {new Date(msg.createdAt).toLocaleTimeString([], {
@@ -356,11 +352,10 @@ export function OrderChatDrawer({
         <button
           type="button"
           onClick={() => setShowAttachmentInput(!showAttachmentInput)}
-          className={`p-2 rounded-xl border border-border/60 transition-colors ${
-            showAttachmentInput
+          className={`p-2 rounded-xl border border-border/60 transition-colors ${showAttachmentInput
               ? "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-indigo-500/30"
               : "text-muted-foreground hover:text-foreground hover:bg-accent"
-          }`}
+            }`}
           title="Attach file or handwriting sample"
         >
           <Paperclip className="h-4 w-4" />

@@ -16,10 +16,11 @@ export interface ProjectCheckpoint {
   updatedAt: string;
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function fetchOrderCheckpoints(orderId: string): Promise<ProjectCheckpoint[]> {
-  const res = await fetch(`${BACKEND_URL}/milestones/order/${orderId}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/order/${orderId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +43,7 @@ export async function createCheckpoint(payload: {
   description?: string;
   targetDate?: string;
 }): Promise<ProjectCheckpoint> {
-  const res = await fetch(`${BACKEND_URL}/milestones`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +70,7 @@ export async function submitCheckpointProgress(
     vendorNotes?: string;
   },
 ): Promise<ProjectCheckpoint> {
-  const res = await fetch(`${BACKEND_URL}/milestones/${checkpointId}/submit`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}/submit`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -94,7 +95,7 @@ export async function reviewCheckpoint(
     clientFeedback?: string;
   },
 ): Promise<ProjectCheckpoint> {
-  const res = await fetch(`${BACKEND_URL}/milestones/${checkpointId}/review`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}/review`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -113,7 +114,7 @@ export async function reviewCheckpoint(
 }
 
 export async function deleteCheckpoint(checkpointId: string): Promise<{ success: boolean }> {
-  const res = await fetch(`${BACKEND_URL}/milestones/${checkpointId}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

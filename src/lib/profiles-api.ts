@@ -45,10 +45,11 @@ export interface CustomerProfile {
   campus?: string;
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function fetchMyVendorProfile(): Promise<VendorProfile | null> {
-  const res = await fetch(`${BACKEND_URL}/profiles/vendor/me`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -81,7 +82,7 @@ export async function submitVendorApplication(payload: {
     description?: string;
   }>;
 }): Promise<VendorProfile> {
-  const res = await fetch(`${BACKEND_URL}/profiles/vendor/apply`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/apply`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -115,7 +116,7 @@ export async function searchVendors(params: {
   if (params.page) query.set("page", String(params.page));
   if (params.limit) query.set("limit", String(params.limit));
 
-  const res = await fetch(`${BACKEND_URL}/profiles/vendor/search?${query.toString()}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/search?${query.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -132,7 +133,7 @@ export async function searchVendors(params: {
 }
 
 export async function fetchPublicVendorProfile(id: string): Promise<VendorProfile> {
-  const res = await fetch(`${BACKEND_URL}/profiles/vendor/${id}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -153,7 +154,7 @@ export async function fetchPendingApplications(page = 1, limit = 10): Promise<{
   total: number;
   totalPages: number;
 }> {
-  const res = await fetch(`${BACKEND_URL}/profiles/admin/pending?page=${page}&limit=${limit}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/admin/pending?page=${page}&limit=${limit}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -175,7 +176,7 @@ export async function reviewVendorApplication(
   status: "APPROVED" | "REJECTED",
   rejectionReason?: string,
 ): Promise<VendorProfile> {
-  const res = await fetch(`${BACKEND_URL}/profiles/admin/review/${profileId}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/admin/review/${profileId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -46,10 +46,11 @@ export interface MatchHelpersQuery {
   maxDistanceKm?: number;
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function matchHelpers(payload: MatchHelpersQuery): Promise<MatchedHelper[]> {
-  const res = await fetch(`${BACKEND_URL}/matching/helpers`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/matching/helpers`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -68,7 +69,7 @@ export async function matchHelpers(payload: MatchHelpersQuery): Promise<MatchedH
 }
 
 export async function fetchCampuses(): Promise<CampusLocation[]> {
-  const res = await fetch(`${BACKEND_URL}/matching/campuses`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/matching/campuses`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

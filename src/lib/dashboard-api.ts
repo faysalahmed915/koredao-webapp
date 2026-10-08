@@ -1,4 +1,4 @@
-const BACKEND_URL =
+const NEXT_PUBLIC_BACKEND_URL =
   process.env.API_URL || "http://localhost:3000/api/v1";
 
 export interface CustomerDashboardMetrics {
@@ -151,7 +151,7 @@ export async function fetchDashboardMetrics(): Promise<DashboardResponse> {
       ? crypto.randomUUID()
       : `cid-${Date.now()}`;
 
-  const res = await fetch(`${BACKEND_URL}/dashboard/metrics`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/dashboard/metrics`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

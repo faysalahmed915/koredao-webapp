@@ -243,9 +243,8 @@ export default function ContactPage() {
                     rows={5}
                     placeholder="Provide specific details regarding your inquiry..."
                     {...register("message")}
-                    className={`w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
-                      errors.message ? "border-destructive focus-visible:ring-destructive" : ""
-                    }`}
+                    className={`w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${errors.message ? "border-destructive focus-visible:ring-destructive" : ""
+                      }`}
                   />
                   {errors.message && (
                     <p className="text-xs text-destructive">{errors.message.message}</p>
@@ -329,7 +328,7 @@ export default function ContactPage() {
             <div className="space-y-2.5 text-xs text-muted-foreground">
               <div>
                 <strong className="text-foreground block">How do I pair with the NestJS backend?</strong>
-                Configure <code className="text-[11px] bg-background px-1 py-0.5 rounded">BACKEND_URL</code> in <code className="text-[11px] bg-background px-1 py-0.5 rounded">.env</code> to point to NestJS (e.g. port 3000).
+                Configure <code className="text-[11px] bg-background px-1 py-0.5 rounded">NEXT_PUBLIC_BACKEND_URL</code> in <code className="text-[11px] bg-background px-1 py-0.5 rounded">.env</code> to point to NestJS (e.g. port 3000).
               </div>
               <div>
                 <strong className="text-foreground block">Are CSP headers applied to all routes?</strong>

@@ -23,15 +23,15 @@ export interface Order {
   platformFee: number;
   netVendorAmount: number;
   status:
-    | "PENDING_PAYMENT"
-    | "ESCROW_HELD"
-    | "IN_PROGRESS"
-    | "DELIVERED"
-    | "UNDER_REVIEW"
-    | "COMPLETED"
-    | "DISPUTED"
-    | "REFUNDED"
-    | "CANCELLED";
+  | "PENDING_PAYMENT"
+  | "ESCROW_HELD"
+  | "IN_PROGRESS"
+  | "DELIVERED"
+  | "UNDER_REVIEW"
+  | "COMPLETED"
+  | "DISPUTED"
+  | "REFUNDED"
+  | "CANCELLED";
   deadline: string;
   maxRevisions: number;
   usedRevisions: number;
@@ -97,7 +97,8 @@ export interface VendorWallet {
   }>;
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function createOrder(payload: {
   gigId?: string;
@@ -105,7 +106,7 @@ export async function createOrder(payload: {
   assignmentId?: string;
   bidId?: string;
 }): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -124,7 +125,7 @@ export async function createOrder(payload: {
 }
 
 export async function fetchMyOrders(): Promise<Order[]> {
-  const res = await fetch(`${BACKEND_URL}/orders/me`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -142,7 +143,7 @@ export async function fetchMyOrders(): Promise<Order[]> {
 }
 
 export async function fetchOrderById(id: string): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders/${id}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -164,7 +165,7 @@ export async function fundEscrow(
   gateway = "MOCK_SANDBOX",
   transactionRef?: string,
 ): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders/${orderId}/fund`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/fund`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -186,7 +187,7 @@ export async function submitDelivery(
   orderId: string,
   payload: { deliveryFiles: string[]; deliveryNotes?: string },
 ): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders/${orderId}/deliver`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/deliver`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -205,7 +206,7 @@ export async function submitDelivery(
 }
 
 export async function acceptDelivery(orderId: string): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders/${orderId}/accept`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/accept`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -226,7 +227,7 @@ export async function requestRevision(
   orderId: string,
   revisionNotes: string,
 ): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders/${orderId}/revision`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/revision`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -248,7 +249,7 @@ export async function raiseDispute(
   orderId: string,
   disputeReason: string,
 ): Promise<Order> {
-  const res = await fetch(`${BACKEND_URL}/orders/${orderId}/dispute`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/dispute`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -267,7 +268,7 @@ export async function raiseDispute(
 }
 
 export async function fetchVendorWallet(): Promise<VendorWallet> {
-  const res = await fetch(`${BACKEND_URL}/orders/wallet`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/wallet`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -289,7 +290,7 @@ export async function requestWithdrawal(payload: {
   payoutMethod: "BKASH" | "NAGAD" | "BANK_TRANSFER";
   payoutAccount: string;
 }): Promise<{ wallet: VendorWallet; transaction: any }> {
-  const res = await fetch(`${BACKEND_URL}/orders/wallet/withdraw`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/wallet/withdraw`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -56,7 +56,7 @@ export default function ProfilePage() {
 
   const fetchProfile = React.useCallback(async () => {
     try {
-      const backendUrl = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
       const response = await fetch(`${backendUrl}/users/profile`, {
         method: "GET",
         headers: {
@@ -82,7 +82,7 @@ export default function ProfilePage() {
   React.useEffect(() => {
     let ignore = false;
     if (session?.user) {
-      const backendUrl = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
       fetch(`${backendUrl}/users/profile`, {
         method: "GET",
         headers: {
@@ -97,7 +97,7 @@ export default function ProfilePage() {
             setProfile(envelope.data);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
     return () => {
       ignore = true;
@@ -170,10 +170,10 @@ export default function ProfilePage() {
   const isEmailVerified = profile?.emailVerified ?? false;
   const createdAtFormatted = profile?.createdAt
     ? new Date(profile.createdAt).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : "Recently";
 
   return (

@@ -47,13 +47,14 @@ export interface Conversation {
   messages?: ChatMessage[];
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function getOrCreateConversation(payload: {
   orderId?: string;
   vendorProfileId?: string;
 }): Promise<Conversation> {
-  const res = await fetch(`${BACKEND_URL}/chat/conversations`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -72,7 +73,7 @@ export async function getOrCreateConversation(payload: {
 }
 
 export async function fetchMyConversations(): Promise<Conversation[]> {
-  const res = await fetch(`${BACKEND_URL}/chat/conversations/me`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +91,7 @@ export async function fetchMyConversations(): Promise<Conversation[]> {
 }
 
 export async function fetchMessages(conversationId: string): Promise<ChatMessage[]> {
-  const res = await fetch(`${BACKEND_URL}/chat/conversations/${conversationId}/messages`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/${conversationId}/messages`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -112,7 +113,7 @@ export async function sendChatMessage(payload: {
   content: string;
   attachments?: string[];
 }): Promise<ChatMessage> {
-  const res = await fetch(`${BACKEND_URL}/chat/messages`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -37,13 +37,13 @@ export interface Assignment {
   title: string;
   description: string;
   category:
-    | "ASSIGNMENT"
-    | "LAB_REPORT"
-    | "THESIS_RESEARCH"
-    | "HANDWRITTEN_HARDCOPY"
-    | "MATH_PROBLEM_SOLVING"
-    | "PRESENTATION_SLIDES"
-    | "OTHER";
+  | "ASSIGNMENT"
+  | "LAB_REPORT"
+  | "THESIS_RESEARCH"
+  | "HANDWRITTEN_HARDCOPY"
+  | "MATH_PROBLEM_SOLVING"
+  | "PRESENTATION_SLIDES"
+  | "OTHER";
   subject: string;
   type: "SOFTCOPY" | "HARDCOPY";
   deadline: string;
@@ -66,7 +66,8 @@ export interface Assignment {
   bids?: Bid[];
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api/v1";
+// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function searchAssignments(params: {
   search?: string;
@@ -96,7 +97,7 @@ export async function searchAssignments(params: {
   if (params.page) query.set("page", String(params.page));
   if (params.limit) query.set("limit", String(params.limit));
 
-  const res = await fetch(`${BACKEND_URL}/assignments/search?${query.toString()}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/search?${query.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -113,7 +114,7 @@ export async function searchAssignments(params: {
 }
 
 export async function fetchAssignmentById(id: string): Promise<Assignment> {
-  const res = await fetch(`${BACKEND_URL}/assignments/${id}`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -144,7 +145,7 @@ export async function createAssignment(payload: {
   preferredHandwritingStyle?: string;
   sampleFileUrls?: string[];
 }): Promise<Assignment> {
-  const res = await fetch(`${BACKEND_URL}/assignments`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -171,7 +172,7 @@ export async function submitBid(
     sampleUrls?: string[];
   },
 ): Promise<Bid> {
-  const res = await fetch(`${BACKEND_URL}/assignments/${assignmentId}/bids`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${assignmentId}/bids`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -193,7 +194,7 @@ export async function acceptBid(
   assignmentId: string,
   bidId: string,
 ): Promise<{ assignment: Assignment; acceptedBid: Bid }> {
-  const res = await fetch(`${BACKEND_URL}/assignments/${assignmentId}/bids/${bidId}/accept`, {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${assignmentId}/bids/${bidId}/accept`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
