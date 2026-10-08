@@ -4,16 +4,16 @@ import React, { createContext, useContext, useSyncExternalStore } from "react";
 import { SupportedLanguage, TranslationDictionary } from "@/i18n/types";
 import en from "@/i18n/dictionaries/en.json";
 import bn from "@/i18n/dictionaries/bn.json";
-import es from "@/i18n/dictionaries/es.json";
-import fr from "@/i18n/dictionaries/fr.json";
-import de from "@/i18n/dictionaries/de.json";
+// import es from "@/i18n/dictionaries/es.json";
+// import fr from "@/i18n/dictionaries/fr.json";
+// import de from "@/i18n/dictionaries/de.json";
 
 const dictionaries: Record<SupportedLanguage, TranslationDictionary> = {
   en: en as TranslationDictionary,
   bn: bn as TranslationDictionary,
-  es: es as TranslationDictionary,
-  fr: fr as TranslationDictionary,
-  de: de as TranslationDictionary,
+  // es: es as TranslationDictionary,
+  // fr: fr as TranslationDictionary,
+  // de: de as TranslationDictionary,
 };
 
 interface LanguageContextType {

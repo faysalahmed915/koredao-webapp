@@ -1,4 +1,5 @@
-export type SupportedLanguage = "en" | "bn" | "es" | "fr" | "de";
+// export type SupportedLanguage = "en" | "bn" | "es" | "fr" | "de";
+export type SupportedLanguage = "en" | "bn";
 
 export interface LanguageOption {
   code: SupportedLanguage;
@@ -9,9 +10,9 @@ export interface LanguageOption {
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: "en", label: "English", flag: "🇺🇸" },
   { code: "bn", label: "বাংলা", flag: "🇧🇩" },
-  { code: "es", label: "Español", flag: "🇪🇸" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
+  // { code: "es", label: "Español", flag: "🇪🇸" },
+  // { code: "fr", label: "Français", flag: "🇫🇷" },
+  // { code: "de", label: "Deutsch", flag: "🇩🇪" },
 ];
 
 export interface TranslationDictionary {

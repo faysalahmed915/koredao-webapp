@@ -4,12 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-sans), sans-serif;
+  --font-serif: var(--font-serif), Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: var(--font-mono), monospace;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
+  --font-serif: var(--font-serif);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,85 +54,246 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Dynamic Brand scales: Mapped to variables for instant light/dark mood switching */
+  --color-indigo-50: var(--indigo-50);
+  --color-indigo-100: var(--indigo-100);
+  --color-indigo-200: var(--indigo-200);
+  --color-indigo-300: var(--indigo-300);
+  --color-indigo-400: var(--indigo-400);
+  --color-indigo-500: var(--indigo-500);
+  --color-indigo-600: var(--indigo-600);
+  --color-indigo-700: var(--indigo-700);
+  --color-indigo-800: var(--indigo-800);
+  --color-indigo-900: var(--indigo-900);
+  --color-indigo-950: var(--indigo-950);
+
+  --color-purple-50: var(--purple-50);
+  --color-purple-100: var(--purple-100);
+  --color-purple-200: var(--purple-200);
+  --color-purple-300: var(--purple-300);
+  --color-purple-400: var(--purple-400);
+  --color-purple-500: var(--purple-500);
+  --color-purple-600: var(--purple-600);
+  --color-purple-700: var(--purple-700);
+  --color-purple-800: var(--purple-800);
+  --color-purple-900: var(--purple-900);
+  --color-purple-950: var(--purple-950);
+
+  --color-pink-50: var(--pink-50);
+  --color-pink-100: var(--pink-100);
+  --color-pink-200: var(--pink-200);
+  --color-pink-300: var(--pink-300);
+  --color-pink-400: var(--pink-400);
+  --color-pink-500: var(--pink-500);
+  --color-pink-600: var(--pink-600);
+  --color-pink-700: var(--pink-700);
+  --color-pink-800: var(--pink-800);
+  --color-pink-900: var(--pink-900);
+  --color-pink-950: var(--pink-950);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* ==========================================================================
+     LIGHT MOOD: Upwork Signature Aesthetics
+     Clean warm-off-white canvas, trustworthy green accents, soft neutral cards
+     ========================================================================== */
+  --background: oklch(0.995 0.003 140);
+  --foreground: oklch(0.185 0.015 145);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.185 0.015 145);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.185 0.015 145);
+  --primary: oklch(0.535 0.19 142.5);
+  /* Upwork Primary Green #14a800 */
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.965 0.012 142);
+  --secondary-foreground: oklch(0.19 0.02 145);
+  --muted: oklch(0.968 0.008 140);
+  --muted-foreground: oklch(0.48 0.018 140);
+  --accent: oklch(0.955 0.028 142);
+  --accent-foreground: oklch(0.18 0.025 142);
+  --destructive: oklch(0.58 0.22 28);
+  --border: oklch(0.915 0.008 140);
+  --input: oklch(0.915 0.008 140);
+  --ring: oklch(0.535 0.19 142.5);
+  --radius: 0.75rem;
+
+  --sidebar: oklch(0.99 0.005 140);
+  --sidebar-foreground: oklch(0.185 0.015 145);
+  --sidebar-primary: oklch(0.535 0.19 142.5);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.955 0.028 142);
+  --sidebar-accent-foreground: oklch(0.18 0.025 142);
+  --sidebar-border: oklch(0.915 0.008 140);
+  --sidebar-ring: oklch(0.535 0.19 142.5);
+
+  --chart-1: oklch(0.535 0.19 142.5);
+  --chart-2: oklch(0.45 0.12 180);
+  --chart-3: oklch(0.65 0.17 75);
+  --chart-4: oklch(0.70 0.18 135);
+  --chart-5: oklch(0.35 0.08 150);
+
+  /* Light Mood: Upwork Signature Green scale */
+  --indigo-50: #f2fcf4;
+  --indigo-100: #e2f8e7;
+  --indigo-200: #c4eed0;
+  --indigo-300: #93dead;
+  --indigo-400: #55c87a;
+  --indigo-500: #1eb547;
+  --indigo-600: #14a800;
+  /* Upwork Green */
+  --indigo-700: #108a00;
+  --indigo-800: #0f6c03;
+  --indigo-900: #0d5607;
+  --indigo-950: #042e05;
+
+  --purple-50: #f0fdf9;
+  --purple-100: #dcfce7;
+  --purple-200: #a7f3d0;
+  --purple-300: #6ee7b7;
+  --purple-400: #34d399;
+  --purple-500: #10b981;
+  --purple-600: #0d534d;
+  --purple-700: #13544e;
+  --purple-800: #0f403c;
+  --purple-900: #001e00;
+  --purple-950: #001200;
+
+  --pink-50: #f7fee7;
+  --pink-100: #ecfccb;
+  --pink-200: #d9f99d;
+  --pink-300: #bef264;
+  --pink-400: #a3e635;
+  --pink-500: #84cc16;
+  --pink-600: #65a30d;
+  --pink-700: #4d7c0f;
+  --pink-800: #3f6212;
+  --pink-900: #365314;
+  --pink-950: #1a2e05;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* ==========================================================================
+     DARK MOOD: Sleek Midnight Obsidian & Electric Indigo/Violet (ZERO GREEN)
+     Deep graphite background, high-contrast platinum font, crisp cyber accents
+     ========================================================================== */
+  --background: oklch(0.12 0.012 265);
+  /* Deep midnight obsidian #090a10 */
+  --foreground: oklch(0.97 0.005 260);
+  /* High-clarity platinum font #f8fafc */
+  --card: oklch(0.16 0.015 265);
+  /* Elevated dark graphite card #12141c */
+  --card-foreground: oklch(0.97 0.005 260);
+  --popover: oklch(0.17 0.016 265);
+  /* Elevated dark popover #141620 */
+  --popover-foreground: oklch(0.97 0.005 260);
+  --primary: oklch(0.62 0.22 265);
+  /* Electric Indigo #6366f1 (Zero green!) */
+  --primary-foreground: oklch(0.99 0 0);
+  /* Pure white font on button */
+  --secondary: oklch(0.22 0.02 265);
+  /* Sleek dark slate #191c28 */
+  --secondary-foreground: oklch(0.94 0.008 260);
+  --muted: oklch(0.19 0.016 265);
+  /* Muted background #151824 */
+  --muted-foreground: oklch(0.68 0.02 260);
+  /* High-readability silver font #94a3b8 */
+  --accent: oklch(0.24 0.035 265);
+  /* Refined dark hover #1e2236 */
+  --accent-foreground: oklch(0.97 0.005 260);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.26 0.02 265 / 65%);
+  /* Subtle dark slate border #23273a */
+  --input: oklch(0.26 0.02 265 / 65%);
+  --ring: oklch(0.62 0.22 265);
+  /* Electric Indigo focus ring */
+  --radius: 0.75rem;
+
+  --sidebar: oklch(0.13 0.014 265);
+  /* Deep obsidian sidebar #0b0d14 */
+  --sidebar-foreground: oklch(0.97 0.005 260);
+  --sidebar-primary: oklch(0.62 0.22 265);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.22 0.025 265);
+  --sidebar-accent-foreground: oklch(0.97 0.005 260);
+  --sidebar-border: oklch(0.26 0.02 265 / 65%);
+  --sidebar-ring: oklch(0.62 0.22 265);
+
+  --chart-1: oklch(0.62 0.22 265);
+  /* Electric Indigo */
+  --chart-2: oklch(0.68 0.18 200);
+  /* Cyan */
+  --chart-3: oklch(0.70 0.19 320);
+  /* Neon Fuchsia */
+  --chart-4: oklch(0.75 0.18 75);
+  /* Golden Amber */
+  --chart-5: oklch(0.65 0.22 25);
+  /* Coral */
+
+  /* Dark Mood: Electric Indigo / Violet scale (Zero green tint!) */
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-300: #a5b4fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  /* Electric Indigo */
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+  --indigo-950: #1e1b4b;
+
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-200: #ddd6fe;
+  --purple-300: #c4b5fd;
+  --purple-400: #a78bfa;
+  --purple-500: #8b5cf6;
+  --purple-600: #7c3aed;
+  /* Vibrant Violet */
+  --purple-700: #6d28d9;
+  --purple-800: #5b21b6;
+  --purple-900: #4c1d95;
+  --purple-950: #2e1065;
+
+  --pink-50: #fdf2f8;
+  --pink-100: #fce7f3;
+  --pink-200: #fbcfe8;
+  --pink-300: #f9a8d4;
+  --pink-400: #f472b6;
+  --pink-500: #ec4899;
+  --pink-600: #db2777;
+  /* Neon Rose */
+  --pink-700: #be185d;
+  --pink-800: #9d174d;
+  --pink-900: #831843;
+  --pink-950: #500724;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.011em;
   }
+
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.025em;
   }
 }
