@@ -15,6 +15,23 @@ const nextConfig: NextConfig = {
   experimental: {
     // Turbopack optimizations
   },
+  async rewrites() {
+    const backendTarget = (
+      process.env.BACKEND_PROXY_TARGET ||
+      "https://koredao-server.onrender.com"
+    ).replace(/\/+$/, "");
+
+    return [
+      {
+        source: "/api/auth/:path*",
+        destination: `${backendTarget}/api/auth/:path*`,
+      },
+      {
+        source: "/api/v1/:path*",
+        destination: `${backendTarget}/api/v1/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -47,8 +47,8 @@ export interface Conversation {
   messages?: ChatMessage[];
 }
 
-// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { BACKEND_URL, getApiHeaders } from "./api-client";
+const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
 
 export async function getOrCreateConversation(payload: {
   orderId?: string;
@@ -56,10 +56,7 @@ export async function getOrCreateConversation(payload: {
 }): Promise<Conversation> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -75,10 +72,7 @@ export async function getOrCreateConversation(payload: {
 export async function fetchMyConversations(): Promise<Conversation[]> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/me`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -93,10 +87,7 @@ export async function fetchMyConversations(): Promise<Conversation[]> {
 export async function fetchMessages(conversationId: string): Promise<ChatMessage[]> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/${conversationId}/messages`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -115,10 +106,7 @@ export async function sendChatMessage(payload: {
 }): Promise<ChatMessage> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/messages`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });

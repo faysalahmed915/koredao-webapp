@@ -1,5 +1,4 @@
-const NEXT_PUBLIC_BACKEND_URL =
-  process.env.API_URL || "http://localhost:3000/api/v1";
+import { BACKEND_URL, getApiHeaders } from "./api-client";
 
 export interface CustomerDashboardMetrics {
   role: "CUSTOMER";
@@ -146,17 +145,9 @@ export type DashboardResponse =
   | AdminDashboardMetrics;
 
 export async function fetchDashboardMetrics(): Promise<DashboardResponse> {
-  const correlationId =
-    typeof crypto !== "undefined" && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `cid-${Date.now()}`;
-
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/dashboard/metrics`, {
+  const res = await fetch(`${BACKEND_URL}/dashboard/metrics`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": correlationId,
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 

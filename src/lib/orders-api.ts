@@ -97,8 +97,8 @@ export interface VendorWallet {
   }>;
 }
 
-// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { BACKEND_URL, getApiHeaders } from "./api-client";
+const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
 
 export async function createOrder(payload: {
   gigId?: string;
@@ -108,10 +108,7 @@ export async function createOrder(payload: {
 }): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -127,10 +124,7 @@ export async function createOrder(payload: {
 export async function fetchMyOrders(): Promise<Order[]> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/me`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -145,10 +139,7 @@ export async function fetchMyOrders(): Promise<Order[]> {
 export async function fetchOrderById(id: string): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -167,10 +158,7 @@ export async function fundEscrow(
 ): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/fund`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify({ paymentGateway: gateway, transactionRef }),
   });
@@ -189,10 +177,7 @@ export async function submitDelivery(
 ): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/deliver`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -208,10 +193,7 @@ export async function submitDelivery(
 export async function acceptDelivery(orderId: string): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/accept`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -229,10 +211,7 @@ export async function requestRevision(
 ): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/revision`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify({ revisionNotes }),
   });
@@ -251,10 +230,7 @@ export async function raiseDispute(
 ): Promise<Order> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/dispute`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify({ disputeReason }),
   });
@@ -270,10 +246,7 @@ export async function raiseDispute(
 export async function fetchVendorWallet(): Promise<VendorWallet> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/wallet`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -292,10 +265,7 @@ export async function requestWithdrawal(payload: {
 }): Promise<{ wallet: VendorWallet; transaction: any }> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/wallet/withdraw`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });

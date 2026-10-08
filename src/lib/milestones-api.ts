@@ -16,16 +16,13 @@ export interface ProjectCheckpoint {
   updatedAt: string;
 }
 
-// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { BACKEND_URL, getApiHeaders } from "./api-client";
+const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
 
 export async function fetchOrderCheckpoints(orderId: string): Promise<ProjectCheckpoint[]> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/order/${orderId}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -45,10 +42,7 @@ export async function createCheckpoint(payload: {
 }): Promise<ProjectCheckpoint> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -72,10 +66,7 @@ export async function submitCheckpointProgress(
 ): Promise<ProjectCheckpoint> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}/submit`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -97,10 +88,7 @@ export async function reviewCheckpoint(
 ): Promise<ProjectCheckpoint> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}/review`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -116,10 +104,7 @@ export async function reviewCheckpoint(
 export async function deleteCheckpoint(checkpointId: string): Promise<{ success: boolean }> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 

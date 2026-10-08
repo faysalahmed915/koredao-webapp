@@ -26,7 +26,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { registerSchema, RegisterInput } from "@/lib/schemas/auth.schema";
 import { useLanguage } from "@/components/providers/language-provider";
-import { signUp, useSession } from "@/lib/auth-client";
+import { signUp, useSession, setStoredAuthToken } from "@/lib/auth-client";
 import { cn } from "cn";
 
 export default function RegisterPage() {
@@ -97,6 +97,10 @@ export default function RegisterPage() {
           description: result.error.message || "Failed to create account. Email may already be registered.",
         });
         return;
+      }
+
+      if (result?.data?.token) {
+        setStoredAuthToken(result.data.token);
       }
 
       toast.success("Account created successfully!", {

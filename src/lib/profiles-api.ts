@@ -45,16 +45,13 @@ export interface CustomerProfile {
   campus?: string;
 }
 
-// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { BACKEND_URL, getApiHeaders } from "./api-client";
+const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
 
 export async function fetchMyVendorProfile(): Promise<VendorProfile | null> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/me`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -84,10 +81,7 @@ export async function submitVendorApplication(payload: {
 }): Promise<VendorProfile> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/apply`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -118,10 +112,7 @@ export async function searchVendors(params: {
 
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/search?${query.toString()}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
   });
 
   const envelope = await res.json();
@@ -135,10 +126,7 @@ export async function searchVendors(params: {
 export async function fetchPublicVendorProfile(id: string): Promise<VendorProfile> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
   });
 
   const envelope = await res.json();
@@ -156,10 +144,7 @@ export async function fetchPendingApplications(page = 1, limit = 10): Promise<{
 }> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/admin/pending?page=${page}&limit=${limit}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -178,10 +163,7 @@ export async function reviewVendorApplication(
 ): Promise<VendorProfile> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/admin/review/${profileId}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify({ status, rejectionReason }),
   });

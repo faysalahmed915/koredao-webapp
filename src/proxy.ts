@@ -39,7 +39,7 @@ export function proxy(request: NextRequest) {
     style-src 'self' 'unsafe-inline' https:;
     img-src 'self' blob: data: https:;
     font-src 'self' https: data:;
-    connect-src 'self' http://localhost:3000 http://localhost:3001 https:;
+    connect-src 'self' https://koredao-server.onrender.com http://localhost:3000 http://localhost:3001 ws: wss:;
     frame-ancestors 'none';
     form-action 'self';
     base-uri 'self';

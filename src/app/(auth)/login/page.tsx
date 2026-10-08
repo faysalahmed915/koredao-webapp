@@ -25,7 +25,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { loginSchema, LoginInput } from "@/lib/schemas/auth.schema";
 import { useLanguage } from "@/components/providers/language-provider";
-import { signIn, useSession } from "@/lib/auth-client";
+import { signIn, useSession, setStoredAuthToken } from "@/lib/auth-client";
 
 function LoginFormContent() {
   const router = useRouter();
@@ -71,6 +71,10 @@ function LoginFormContent() {
           description: result.error.message || "Invalid email or password. Please verify your credentials.",
         });
         return;
+      }
+
+      if (result?.data?.token) {
+        setStoredAuthToken(result.data.token);
       }
 
       toast.success("Welcome back!", {

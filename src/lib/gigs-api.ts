@@ -67,8 +67,8 @@ export interface Gig {
   attachments?: GigAttachment[];
 }
 
-// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { BACKEND_URL, getApiHeaders } from "./api-client";
+const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
 
 export async function searchGigs(params: {
   search?: string;
@@ -100,10 +100,7 @@ export async function searchGigs(params: {
 
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/gigs/search?${query.toString()}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
   });
 
   const envelope = await res.json();
@@ -117,10 +114,7 @@ export async function searchGigs(params: {
 export async function fetchGigBySlug(slug: string): Promise<Gig> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/gigs/${slug}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
   });
 
   const envelope = await res.json();
@@ -134,10 +128,7 @@ export async function fetchGigBySlug(slug: string): Promise<Gig> {
 export async function fetchMyGigs(): Promise<Gig[]> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/gigs/me`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -169,10 +160,7 @@ export async function createGig(payload: {
 }): Promise<Gig> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/gigs`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -188,10 +176,7 @@ export async function createGig(payload: {
 export async function deleteGig(id: string): Promise<void> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/gigs/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 

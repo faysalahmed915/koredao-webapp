@@ -66,8 +66,8 @@ export interface Assignment {
   bids?: Bid[];
 }
 
-// const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { BACKEND_URL, getApiHeaders } from "./api-client";
+const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
 
 export async function searchAssignments(params: {
   search?: string;
@@ -99,10 +99,8 @@ export async function searchAssignments(params: {
 
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/search?${query.toString()}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
+    credentials: "include",
   });
 
   const envelope = await res.json();
@@ -116,10 +114,7 @@ export async function searchAssignments(params: {
 export async function fetchAssignmentById(id: string): Promise<Assignment> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 
@@ -147,10 +142,7 @@ export async function createAssignment(payload: {
 }): Promise<Assignment> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -174,10 +166,7 @@ export async function submitBid(
 ): Promise<Bid> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${assignmentId}/bids`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
     body: JSON.stringify(payload),
   });
@@ -196,10 +185,7 @@ export async function acceptBid(
 ): Promise<{ assignment: Assignment; acceptedBid: Bid }> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${assignmentId}/bids/${bidId}/accept`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-correlation-id": crypto.randomUUID(),
-    },
+    headers: getApiHeaders(),
     credentials: "include",
   });
 

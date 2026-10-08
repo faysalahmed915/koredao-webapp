@@ -22,6 +22,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSession, signOut } from "@/lib/auth-client";
+import { BACKEND_URL, getApiHeaders } from "@/lib/api-client";
 import { toast } from "sonner";
 import { cn } from "cn";
 
@@ -56,13 +57,9 @@ export default function ProfilePage() {
 
   const fetchProfile = React.useCallback(async () => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-      const response = await fetch(`${backendUrl}/users/profile`, {
+      const response = await fetch(`${BACKEND_URL}/users/profile`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-correlation-id": crypto.randomUUID(),
-        },
+        headers: getApiHeaders(),
         credentials: "include",
       });
 
@@ -82,13 +79,9 @@ export default function ProfilePage() {
   React.useEffect(() => {
     let ignore = false;
     if (session?.user) {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
-      fetch(`${backendUrl}/users/profile`, {
+      fetch(`${BACKEND_URL}/users/profile`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-correlation-id": crypto.randomUUID(),
-        },
+        headers: getApiHeaders(),
         credentials: "include",
       })
         .then((res) => (res.ok ? res.json() : null))
