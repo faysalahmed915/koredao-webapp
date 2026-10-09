@@ -63,6 +63,66 @@ export async function fetchMyVendorProfile(): Promise<VendorProfile | null> {
   return envelope?.data ?? null;
 }
 
+export async function updateMyVendorProfile(payload: {
+  university?: string;
+  department?: string;
+  academicLevel?: string;
+  degree?: string;
+  passingYear?: number;
+  bio?: string;
+  skills?: string[];
+}): Promise<VendorProfile> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/me`, {
+    method: "PATCH",
+    headers: getApiHeaders(),
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to update vendor profile");
+  }
+
+  return envelope.data;
+}
+
+export async function fetchMyCustomerProfile(): Promise<CustomerProfile | null> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/customer/me`, {
+    method: "GET",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const envelope = await res.json();
+  return envelope?.data ?? null;
+}
+
+export async function updateMyCustomerProfile(payload: {
+  university?: string;
+  department?: string;
+  phone?: string;
+  campus?: string;
+}): Promise<CustomerProfile> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/customer/me`, {
+    method: "PATCH",
+    headers: getApiHeaders(),
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to update customer profile");
+  }
+
+  return envelope.data;
+}
+
 export async function submitVendorApplication(payload: {
   university: string;
   department: string;

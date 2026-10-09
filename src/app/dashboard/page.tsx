@@ -648,30 +648,75 @@ function AdminDashboardView({
   metrics: AdminDashboardMetrics;
   userName: string;
 }) {
+  const isSuperAdmin = metrics.role === "SUPER_ADMIN";
+  const isModerator = metrics.role === "MODERATOR";
+
+  const roleTitle = isSuperAdmin
+    ? `Super Administrator (Root): ${userName}`
+    : isModerator
+    ? `Compliance & Safety Officer: ${userName}`
+    : `Platform Administrator: ${userName}`;
+
+  const roleBadge = isSuperAdmin
+    ? "Root Authority • Level 5"
+    : isModerator
+    ? "Trust & Safety • Level 3"
+    : "Platform Operations • Level 4";
+
+  const roleDescription = isSuperAdmin
+    ? "Master platform command center: root governance, database ledger audits, financial telemetry, and security administration."
+    : isModerator
+    ? "Review pending helper academic applications, inspect reported interactions, and arbitrate student-helper disputes."
+    : "Real-time platform financial telemetry, pending helper verifications, escrow status, and fraud protection alerts.";
+
   return (
     <div className="space-y-8">
       {/* Admin Command Center Banner */}
-      <div className="rounded-2xl border border-rose-500/20 bg-gradient-to-r from-slate-900 via-rose-950/20 to-card p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md backdrop-blur-sm">
+      <div className={cn(
+        "rounded-2xl border p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-md backdrop-blur-sm",
+        isModerator
+          ? "border-amber-500/20 bg-gradient-to-r from-slate-900 via-amber-950/20 to-card"
+          : isSuperAdmin
+          ? "border-purple-500/25 bg-gradient-to-r from-slate-950 via-purple-950/20 to-card"
+          : "border-rose-500/20 bg-gradient-to-r from-slate-900 via-rose-950/20 to-card"
+      )}>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-rose-500">
-              <ShieldCheck className="h-4 w-4" /> Platform Command Center
+            <span className={cn(
+              "inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider",
+              isModerator ? "text-amber-500" : isSuperAdmin ? "text-purple-400" : "text-rose-500"
+            )}>
+              <ShieldCheck className="h-4 w-4" /> {isModerator ? "Trust & Moderation Desk" : "Platform Command Center"}
             </span>
-            <Badge variant="outline" className="text-[10px] text-emerald-500 border-emerald-500/30">
-              Zero-Trust Guard Active
+            <Badge variant="outline" className={cn(
+              "text-[10px]",
+              isModerator
+                ? "text-amber-500 border-amber-500/30"
+                : isSuperAdmin
+                ? "text-purple-400 border-purple-500/30"
+                : "text-emerald-500 border-emerald-500/30"
+            )}>
+              {roleBadge}
             </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-            Administrator: {userName}
+            {roleTitle}
           </h1>
           <p className="text-sm text-muted-foreground max-w-xl">
-            Real-time platform financial telemetry, pending helper verifications, escrow status, and fraud protection alerts.
+            {roleDescription}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/admin/verifications"
-            className={cn(buttonVariants({ size: "default" }), "bg-rose-600 hover:bg-rose-700 text-white font-semibold gap-2 shadow-md shadow-rose-600/20")}
+            className={cn(
+              buttonVariants({ size: "default" }),
+              isModerator
+                ? "bg-amber-600 hover:bg-amber-700 text-white font-semibold gap-2 shadow-md shadow-amber-600/20"
+                : isSuperAdmin
+                ? "bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-2 shadow-md shadow-purple-600/20"
+                : "bg-rose-600 hover:bg-rose-700 text-white font-semibold gap-2 shadow-md shadow-rose-600/20"
+            )}
           >
             <span>Review Applications ({metrics.stats.pendingVerificationsCount})</span>
             <ArrowRight className="h-4 w-4" />
@@ -680,59 +725,115 @@ function AdminDashboardView({
       </div>
 
       {/* High-Level Platform KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card className="border-border/60 bg-card p-5">
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-semibold">Total Escrow Locked</span>
-            <Lock className="h-4 w-4 text-amber-500" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
-            ৳{metrics.stats.totalEscrowHeld}
-          </div>
-          <div className="text-[11px] text-emerald-500 font-semibold mt-1">
-            Held in secure escrow accounts
-          </div>
-        </Card>
+      {isModerator ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Pending Verifications</span>
+              <Clock className="h-4 w-4 text-amber-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-amber-500">
+              {metrics.stats.pendingVerificationsCount}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              Academic ID cards to review
+            </div>
+          </Card>
 
-        <Card className="border-border/60 bg-card p-5">
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-semibold">Platform 10% Revenue</span>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400">
-            ৳{metrics.stats.totalPlatformRevenue}
-          </div>
-          <div className="text-[11px] text-muted-foreground mt-1">
-            From ৳{metrics.stats.totalGMV} completed GMV
-          </div>
-        </Card>
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Safety & Dispute Flags</span>
+              <AlertCircle className="h-4 w-4 text-rose-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-rose-500">
+              {metrics.stats.safetyAlertsCount}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              {metrics.stats.disputedOrdersCount} disputes requiring arbitration
+            </div>
+          </Card>
 
-        <Card className="border-border/60 bg-card p-5">
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-semibold">Total Users</span>
-            <Users className="h-4 w-4 text-indigo-500" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
-            {metrics.stats.totalUsers}
-          </div>
-          <div className="text-[11px] text-muted-foreground mt-1">
-            {metrics.stats.totalVendors} helpers • {metrics.stats.totalCustomers} students
-          </div>
-        </Card>
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Verified Helpers</span>
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
+              {metrics.stats.totalVendors}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              Active vetted writers
+            </div>
+          </Card>
 
-        <Card className="border-border/60 bg-card p-5">
-          <div className="flex items-center justify-between text-muted-foreground mb-2">
-            <span className="text-xs font-semibold">Security & Safety Flags</span>
-            <AlertCircle className="h-4 w-4 text-rose-500" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-black font-mono text-rose-600 dark:text-rose-400">
-            {metrics.stats.safetyAlertsCount}
-          </div>
-          <div className="text-[11px] text-muted-foreground mt-1">
-            {metrics.stats.disputedOrdersCount} disputes requiring arbitration
-          </div>
-        </Card>
-      </div>
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Active Assignments</span>
+              <FileText className="h-4 w-4 text-indigo-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
+              {metrics.stats.totalAssignments}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              {metrics.stats.totalGigs} gigs cataloged
+            </div>
+          </Card>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Total Escrow Locked</span>
+              <Lock className="h-4 w-4 text-amber-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
+              ৳{metrics.stats.totalEscrowHeld}
+            </div>
+            <div className="text-[11px] text-emerald-500 font-semibold mt-1">
+              Held in secure escrow accounts
+            </div>
+          </Card>
+
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Platform 10% Revenue</span>
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+              ৳{metrics.stats.totalPlatformRevenue}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              From ৳{metrics.stats.totalGMV} completed GMV
+            </div>
+          </Card>
+
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Total Users</span>
+              <Users className="h-4 w-4 text-indigo-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
+              {metrics.stats.totalUsers}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              {metrics.stats.totalVendors} helpers • {metrics.stats.totalCustomers} students
+            </div>
+          </Card>
+
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Security & Safety Flags</span>
+              <AlertCircle className="h-4 w-4 text-rose-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-rose-600 dark:text-rose-400">
+              {metrics.stats.safetyAlertsCount}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              {metrics.stats.disputedOrdersCount} disputes requiring arbitration
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Admin Actionable Queues */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

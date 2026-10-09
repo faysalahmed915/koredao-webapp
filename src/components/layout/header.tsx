@@ -27,7 +27,10 @@ export function Header() {
   const { data: session, isPending } = useSession();
 
   const userRole = (session?.user as any)?.role;
-  const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN";
+  const isSuperAdmin = userRole === "SUPER_ADMIN";
+  const isAdmin = userRole === "ADMIN" || isSuperAdmin;
+  const isModerator = userRole === "MODERATOR";
+  const canAccessAdmin = isAdmin || isModerator;
   const isVendor = userRole === "VENDOR" || isAdmin;
 
   // Navigation Links
@@ -45,8 +48,8 @@ export function Header() {
         ]
       : []),
     ...(isVendor ? [{ title: "Wallet", href: "/vendor/wallet" }] : []),
-    ...(!isVendor ? [{ title: "Become a Helper", href: "/vendor/apply" }] : []),
-    ...(isAdmin ? [{ title: "Verifications", href: "/admin/verifications" }] : []),
+    ...(!isVendor && !isAdmin && !isModerator ? [{ title: "Become a Helper", href: "/vendor/apply" }] : []),
+    ...(canAccessAdmin ? [{ title: "Verifications", href: "/admin/verifications" }] : []),
     { title: t.nav.about, href: "/about" },
     { title: t.nav.contact, href: "/contact" },
   ];
@@ -181,9 +184,9 @@ export function Header() {
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2 text-left">
                     <div className="flex h-7 w-7 items-center justify-center rounded bg-indigo-600 text-white">
-                      <ShieldCheck className="h-4 w-4" />
+                      <GraduationCap className="h-4 w-4" />
                     </div>
-                    <span>NextEnterprise</span>
+                    <span className="font-bold">KoreDao</span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 py-6">
