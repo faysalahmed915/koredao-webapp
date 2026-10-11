@@ -5,137 +5,259 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ArrowRight } from "lucide-react";
 
-import { dropdownNavigation } from "./navigation-data";
+import {
+    dropdownNavigation,
+    isRouteActive,
+    type NavItem,
+    type DropdownNavItem,
+} from "./navigation-data";
+
+// Check whether any item or subitem in a dropdown category is active.
+function isDropdownActive(pathname: string, item: DropdownNavItem): boolean {
+    return (
+        pathname === item.href ||
+        pathname.startsWith(`${item.href}/`) ||
+        (item.groups?.some((group) =>
+            group.items.some((child) => isRouteActive(pathname, child))
+        ) ?? false)
+    );
+}
+
+// Reusable recursive component for unlimited nesting in mobile navigation.
+type MobileNestedNavItemProps = {
+    item: NavItem;
+    pathname: string;
+    onNavigate?: () => void;
+    depth?: number;
+};
+
+function MobileNestedNavItem({
+    item,
+    pathname,
+    onNavigate,
+    depth = 0,
+}: MobileNestedNavItemProps) {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+    const hasChildren = Boolean(item.children?.length);
+    const isActive = isRouteActive(pathname, item);
+    const isCurrentPage = pathname === item.href;
+
+    const submenuId = React.useId();
+
+    React.useEffect(() => {
+        // Expand ancestors when a nested route is active.
+        if (hasChildren && isActive) {
+            setIsExpanded(true);
+        }
+    }, [hasChildren, isActive, pathname]);
+
+    return (
+        <li className="min-w-0 list-none">
+            <div
+                className={`flex items-start gap-1 rounded-lg transition-colors ${
+                    isCurrentPage
+                        ? "bg-accent text-primary font-medium"
+                        : isActive
+                            ? "bg-accent/40"
+                            : "hover:bg-accent/60"
+                }`}
+                style={{ marginLeft: depth > 0 ? 0 : undefined }}
+            >
+                <Link
+                    href={item.href}
+                    onClick={onNavigate}
+                    aria-current={isCurrentPage ? "page" : undefined}
+                    className="group flex min-w-0 flex-1 items-start justify-between gap-2 p-2.5"
+                >
+                    <span className="min-w-0">
+                        <span className="block text-sm font-medium">
+                            {item.title}
+                        </span>
+
+                        {item.description && (
+                            <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+                                {item.description}
+                            </span>
+                        )}
+                    </span>
+
+                    {!hasChildren && (
+                        <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-40 transition-opacity group-hover:opacity-100" />
+                    )}
+                </Link>
+
+                {hasChildren && (
+                    <button
+                        type="button"
+                        aria-label={`${isExpanded ? "Collapse" : "Expand"} ${item.title}`}
+                        aria-expanded={isExpanded}
+                        aria-controls={submenuId}
+                        onClick={() => setIsExpanded((previous) => !previous)}
+                        className="mr-1 mt-1 rounded-md p-2 text-muted-foreground hover:bg-background/80 hover:text-foreground"
+                    >
+                        <ChevronDown
+                            aria-hidden="true"
+                            className={`h-4 w-4 transition-transform duration-200 ${
+                                isExpanded ? "rotate-180" : ""
+                            }`}
+                        />
+                    </button>
+                )}
+            </div>
+
+            {hasChildren && isExpanded && (
+                <ul
+                    id={submenuId}
+                    className="ml-3 mt-1 space-y-1 border-l border-border pl-2"
+                >
+                    {item.children!.map((child) => (
+                        <MobileNestedNavItem
+                            key={child.href}
+                            item={child}
+                            pathname={pathname}
+                            onNavigate={onNavigate}
+                            depth={depth + 1}
+                        />
+                    ))}
+                </ul>
+            )}
+        </li>
+    );
+}
 
 type MobileNavigationProps = {
     onNavigate?: () => void;
 };
 
-export function MobileNavigation({
-    onNavigate,
-}: MobileNavigationProps) {
+export function MobileNavigation({ onNavigate }: MobileNavigationProps) {
     const pathname = usePathname();
-    const [expanded, setExpanded] = React.useState<string | null>(
-        null
-    );
+    const [expandedSection, setExpandedSection] = React.useState<string | null>(null);
+
+    // Auto-expand the category containing the active route
+    React.useEffect(() => {
+        const activeCategory = dropdownNavigation.find((item) =>
+            isDropdownActive(pathname, item)
+        );
+        if (activeCategory) {
+            setExpandedSection(activeCategory.title);
+        }
+    }, [pathname]);
+
+    const isHomeActive = pathname === "/";
 
     return (
-        <nav aria-label="Mobile navigation" className="space-y-1">
+        <nav aria-label="Mobile navigation" className="space-y-1.5">
+            {/* Home Link */}
             <Link
                 href="/"
                 onClick={onNavigate}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${pathname === "/"
-                    ? "bg-accent text-primary"
-                    : "hover:bg-accent/60"
-                    }`}
+                aria-current={isHomeActive ? "page" : undefined}
+                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isHomeActive
+                        ? "bg-accent text-primary font-semibold"
+                        : "text-foreground hover:bg-accent/60"
+                }`}
             >
-                Home
+                <span>Home</span>
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-40" />
             </Link>
 
+            {/* Dropdown Navigation Categories */}
             {dropdownNavigation.map((item) => {
-                const isExpanded = expanded === item.title;
-
-                const isActive =
-                    pathname === item.href ||
-                    item.groups?.some((group) =>
-                        group.items.some(
-                            (child) =>
-                                pathname === child.href ||
-                                pathname.startsWith(`${child.href}/`)
-                        )
-                    );
+                const isExpanded = expandedSection === item.title;
+                const isActive = isDropdownActive(pathname, item);
+                const sectionId = `mobile-menu-${item.title.toLowerCase().replace(/\s+/g, "-")}`;
 
                 return (
                     <section
                         key={item.title}
-                        className="overflow-hidden rounded-lg"
+                        className="overflow-hidden rounded-lg border border-border/40 bg-card/40 transition-colors"
                     >
-                        <div className="flex items-center gap-1">
+                        {/* Header Row */}
+                        <div
+                            className={`flex items-center justify-between rounded-lg transition-colors ${
+                                isActive
+                                    ? "bg-accent/50 text-primary font-semibold"
+                                    : "text-foreground hover:bg-accent/40"
+                            }`}
+                        >
                             <Link
-                                href={item.href ?? "#"}
+                                href={item.href}
                                 onClick={onNavigate}
-                                className={`min-w-0 flex-1 rounded-lg px-3 py-2.5 text-sm font-medium ${isActive
-                                    ? "text-primary"
-                                    : "text-foreground"
-                                    }`}
+                                aria-current={pathname === item.href ? "page" : undefined}
+                                className="flex min-w-0 flex-1 items-center justify-between py-2.5 pl-3 pr-2 text-sm font-semibold"
                             >
-                                {item.title}
+                                <span className="truncate">{item.title}</span>
                             </Link>
 
                             <button
                                 type="button"
-                                aria-label={`Toggle ${item.title} submenu`}
+                                aria-label={`${isExpanded ? "Collapse" : "Expand"} ${item.title}`}
                                 aria-expanded={isExpanded}
+                                aria-controls={sectionId}
                                 onClick={() =>
-                                    setExpanded(
-                                        isExpanded ? null : item.title
-                                    )
+                                    setExpandedSection(isExpanded ? null : item.title)
                                 }
-                                className="rounded-lg p-2.5 hover:bg-accent"
+                                className="mr-1 rounded-md p-2 text-muted-foreground hover:bg-background/80 hover:text-foreground"
                             >
                                 <ChevronDown
-                                    className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
-                                        }`}
+                                    aria-hidden="true"
+                                    className={`h-4 w-4 transition-transform duration-200 ${
+                                        isExpanded ? "rotate-180" : ""
+                                    }`}
                                 />
                             </button>
                         </div>
 
+                        {/* Collapsible Content */}
                         {isExpanded && (
-                            <div className="ml-3 border-l border-border pl-3 pb-2">
-                                <p className="px-3 py-2 text-xs text-muted-foreground">
-                                    {item.description}
-                                </p>
+                            <div
+                                id={sectionId}
+                                className="border-t border-border/40 bg-background/50 px-3 pb-3 pt-2 space-y-3"
+                            >
+                                {item.description && (
+                                    <p className="px-1 text-xs text-muted-foreground leading-relaxed">
+                                        {item.description}
+                                    </p>
+                                )}
 
                                 {item.groups?.map((group) => (
-                                    <div key={group.title} className="mb-3">
-                                        <h3 className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                            {group.title}
-                                        </h3>
+                                    <div key={group.title} className="space-y-2">
+                                        <div className="px-1 pt-1">
+                                            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                {group.title}
+                                            </h3>
+                                            {group.description && (
+                                                <p className="mt-0.5 text-xs text-muted-foreground/80">
+                                                    {group.description}
+                                                </p>
+                                            )}
+                                        </div>
 
-                                        {group.items.map((child) => {
-                                            const childActive =
-                                                pathname === child.href ||
-                                                pathname.startsWith(`${child.href}/`);
-
-                                            return (
-                                                <Link
+                                        <ul className="space-y-1">
+                                            {group.items.map((child) => (
+                                                <MobileNestedNavItem
                                                     key={child.href}
-                                                    href={child.href}
-                                                    onClick={onNavigate}
-                                                    className={`mb-1 flex items-start justify-between gap-2 rounded-lg px-3 py-2.5 ${childActive
-                                                        ? "bg-accent text-primary"
-                                                        : "hover:bg-accent/60"
-                                                        }`}
-                                                >
-                                                    <span>
-                                                        <span className="block text-sm font-medium">
-                                                            {child.title}
-                                                        </span>
-
-                                                        {child.description && (
-                                                            <span className="mt-1 block text-xs text-muted-foreground">
-                                                                {child.description}
-                                                            </span>
-                                                        )}
-                                                    </span>
-
-                                                    <ArrowRight className="mt-1 h-3.5 w-3.5 shrink-0" />
-                                                </Link>
-                                            );
-                                        })}
+                                                    item={child}
+                                                    pathname={pathname}
+                                                    onNavigate={onNavigate}
+                                                />
+                                            ))}
+                                        </ul>
                                     </div>
                                 ))}
 
-                                {item.href && (
+                                {/* Browse all link */}
+                                <div className="border-t border-border/50 pt-2 px-1">
                                     <Link
                                         href={item.href}
                                         onClick={onNavigate}
-                                        className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-primary"
+                                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                                     >
                                         Browse all {item.title}
-                                        <ArrowRight className="h-4 w-4" />
+                                        <ArrowRight className="h-3.5 w-3.5" />
                                     </Link>
-                                )}
+                                </div>
                             </div>
                         )}
                     </section>

@@ -193,25 +193,8 @@ export function Header() {
                     <span className="font-bold">KoreDao</span>
                   </SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col gap-4 py-6">
-                  {/* <div className="flex flex-col gap-1">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                          pathname === link.href
-                            ? "bg-accent text-primary font-semibold"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                        }`}
-                      >
-                        {link.title}
-                      </Link>
-                    ))}
-                  </div> */}
-
-                  <MobileNavigation />
+                <div className="flex flex-col flex-1 overflow-y-auto pr-1 gap-4 py-4">
+                  <MobileNavigation onNavigate={() => setIsOpen(false)} />
 
                   <div className="h-px bg-border/60 my-1" />
 

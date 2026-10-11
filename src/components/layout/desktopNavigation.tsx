@@ -12,19 +12,9 @@ import {
 
 import {
     dropdownNavigation,
+    isRouteActive,
     type NavItem,
 } from "./navigation-data";
-
-// Check whether a route matches an item or any nested child.
-function isRouteActive(pathname: string, item: NavItem): boolean {
-    return (
-        pathname === item.href ||
-        pathname.startsWith(`${item.href}/`) ||
-        (item.children?.some((child) =>
-            isRouteActive(pathname, child)
-        ) ?? false)
-    );
-}
 
 // Reusable recursive component for unlimited nesting.
 type NestedNavItemProps = {

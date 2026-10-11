@@ -21,6 +21,14 @@ export type DropdownNavItem = {
     groups?: NavGroup[];
 };
 
+export function isRouteActive(pathname: string, item: NavItem): boolean {
+    return (
+        pathname === item.href ||
+        pathname.startsWith(`${item.href}/`) ||
+        (item.children?.some((child) => isRouteActive(pathname, child)) ?? false)
+    );
+}
+
 export const dropdownNavigation: DropdownNavItem[] = [
     {
         title: "Hire Assistance",
