@@ -18,6 +18,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { DesktopNavigation } from "./desktopNavigation";
+import { MobileNavigation } from "./mobileNavigation";
 
 export function Header() {
   const pathname = usePathname();
@@ -34,25 +36,25 @@ export function Header() {
   const isVendor = userRole === "VENDOR" || isAdmin;
 
   // Navigation Links
-  const navLinks = [
-    { title: "Home", href: "/" },
-    { title: "Services", href: "/gigs" },
-    { title: "Job Board", href: "/assignments" },
-    { title: "Find Helpers", href: "/helpers" },
-    { title: "Handwriting Matcher", href: "/handwriting-matcher" },
-    ...(session?.user
-      ? [
-          { title: "Dashboard", href: "/dashboard" },
-          { title: "Orders", href: "/orders" },
-          { title: "Messages", href: "/messages" },
-        ]
-      : []),
-    ...(isVendor ? [{ title: "Wallet", href: "/vendor/wallet" }] : []),
-    ...(!isVendor && !isAdmin && !isModerator ? [{ title: "Become a Helper", href: "/vendor/apply" }] : []),
-    ...(canAccessAdmin ? [{ title: "Verifications", href: "/admin/verifications" }] : []),
-    { title: t.nav.about, href: "/about" },
-    { title: t.nav.contact, href: "/contact" },
-  ];
+  // const navLinks = [
+  //   { title: "Home", href: "/" },
+  //   { title: "Services", href: "/gigs" },
+  //   { title: "Job Board", href: "/assignments" },
+  //   { title: "Find Helpers", href: "/helpers" },
+  //   { title: "Handwriting Matcher", href: "/handwriting-matcher" },
+  //   ...(session?.user
+  //     ? [
+  //         { title: "Dashboard", href: "/dashboard" },
+  //         { title: "Orders", href: "/orders" },
+  //         { title: "Messages", href: "/messages" },
+  //       ]
+  //     : []),
+  //   ...(isVendor ? [{ title: "Wallet", href: "/vendor/wallet" }] : []),
+  //   ...(!isVendor && !isAdmin && !isModerator ? [{ title: "Become a Helper", href: "/vendor/apply" }] : []),
+  //   ...(canAccessAdmin ? [{ title: "Verifications", href: "/admin/verifications" }] : []),
+  //   { title: t.nav.about, href: "/about" },
+  //   { title: t.nav.contact, href: "/contact" },
+  // ];
 
   const handleSignOut = async () => {
     try {
@@ -85,7 +87,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1 pl-4" aria-label="Main Navigation">
+          {/* <nav className="hidden md:flex items-center gap-1 pl-4" aria-label="Main Navigation">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -102,15 +104,17 @@ export function Header() {
                 </Link>
               );
             })}
-          </nav>
+          </nav> */}
+
+          <DesktopNavigation />
         </div>
 
         {/* Right Side: Backend Badge, Language, Theme, Auth CTAs */}
         <div className="flex items-center gap-2.5">
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono">
+          {/* <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>NestJS Backend Paired</span>
-          </div>
+          </div> */}
 
           <LanguageToggle />
           <ThemeToggle />
@@ -190,7 +194,7 @@ export function Header() {
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 py-6">
-                  <div className="flex flex-col gap-1">
+                  {/* <div className="flex flex-col gap-1">
                     {navLinks.map((link) => (
                       <Link
                         key={link.href}
@@ -205,7 +209,9 @@ export function Header() {
                         {link.title}
                       </Link>
                     ))}
-                  </div>
+                  </div> */}
+
+                  <MobileNavigation />
 
                   <div className="h-px bg-border/60 my-1" />
 
@@ -271,6 +277,10 @@ export function Header() {
               </SheetContent>
             </Sheet>
           </div>
+
+
+
+
         </div>
       </div>
     </header>
