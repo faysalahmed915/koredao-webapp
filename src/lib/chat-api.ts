@@ -1,3 +1,10 @@
+export interface ChatCheckpointTarget {
+  id: string;
+  title: string;
+  targetDate?: string;
+  status: string;
+}
+
 export interface ChatMessage {
   id: string;
   conversationId: string;
@@ -9,6 +16,7 @@ export interface ChatMessage {
   };
   content: string;
   attachments: string[];
+  checkpoint?: ChatCheckpointTarget | null;
   hasSafetyWarning: boolean;
   safetyWarningNote?: string;
   isRead: boolean;
@@ -103,6 +111,7 @@ export async function sendChatMessage(payload: {
   conversationId: string;
   content: string;
   attachments?: string[];
+  checkpointId?: string;
 }): Promise<ChatMessage> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/messages`, {
     method: "POST",

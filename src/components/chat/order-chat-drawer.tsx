@@ -7,13 +7,13 @@ import {
   ShieldAlert,
   Paperclip,
   Check,
-  CheckCheck,
   Loader2,
-  RefreshCw,
   ExternalLink,
   Info,
   Maximize2,
   Minimize2,
+  Target,
+  CalendarClock,
 } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,10 @@ import {
   type ChatMessage,
   type Conversation,
 } from "@/lib/chat-api";
+import {
+  fetchOrderCheckpoints,
+  type ProjectCheckpoint,
+} from "@/lib/milestones-api";
 
 interface OrderChatDrawerProps {
   orderId?: string;
@@ -51,6 +55,11 @@ export function OrderChatDrawer({
   const [typingUser, setTypingUser] = React.useState<string | null>(null);
   const [isExpanded, setIsExpanded] = React.useState(false);
 
+  // Milestone "target" linking (order-scoped chats only)
+  const [checkpoints, setCheckpoints] = React.useState<ProjectCheckpoint[]>([]);
+  const [selectedCheckpointId, setSelectedCheckpointId] = React.useState<string>("");
+  const [showTargetInput, setShowTargetInput] = React.useState(false);
+
   const socketRef = React.useRef<Socket | null>(null);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -69,8 +78,18 @@ export function OrderChatDrawer({
         const msgs = await fetchMessages(conv.id);
         if (!isMounted) return;
         setMessages(msgs);
-      } catch (err: any) {
-        toast.error(err?.message || "Failed to load conversation");
+
+        // Load milestone checkpoints for target-linking (order-scoped only).
+        if (orderId) {
+          try {
+            const cps = await fetchOrderCheckpoints(orderId);
+            if (isMounted) setCheckpoints(cps);
+          } catch {
+            // Checkpoints unavailable — target-linking is simply disabled.
+          }
+        }
+      } catch (err: unknown) {
+        toast.error(err instanceof Error ? err.message : "Failed to load conversation");
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -160,6 +179,7 @@ export function OrderChatDrawer({
         conversationId: conversation.id,
         content: content.trim() || "Shared an attachment",
         attachments,
+        checkpointId: selectedCheckpointId || undefined,
       });
 
       // Optimistic update
@@ -170,13 +190,15 @@ export function OrderChatDrawer({
 
       setContent("");
       setAttachmentUrl("");
+      setSelectedCheckpointId("");
       setShowAttachmentInput(false);
+      setShowTargetInput(false);
 
       if (sent.hasSafetyWarning) {
         toast.warning(sent.safetyWarningNote || "Warning: Off-platform contact sharing is restricted.");
       }
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to send message");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to send message");
     } finally {
       setSending(false);
     }
@@ -284,6 +306,32 @@ export function OrderChatDrawer({
                     </div>
                   )}
 
+                  {/* Milestone Target Reference Badge */}
+                  {msg.checkpoint && (
+                    <a
+                      href={orderId ? `/orders/${orderId}` : "#"}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all border ${isMe
+                          ? "bg-white/15 text-white border-white/20 hover:bg-white/25"
+                          : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/20"
+                        }`}
+                    >
+                      <Target className="h-3 w-3 shrink-0" />
+                      <span className="truncate max-w-[180px]">
+                        Target: {msg.checkpoint.title}
+                      </span>
+                      {msg.checkpoint.targetDate && (
+                        <span className="inline-flex items-center gap-0.5 opacity-80">
+                          <CalendarClock className="h-3 w-3" />
+                          {new Date(msg.checkpoint.targetDate).toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      )}
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+
                   {/* Timestamp & read status */}
                   <div
                     className={`flex items-center justify-end gap-1 text-[9px] pt-1 ${isMe ? "text-indigo-200" : "text-muted-foreground"
@@ -347,6 +395,45 @@ export function OrderChatDrawer({
         </div>
       )}
 
+      {/* Milestone Target selector (order-scoped chats with checkpoints only) */}
+      {orderId && checkpoints.length > 0 && showTargetInput && (
+        <div className="p-3 bg-muted/50 border-t border-border/40 animate-in slide-in-from-bottom-2">
+          <label className="block text-[11px] font-semibold text-muted-foreground mb-1 flex items-center gap-1">
+            <Target className="h-3 w-3" /> Link a milestone target to this message
+          </label>
+          <div className="flex gap-2">
+            <select
+              value={selectedCheckpointId}
+              onChange={(e) => setSelectedCheckpointId(e.target.value)}
+              className="flex-1 px-3 py-1.5 rounded-lg border border-border/80 bg-background text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              <option value="">— No target —</option>
+              {checkpoints.map((cp) => (
+                <option key={cp.id} value={cp.id}>
+                  {cp.title}
+                  {cp.targetDate
+                    ? ` (due ${new Date(cp.targetDate).toLocaleDateString([], {
+                        month: "short",
+                        day: "numeric",
+                      })})`
+                    : ""}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => {
+                setShowTargetInput(false);
+                setSelectedCheckpointId("");
+              }}
+              className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input Bar */}
       <form onSubmit={handleSendMessage} className="p-3 border-t border-border/60 bg-card flex items-center gap-2">
         <button
@@ -360,6 +447,20 @@ export function OrderChatDrawer({
         >
           <Paperclip className="h-4 w-4" />
         </button>
+
+        {orderId && checkpoints.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowTargetInput(!showTargetInput)}
+            className={`p-2 rounded-xl border border-border/60 transition-colors ${showTargetInput || selectedCheckpointId
+                ? "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-indigo-500/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              }`}
+            title="Link a milestone target"
+          >
+            <Target className="h-4 w-4" />
+          </button>
+        )}
 
         <input
           type="text"
