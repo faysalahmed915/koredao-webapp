@@ -267,32 +267,36 @@ export function DesktopNavigation() {
                                             : "grid-cols-1"
                                             }`}
                                     >
-                                        {item.groups?.map((group, groupIndex) => (
-                                            <section key={group.title || `${item.href}-group-${groupIndex}`} className="min-w-0">
-                                                {group.title && (
-                                                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                                        {group.title}
-                                                    </h3>
-                                                )}
+                                        {item.groups
+                                            ?.filter((group) => isNavItemVisible(group, session?.user))
+                                            .map((group, groupIndex) => (
+                                                <section key={group.title || `${item.href}-group-${groupIndex}`} className="min-w-0">
+                                                    {group.title && (
+                                                        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                                            {group.title}
+                                                        </h3>
+                                                    )}
 
-                                                {group.description && (
-                                                    <p className="mb-3 mt-1 text-xs text-muted-foreground">
-                                                        {group.description}
-                                                    </p>
-                                                )}
+                                                    {group.description && (
+                                                        <p className="mb-3 mt-1 text-xs text-muted-foreground">
+                                                            {group.description}
+                                                        </p>
+                                                    )}
 
-                                                <ul className="space-y-1">
-                                                    {group.items.map((child) => (
-                                                        <NestedNavItem
-                                                            key={child.href}
-                                                            item={child}
-                                                            pathname={pathname}
-                                                            onNavigate={() => setOpenMenu(null)}
-                                                        />
-                                                    ))}
-                                                </ul>
-                                            </section>
-                                        ))}
+                                                    <ul className="space-y-1">
+                                                        {group.items
+                                                            .filter((child) => isNavItemVisible(child, session?.user))
+                                                            .map((child) => (
+                                                                <NestedNavItem
+                                                                    key={child.href}
+                                                                    item={child}
+                                                                    pathname={pathname}
+                                                                    onNavigate={() => setOpenMenu(null)}
+                                                                />
+                                                            ))}
+                                                    </ul>
+                                                </section>
+                                            ))}
                                     </div>
 
                                     <div className="border-t border-border/70 bg-muted/30 p-4">

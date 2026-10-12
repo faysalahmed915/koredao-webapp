@@ -138,6 +138,117 @@ export const dropdownNavigation: DropdownNavItem[] = [
         ],
     },
     {
+        title: "Find Work",
+        href: "/assignments",
+        description:
+            "Browse academic jobs, submit bids, and monetize your skills as an assistant.",
+        groups: [
+            {
+                title: "Browse Academic Jobs",
+                description:
+                    "Find open student requests and submit proposals to earn money.",
+                items: [
+                    {
+                        title: "Open Assignments Feed",
+                        href: "/assignments",
+                        description:
+                            "Browse all open student assignments, filter by subject, and place bids.",
+                    },
+                    {
+                        title: "Practical & Lab Work",
+                        href: "/assistance/practical",
+                        description:
+                            "Bid on practical notebook writing and lab experiment assistance.",
+                        children: [
+                            {
+                                title: "SSC Practicals",
+                                href: "/assistance/practical/ssc",
+                            },
+                            {
+                                title: "HSC Practicals",
+                                href: "/assistance/practical/hsc",
+                            },
+                            {
+                                title: "University Labs",
+                                href: "/assistance/practical/university",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Research & Surveys",
+                        href: "/assistance/research-and-survey",
+                        description:
+                            "Earn by conducting academic surveys, data collection, and research analysis.",
+                        children: [
+                            {
+                                title: "Academic Research",
+                                href: "/assistance/research-and-survey/research",
+                            },
+                            {
+                                title: "Survey Data Collection",
+                                href: "/assistance/research-and-survey/survey",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Thesis & Dissertations",
+                        href: "/assistance/thesis",
+                        description:
+                            "Offer thesis consultation, chapter reviews, and academic formatting.",
+                    },
+                ],
+            },
+            {
+                title: "Assistant Workspace & Tools",
+                description:
+                    "Manage your gig offerings, fulfillment tools, and earnings.",
+                items: [
+                    {
+                        title: "Academic Gigs Catalog",
+                        href: "/gigs",
+                        description:
+                            "Showcase pre-packaged academic services for students to hire directly.",
+                    },
+                    {
+                        title: "Create a Gig Package",
+                        href: "/vendor/gigs/create",
+                        description:
+                            "Publish custom service packages and pricing tiers for student buyers.",
+                        roles: [UserRole.VENDOR, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+                        requireAuth: true,
+                    },
+                    {
+                        title: "Handwriting Matcher",
+                        href: "/handwriting-matcher",
+                        description:
+                            "AI-powered tool to replicate student handwriting styles for authentic deliverables.",
+                    },
+                    {
+                        title: "Active Orders & Contracts",
+                        href: "/orders",
+                        description:
+                            "Track ongoing student assignments, submit deliverables, and meet deadlines.",
+                        requireAuth: true,
+                    },
+                    {
+                        title: "Assistant Wallet & Payouts",
+                        href: "/vendor/wallet",
+                        description:
+                            "Track escrow balances and withdraw earnings via bKash, Nagad, or Bank.",
+                        roles: [UserRole.VENDOR, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+                        requireAuth: true,
+                    },
+                    {
+                        title: "Become a Verified Assistant",
+                        href: "/vendor/apply",
+                        description:
+                            "Submit your academic credentials and handwriting sample to start earning.",
+                    },
+                ],
+            },
+        ],
+    },
+    {
         title: "Resources",
         href: "/resources",
         description: "Explore learning resources and platform information.",

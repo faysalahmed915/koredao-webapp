@@ -257,35 +257,39 @@ export function MobileNavigation({ onNavigate }: MobileNavigationProps) {
                                     </p>
                                 )}
 
-                                {item.groups?.map((group, groupIndex) => (
-                                    <div key={group.title || `${item.href}-group-${groupIndex}`} className="space-y-2">
-                                        {(group.title || group.description) && (
-                                            <div className="px-1 pt-1">
-                                                {group.title && (
-                                                    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                                        {group.title}
-                                                    </h3>
-                                                )}
-                                                {group.description && (
-                                                    <p className="mt-0.5 text-xs text-muted-foreground/80">
-                                                        {group.description}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
+                                 {item.groups
+                                    ?.filter((group) => isNavItemVisible(group, session?.user))
+                                    .map((group, groupIndex) => (
+                                        <div key={group.title || `${item.href}-group-${groupIndex}`} className="space-y-2">
+                                            {(group.title || group.description) && (
+                                                <div className="px-1 pt-1">
+                                                    {group.title && (
+                                                        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                            {group.title}
+                                                        </h3>
+                                                    )}
+                                                    {group.description && (
+                                                        <p className="mt-0.5 text-xs text-muted-foreground/80">
+                                                            {group.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
 
-                                        <ul className="space-y-1">
-                                            {group.items.map((child) => (
-                                                <MobileNestedNavItem
-                                                    key={child.href}
-                                                    item={child}
-                                                    pathname={pathname}
-                                                    onNavigate={onNavigate}
-                                                />
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
+                                            <ul className="space-y-1">
+                                                {group.items
+                                                    .filter((child) => isNavItemVisible(child, session?.user))
+                                                    .map((child) => (
+                                                        <MobileNestedNavItem
+                                                            key={child.href}
+                                                            item={child}
+                                                            pathname={pathname}
+                                                            onNavigate={onNavigate}
+                                                        />
+                                                    ))}
+                                            </ul>
+                                        </div>
+                                    ))}
 
                                 {/* Browse all link */}
                                 <div className="border-t border-border/50 pt-2 px-1">
