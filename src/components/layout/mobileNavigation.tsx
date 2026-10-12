@@ -11,6 +11,8 @@ import {
     type NavItem,
     type DropdownNavItem,
 } from "./navigation-data";
+import { useSession } from "@/lib/auth-client";
+import { isNavItemVisible } from "@/lib/access-control";
 
 // Check whether any item or subitem in a dropdown category is active.
 function isDropdownActive(pathname: string, item: DropdownNavItem): boolean {
@@ -132,16 +134,24 @@ type MobileNavigationProps = {
 export function MobileNavigation({ onNavigate }: MobileNavigationProps) {
     const pathname = usePathname();
     const [expandedSection, setExpandedSection] = React.useState<string | null>(null);
+    const { data: session } = useSession();
+
+    // Filter navigation based on user session & roles
+    const visibleNavigation = React.useMemo(() => {
+        return dropdownNavigation.filter((item) =>
+            isNavItemVisible(item, session?.user)
+        );
+    }, [session?.user]);
 
     // Auto-expand the category containing the active route
     React.useEffect(() => {
-        const activeCategory = dropdownNavigation.find((item) =>
+        const activeCategory = visibleNavigation.find((item) =>
             isDropdownActive(pathname, item)
         );
         if (activeCategory) {
             setExpandedSection(activeCategory.title);
         }
-    }, [pathname]);
+    }, [pathname, visibleNavigation]);
 
     const isHomeActive = pathname === "/";
 
@@ -162,8 +172,34 @@ export function MobileNavigation({ onNavigate }: MobileNavigationProps) {
                 <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-40" />
             </Link>
 
-            {/* Dropdown Navigation Categories */}
-            {dropdownNavigation.map((item) => {
+            {/* Navigation Items */}
+            {visibleNavigation.map((item) => {
+                const hasGroups = Boolean(item.groups && item.groups.length > 0);
+
+                // For items without dropdown groups (e.g. Dashboard, Admin, Gigs), render direct link
+                if (!hasGroups) {
+                    const isDirectActive =
+                        pathname === item.href ||
+                        pathname.startsWith(`${item.href}/`);
+
+                    return (
+                        <Link
+                            key={item.title}
+                            href={item.href}
+                            onClick={onNavigate}
+                            aria-current={isDirectActive ? "page" : undefined}
+                            className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                                isDirectActive
+                                    ? "bg-accent text-primary font-semibold"
+                                    : "text-foreground hover:bg-accent/60"
+                            }`}
+                        >
+                            <span>{item.title}</span>
+                            <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-40" />
+                        </Link>
+                    );
+                }
+
                 const isExpanded = expandedSection === item.title;
                 const isActive = isDropdownActive(pathname, item);
                 const sectionId = `mobile-menu-${item.title.toLowerCase().replace(/\s+/g, "-")}`;
@@ -221,18 +257,22 @@ export function MobileNavigation({ onNavigate }: MobileNavigationProps) {
                                     </p>
                                 )}
 
-                                {item.groups?.map((group) => (
-                                    <div key={group.title} className="space-y-2">
-                                        <div className="px-1 pt-1">
-                                            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                                                {group.title}
-                                            </h3>
-                                            {group.description && (
-                                                <p className="mt-0.5 text-xs text-muted-foreground/80">
-                                                    {group.description}
-                                                </p>
-                                            )}
-                                        </div>
+                                {item.groups?.map((group, groupIndex) => (
+                                    <div key={group.title || `${item.href}-group-${groupIndex}`} className="space-y-2">
+                                        {(group.title || group.description) && (
+                                            <div className="px-1 pt-1">
+                                                {group.title && (
+                                                    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                                        {group.title}
+                                                    </h3>
+                                                )}
+                                                {group.description && (
+                                                    <p className="mt-0.5 text-xs text-muted-foreground/80">
+                                                        {group.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
 
                                         <ul className="space-y-1">
                                             {group.items.map((child) => (

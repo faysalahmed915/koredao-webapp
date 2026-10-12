@@ -1,17 +1,25 @@
 
 // src/components/layout/navigation-data.ts
 
+import { UserRole } from "@/types";
+
 export type NavItem = {
     title: string;
     href: string;
     description?: string;
     children?: NavItem[];
+    roles?: UserRole[];
+    requireAuth?: boolean;
+    guestOnly?: boolean;
 };
 
 export type NavGroup = {
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
     items: NavItem[];
+    roles?: UserRole[];
+    requireAuth?: boolean;
+    guestOnly?: boolean;
 };
 
 export type DropdownNavItem = {
@@ -19,6 +27,9 @@ export type DropdownNavItem = {
     href: string;
     description?: string;
     groups?: NavGroup[];
+    roles?: UserRole[];
+    requireAuth?: boolean;
+    guestOnly?: boolean;
 };
 
 export function isRouteActive(pathname: string, item: NavItem): boolean {
@@ -37,8 +48,8 @@ export const dropdownNavigation: DropdownNavItem[] = [
             "Discover academic assistance for your practicals and coursework.",
         groups: [
             {
-                title: "Discover Assistance",
-                description: "Choose your academic level and practical category.",
+                // title: "Discover Assistance",
+                // description: "Choose your academic level and practical category.",
                 items: [
                     {
                         title: "Practical",
@@ -97,29 +108,31 @@ export const dropdownNavigation: DropdownNavItem[] = [
                         ],
                     },
                     {
-                        title: "Top Rated Helpers",
-                        href: "/helpers/top-rated",
-                        description: "Discover highly rated helpers.",
-                    },
-                    {
-                        title: "Browse by Subject",
-                        href: "/helpers/subjects",
-                        description: "Find assistance by subject.",
+                        title: "Research and Survey",
+                        href: "/assistance/research-and-survey",
+                        description: "Browse research and survey assistance by academic level.",
                         children: [
                             {
-                                title: "Mathematics",
-                                href: "/helpers/subjects/mathematics",
+                                title: "Research",
+                                href: "/assistance/research-and-survey/research",
                             },
                             {
-                                title: "Physics",
-                                href: "/helpers/subjects/physics",
-                            },
-                            {
-                                title: "Chemistry",
-                                href: "/helpers/subjects/chemistry",
+                                title: "Survey",
+                                href: "/assistance/research-and-survey/survey",
                             },
                         ],
                     },
+                    {
+                        title: "Thesis",
+                        href: "/assistance/thesis",
+                        description: "Browse thesis assistance by academic level.",
+                    },
+                    {
+                        title: "Assignment",
+                        href: "/assistance/assignments",
+                        description: "Browse assignment assistance by academic level.",
+                    },
+
                 ],
             },
         ],
@@ -167,112 +180,34 @@ export const dropdownNavigation: DropdownNavItem[] = [
             },
         ],
     },
+    {
+        title: "Admin",
+        href: "/admin",
+        roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN],
+        requireAuth: true,
+    },
+    {
+        title: "Gigs",
+        href: "/gigs",
+    },
+    {
+        title: "Handwriting Matcher",
+        href: "/handwriting-matcher",
+    },
+    {
+        title: "Messages",
+        href: "/messages",
+        requireAuth: true,
+    },
+    {
+        title: "Orders",
+        href: "/orders",
+        requireAuth: true,
+    },
+    {
+        title: "Dashboard",
+        href: "/dashboard",
+        requireAuth: true,
+    },
 ];
 
-
-
-// {
-//         title: "Services",
-//         href: "/gigs",
-//         description: "Explore academic services and find the right support.",
-//         groups: [
-//             {
-//                 title: "Academic Services",
-//                 description: "Browse services for your academic needs.",
-//                 items: [
-//                     {
-//                         title: "Writing & Editing",
-//                         href: "/gigs/writing-editing",
-//                         description: "Essays, reports and proofreading",
-//                     },
-//                     {
-//                         title: "Assignment Support",
-//                         href: "/gigs/assignments",
-//                         description: "Get help understanding assignments",
-//                     },
-//                     {
-//                         title: "Presentation Design",
-//                         href: "/gigs/presentations",
-//                         description: "Slides and academic presentations",
-//                     },
-//                 ],
-//             },
-//             {
-//                 title: "Study & Learning",
-//                 description: "Find learning resources and expert support.",
-//                 items: [
-//                     {
-//                         title: "Online Tutoring",
-//                         href: "/gigs/tutoring",
-//                         description: "Learn with a subject specialist",
-//                     },
-//                     {
-//                         title: "Research Support",
-//                         href: "/gigs/research",
-//                         description: "Research guidance and formatting",
-//                     },
-//                     {
-//                         title: "Handwriting Matcher",
-//                         href: "/handwriting-matcher",
-//                         description: "Explore handwriting matching tools",
-//                     },
-//                 ],
-//             },
-//         ],
-//     },
-//     {
-//         title: "Find Work",
-//         href: "/assistance",
-//         description: "Discover people who can help with your academic work.",
-//         groups: [
-//             {
-//                 title: "Discover Talent",
-//                 description: "Browse helpers by your needs.",
-//                 items: [
-//                     {
-//                         title: "All Helpers",
-//                         href: "/helpers",
-//                         description: "Explore the helper directory",
-//                     },
-//                     {
-//                         title: "Top Rated Helpers",
-//                         href: "/helpers/top-rated",
-//                         description: "Discover highly rated profiles",
-//                     },
-//                     {
-//                         title: "Browse by Subject",
-//                         href: "/helpers/subjects",
-//                         description: "Find help for a specific subject",
-//                     },
-//                 ],
-//             },
-//         ],
-//     },
-//     {
-//         title: "Job Board",
-//         href: "/assignments",
-//         description: "Explore opportunities and academic task listings.",
-//         groups: [
-//             {
-//                 title: "Opportunities",
-//                 description: "Explore available assignments and projects.",
-//                 items: [
-//                     {
-//                         title: "Browse Jobs",
-//                         href: "/assignments",
-//                         description: "View available opportunities",
-//                     },
-//                     {
-//                         title: "Post a Job",
-//                         href: "/assignments/create",
-//                         description: "Create a new job listing",
-//                     },
-//                     {
-//                         title: "My Applications",
-//                         href: "/assignments/applications",
-//                         description: "Review your applications",
-//                     },
-//                 ],
-//             },
-//         ],
-//     },

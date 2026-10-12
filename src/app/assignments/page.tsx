@@ -131,33 +131,30 @@ export default function AssignmentsFeedPage() {
           <button
             type="button"
             onClick={() => setType("")}
-            className={`rounded-full px-3 py-1 font-medium transition-colors ${
-              type === ""
-                ? "bg-indigo-600 text-white"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
+            className={`rounded-full px-3 py-1 font-medium transition-colors ${type === ""
+              ? "bg-indigo-600 text-white"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
           >
             All Types
           </button>
           <button
             type="button"
             onClick={() => setType("SOFTCOPY")}
-            className={`rounded-full px-3 py-1 font-medium transition-colors ${
-              type === "SOFTCOPY"
-                ? "bg-indigo-600 text-white"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
+            className={`rounded-full px-3 py-1 font-medium transition-colors ${type === "SOFTCOPY"
+              ? "bg-indigo-600 text-white"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
           >
             <FileText className="inline-block mr-1 h-3 w-3" /> Softcopy Digital
           </button>
           <button
             type="button"
             onClick={() => setType("HARDCOPY")}
-            className={`rounded-full px-3 py-1 font-medium transition-colors ${
-              type === "HARDCOPY"
-                ? "bg-purple-600 text-white"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
+            className={`rounded-full px-3 py-1 font-medium transition-colors ${type === "HARDCOPY"
+              ? "bg-purple-600 text-white"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
           >
             <PenTool className="inline-block mr-1 h-3 w-3" /> Hardcopy Handwritten
           </button>

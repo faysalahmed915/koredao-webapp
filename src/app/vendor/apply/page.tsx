@@ -201,7 +201,7 @@ export default function VendorApplyPage() {
                   </p>
                 </div>
               </div>
-              <Link href={`/helpers/${existingProfile.id}`}>
+              <Link href={`/assistance/${existingProfile.id}`}>
                 <Button variant="outline" size="sm" className="border-emerald-500/30">
                   View Public Profile
                 </Button>

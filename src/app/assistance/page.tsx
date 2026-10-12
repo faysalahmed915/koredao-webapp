@@ -116,8 +116,8 @@ export default function HelpersDirectoryPage() {
               type="button"
               onClick={() => setHandwritingStyle(style.value)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${handwritingStyle === style.value
-                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/20"
-                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/20"
+                : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
             >
               {style.label}

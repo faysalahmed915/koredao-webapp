@@ -15,6 +15,8 @@ import {
     isRouteActive,
     type NavItem,
 } from "./navigation-data";
+import { useSession } from "@/lib/auth-client";
+import { isNavItemVisible } from "@/lib/access-control";
 
 // Reusable recursive component for unlimited nesting.
 type NestedNavItemProps = {
@@ -120,6 +122,14 @@ export function DesktopNavigation() {
     const pathname = usePathname();
     const [openMenu, setOpenMenu] = React.useState<string | null>(null);
     const navRef = React.useRef<HTMLElement>(null);
+    const { data: session } = useSession();
+
+    // Filter dropdown navigation based on user session & roles
+    const visibleNavigation = React.useMemo(() => {
+        return dropdownNavigation.filter((item) =>
+            isNavItemVisible(item, session?.user)
+        );
+    }, [session?.user]);
 
     React.useEffect(() => {
         function handlePointerDown(event: PointerEvent) {
@@ -167,7 +177,30 @@ export function DesktopNavigation() {
                 Home
             </Link>
 
-            {dropdownNavigation.map((item) => {
+            {visibleNavigation.map((item) => {
+                const hasGroups = Boolean(item.groups && item.groups.length > 0);
+
+                // For items without dropdown groups (e.g. Dashboard, Admin, Gigs), render a direct link
+                if (!hasGroups) {
+                    const isDirectActive =
+                        pathname === item.href ||
+                        pathname.startsWith(`${item.href}/`);
+
+                    return (
+                        <Link
+                            key={item.title}
+                            href={item.href}
+                            aria-current={isDirectActive ? "page" : undefined}
+                            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${isDirectActive
+                                ? "bg-accent text-primary"
+                                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                                }`}
+                        >
+                            {item.title}
+                        </Link>
+                    );
+                }
+
                 const isOpen = openMenu === item.title;
 
                 const isActive =
@@ -234,15 +267,19 @@ export function DesktopNavigation() {
                                             : "grid-cols-1"
                                             }`}
                                     >
-                                        {item.groups?.map((group) => (
-                                            <section key={group.title} className="min-w-0">
-                                                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                                    {group.title}
-                                                </h3>
+                                        {item.groups?.map((group, groupIndex) => (
+                                            <section key={group.title || `${item.href}-group-${groupIndex}`} className="min-w-0">
+                                                {group.title && (
+                                                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                                        {group.title}
+                                                    </h3>
+                                                )}
 
-                                                <p className="mb-3 mt-1 text-xs text-muted-foreground">
-                                                    {group.description}
-                                                </p>
+                                                {group.description && (
+                                                    <p className="mb-3 mt-1 text-xs text-muted-foreground">
+                                                        {group.description}
+                                                    </p>
+                                                )}
 
                                                 <ul className="space-y-1">
                                                     {group.items.map((child) => (
