@@ -62,7 +62,13 @@ export function OrderChatDrawer({
 
   const socketRef = React.useRef<Socket | null>(null);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
+  const messagesPaneRef = React.useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  // Whether the user is currently parked near the bottom of the messages pane.
+  // Auto-scroll only fires when they are (or on first load / own send) so reading
+  // history is never yanked back down by a typing indicator or incoming message.
+  const isNearBottomRef = React.useRef(true);
+  const hasScrolledInitiallyRef = React.useRef(false);
 
   // Initialize Conversation & History
   React.useEffect(() => {
@@ -142,10 +148,33 @@ export function OrderChatDrawer({
     };
   }, [conversation]);
 
-  // Auto-scroll on new message
+  // Track whether the user is parked near the bottom of the messages pane.
+  const handleMessagesScroll = React.useCallback(() => {
+    const pane = messagesPaneRef.current;
+    if (!pane) return;
+    const distanceFromBottom = pane.scrollHeight - pane.scrollTop - pane.clientHeight;
+    isNearBottomRef.current = distanceFromBottom <= 80;
+  }, []);
+
+  // Auto-scroll only when the user is already near the bottom (live tailing) or
+  // on the first render of a loaded conversation. Typing indicators no longer
+  // force a scroll, and the page window is never scrolled (pane scrollTop only).
   React.useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, typingUser]);
+    const pane = messagesPaneRef.current;
+    if (!pane || loading) return;
+    const shouldScroll = !hasScrolledInitiallyRef.current || isNearBottomRef.current;
+    if (shouldScroll) {
+      pane.scrollTop = pane.scrollHeight;
+      hasScrolledInitiallyRef.current = true;
+    }
+  }, [messages, loading]);
+
+  // Reset per-conversation scroll state so a newly opened thread starts pinned
+  // to the latest message.
+  React.useEffect(() => {
+    hasScrolledInitiallyRef.current = false;
+    isNearBottomRef.current = true;
+  }, [conversation?.id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
@@ -171,6 +200,9 @@ export function OrderChatDrawer({
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!conversation || (!content.trim() && !attachmentUrl.trim())) return;
+
+    // The user just sent a message — pin to the bottom regardless of prior scroll.
+    isNearBottomRef.current = true;
 
     setSending(true);
     try {
@@ -245,7 +277,11 @@ export function OrderChatDrawer({
       </div>
 
       {/* Messages Pane */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-3.5">
+      <div
+        ref={messagesPaneRef}
+        onScroll={handleMessagesScroll}
+        className="flex-1 p-4 overflow-y-auto space-y-3.5"
+      >
         {loading ? (
           <div className="h-full flex items-center justify-center text-muted-foreground text-xs gap-2">
             <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
