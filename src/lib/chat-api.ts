@@ -34,6 +34,7 @@ export interface Conversation {
     name: string;
     image?: string;
     email?: string;
+    lastSeenAt?: string;
   };
   vendorProfile?: {
     id: string;
@@ -44,6 +45,7 @@ export interface Conversation {
       id: string;
       name: string;
       image?: string;
+      lastSeenAt?: string;
     };
   };
   order?: {
@@ -136,6 +138,41 @@ export async function fetchModerationConversations(params: {
   }
 
   return envelope.data || { items: [], total: 0, totalPages: 0 };
+}
+
+export async function markConversationRead(
+  conversationId: string,
+): Promise<{ updatedCount: number; messageIds: string[] }> {
+  const res = await fetch(
+    `${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/${conversationId}/read`,
+    {
+      method: "POST",
+      headers: getApiHeaders(),
+      credentials: "include",
+    },
+  );
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to mark conversation as read");
+  }
+
+  return envelope.data || { updatedCount: 0, messageIds: [] };
+}
+
+export async function updatePresence(): Promise<{ userId: string; lastSeenAt: string }> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/presence`, {
+    method: "POST",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to update presence");
+  }
+
+  return envelope.data;
 }
 
 export async function sendChatMessage(payload: {

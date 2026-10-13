@@ -7,6 +7,7 @@ import {
   ShieldAlert,
   Paperclip,
   Check,
+  CheckCheck,
   Loader2,
   ExternalLink,
   Info,
@@ -22,6 +23,7 @@ import {
   getOrCreateConversation,
   fetchMessages,
   sendChatMessage,
+  markConversationRead,
   type ChatMessage,
   type Conversation,
 } from "@/lib/chat-api";
@@ -36,6 +38,21 @@ interface OrderChatDrawerProps {
   currentUserId: string;
   currentUserName: string;
   otherPartyName: string;
+}
+
+// Human-friendly "last seen" label for presence display.
+function formatLastSeen(iso: string | null): string {
+  if (!iso) return "offline";
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "offline";
+  const diffMs = Date.now() - then;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "last seen just now";
+  if (mins < 60) return `last seen ${mins} min ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `last seen ${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `last seen ${days}d ago`;
 }
 
 export function OrderChatDrawer({
@@ -53,6 +70,9 @@ export function OrderChatDrawer({
   const [showAttachmentInput, setShowAttachmentInput] = React.useState(false);
   const [sending, setSending] = React.useState(false);
   const [typingUser, setTypingUser] = React.useState<string | null>(null);
+  // Presence (online / last-seen) for the OTHER party in this conversation.
+  const [otherPartyOnline, setOtherPartyOnline] = React.useState(false);
+  const [otherPartyLastSeen, setOtherPartyLastSeen] = React.useState<string | null>(null);
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   // Milestone "target" linking (order-scoped chats only)
@@ -81,9 +101,35 @@ export function OrderChatDrawer({
         if (!isMounted) return;
         setConversation(conv);
 
+        // Seed presence from the conversation payload: the party that is NOT me.
+        const iAmCustomer = conv.customerId === currentUserId;
+        const otherLastSeen = iAmCustomer
+          ? conv.vendorProfile?.user?.lastSeenAt
+          : conv.customer?.lastSeenAt;
+        if (otherLastSeen) setOtherPartyLastSeen(otherLastSeen);
+
         const msgs = await fetchMessages(conv.id);
         if (!isMounted) return;
         setMessages(msgs);
+
+        // If there are unread incoming messages, mark them read (read receipts).
+        const hasUnreadIncoming = msgs.some(
+          (m) => !m.isRead && m.senderId !== currentUserId,
+        );
+        if (hasUnreadIncoming) {
+          try {
+            await markConversationRead(conv.id);
+            if (isMounted) {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.senderId !== currentUserId ? { ...m, isRead: true } : m,
+                ),
+              );
+            }
+          } catch {
+            // Non-fatal: read receipts simply won't update for the sender.
+          }
+        }
 
         // Load milestone checkpoints for target-linking (order-scoped only).
         if (orderId) {
@@ -106,11 +152,17 @@ export function OrderChatDrawer({
     return () => {
       isMounted = false;
     };
-  }, [orderId, vendorProfileId]);
+  }, [orderId, vendorProfileId, currentUserId]);
 
   // Connect WebSocket
   React.useEffect(() => {
     if (!conversation) return;
+
+    // The other party's userId so we can react to their presence events.
+    const iAmCustomer = conversation.customerId === currentUserId;
+    const otherUserId = iAmCustomer
+      ? conversation.vendorProfile?.userId
+      : conversation.customerId;
 
     const wsUrl = process.env.NEXT_PUBLIC_BACKEND_URL
       ? process.env.NEXT_PUBLIC_BACKEND_URL.replace("/api/v1", "")
@@ -119,6 +171,7 @@ export function OrderChatDrawer({
     const socket = io(`${wsUrl}/chat`, {
       transports: ["websocket", "polling"],
       withCredentials: true,
+      query: { userId: currentUserId },
     });
 
     socketRef.current = socket;
@@ -133,6 +186,21 @@ export function OrderChatDrawer({
         return [...prev, newMsg];
       });
       setTypingUser(null);
+
+      // If this incoming message is from the OTHER party and we're actively viewing
+      // the conversation, immediately send a read receipt so the sender sees ✓✓.
+      if (newMsg.senderId !== currentUserId) {
+        socket.emit("mark_read", {
+          userId: currentUserId,
+          conversationId: conversation.id,
+        });
+        // Optimistically reflect read state locally for incoming messages.
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.senderId !== currentUserId ? { ...m, isRead: true } : m,
+          ),
+        );
+      }
     });
 
     socket.on("user_typing", (data: { userName: string; isTyping: boolean }) => {
@@ -143,10 +211,36 @@ export function OrderChatDrawer({
       }
     });
 
+    // Presence: update the other party's online/last-seen status live.
+    socket.on(
+      "presence",
+      (data: { userId: string; online: boolean; lastSeenAt?: string }) => {
+        if (!otherUserId || data.userId !== otherUserId) return;
+        setOtherPartyOnline(data.online);
+        if (!data.online && data.lastSeenAt) {
+          setOtherPartyLastSeen(data.lastSeenAt);
+        } else if (data.online) {
+          setOtherPartyLastSeen(null);
+        }
+      },
+    );
+
+    // Read receipts: mark my sent messages as read when the other party reads them.
+    socket.on(
+      "messages_read",
+      (data: { conversationId: string; messageIds: string[]; readBy: string }) => {
+        if (data.conversationId !== conversation.id) return;
+        const readSet = new Set(data.messageIds);
+        setMessages((prev) =>
+          prev.map((m) => (readSet.has(m.id) ? { ...m, isRead: true } : m)),
+        );
+      },
+    );
+
     return () => {
       socket.disconnect();
     };
-  }, [conversation]);
+  }, [conversation, currentUserId]);
 
   // Track whether the user is parked near the bottom of the messages pane.
   const handleMessagesScroll = React.useCallback(() => {
@@ -250,10 +344,21 @@ export function OrderChatDrawer({
           <div>
             <h4 className="font-bold text-sm text-foreground flex items-center gap-1.5">
               <span>{otherPartyName}</span>
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              {otherPartyOnline ? (
+                <span
+                  className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"
+                  title="Online now"
+                />
+              ) : (
+                <span className="h-2 w-2 rounded-full bg-muted-foreground/40" title="Offline" />
+              )}
             </h4>
             <span className="text-[10px] text-muted-foreground font-mono">
-              Live WebSocket Workspace Chat
+              {otherPartyOnline ? (
+                <span className="text-emerald-600 dark:text-emerald-400">Active now</span>
+              ) : (
+                formatLastSeen(otherPartyLastSeen)
+              )}
             </span>
           </div>
         </div>
@@ -379,7 +484,18 @@ export function OrderChatDrawer({
                         minute: "2-digit",
                       })}
                     </span>
-                    {isMe && <Check className="h-3 w-3" />}
+                    {isMe &&
+                      (msg.isRead ? (
+                        <CheckCheck
+                          className="h-3.5 w-3.5 text-sky-300"
+                          aria-label="Read"
+                        />
+                      ) : (
+                        <Check
+                          className="h-3 w-3 text-indigo-200"
+                          aria-label="Sent"
+                        />
+                      ))}
                   </div>
                 </div>
 
@@ -397,9 +513,13 @@ export function OrderChatDrawer({
 
         {/* Live Typing Indicator */}
         {typingUser && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground italic pl-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-ping" />
-            <span>{typingUser} is typing...</span>
+          <div className="flex items-center gap-2 px-3 pb-1.5 text-xs text-muted-foreground italic">
+            <span className="flex items-center gap-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.3s]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.15s]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce" />
+            </span>
+            <span>{typingUser} is typing…</span>
           </div>
         )}
 
