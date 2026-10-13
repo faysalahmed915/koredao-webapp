@@ -163,10 +163,16 @@ export default function MessagesInboxPage() {
                 </div>
               ) : (
                 filteredConversations.map((conv) => {
-                  const isCustomerMe = conv.customerId === currentUserId;
-                  const otherName = isCustomerMe
-                    ? conv.vendorProfile?.user?.name || "Helper"
-                    : conv.customer?.name || "Student";
+                  // Robustly resolve the OTHER party (never show my own name).
+                  // If my id matches the vendor profile's owning user, the other
+                  // party is the customer; otherwise the other party is the helper.
+                  const iAmVendor = conv.vendorProfile?.userId === currentUserId;
+                  const otherName = iAmVendor
+                    ? conv.customer?.name || "Student"
+                    : conv.vendorProfile?.user?.name || "Helper";
+                  const otherLastSeen = iAmVendor
+                    ? conv.customer?.lastSeenAt
+                    : conv.vendorProfile?.user?.lastSeenAt;
                   const isSelected = selectedConv?.id === conv.id;
                   const lastMsg = conv.messages?.[0];
 
@@ -187,7 +193,15 @@ export default function MessagesInboxPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-1 mb-0.5">
-                          <h4 className="font-bold text-xs text-foreground truncate">{otherName}</h4>
+                          <h4 className="font-bold text-xs text-foreground truncate flex items-center gap-1.5">
+                            {otherName}
+                            {otherLastSeen && (
+                              <span
+                                className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0"
+                                title="Recently active"
+                              />
+                            )}
+                          </h4>
                           <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                             {new Date(conv.lastMessageAt).toLocaleDateString([], {
                               month: "short",
