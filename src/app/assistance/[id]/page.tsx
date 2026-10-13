@@ -21,14 +21,19 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchPublicVendorProfile, VendorProfile } from "@/lib/profiles-api";
+import { getOrCreateConversation } from "@/lib/chat-api";
+import { useSession } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function HelperDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
+  const { data: session } = useSession();
 
   const [loading, setLoading] = React.useState(true);
   const [vendor, setVendor] = React.useState<VendorProfile | null>(null);
+  const [isContacting, setIsContacting] = React.useState(false);
 
   React.useEffect(() => {
     if (id) {
@@ -38,6 +43,25 @@ export default function HelperDetailPage() {
         .finally(() => setLoading(false));
     }
   }, [id]);
+
+  const handleContactHelper = async () => {
+    if (!vendor) return;
+    if (!session?.user) {
+      toast.error("Please sign in to contact this helper.");
+      router.push("/login");
+      return;
+    }
+    setIsContacting(true);
+    try {
+      await getOrCreateConversation({ vendorProfileId: vendor.id });
+      toast.success("Conversation opened with the helper.");
+      router.push("/messages");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to open conversation.");
+    } finally {
+      setIsContacting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -117,6 +141,25 @@ export default function HelperDetailPage() {
                   <div className="text-sm font-bold">{vendor.completedOrders}</div>
                   <span className="text-[11px] text-muted-foreground">Orders Completed</span>
                 </div>
+              </div>
+
+              {/* Contact Helper CTA */}
+              <div className="mt-5">
+                <Button
+                  onClick={handleContactHelper}
+                  disabled={isContacting}
+                  className="w-full bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
+                >
+                  {isContacting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                  )}
+                  Contact Helper
+                </Button>
+                <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                  Start a conversation before posting a job or ordering a gig.
+                </p>
               </div>
 
               {/* Bio */}

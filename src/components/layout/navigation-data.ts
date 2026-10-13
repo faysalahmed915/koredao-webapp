@@ -298,6 +298,12 @@ export const dropdownNavigation: DropdownNavItem[] = [
         requireAuth: true,
     },
     {
+        title: "Moderation",
+        href: "/admin/moderation",
+        roles: [UserRole.MODERATOR, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+        requireAuth: true,
+    },
+    {
         title: "Gigs",
         href: "/gigs",
     },

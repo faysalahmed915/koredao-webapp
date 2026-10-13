@@ -10,6 +10,7 @@ export interface ProjectCheckpoint {
   vendorNotes?: string;
   clientFeedback?: string;
   status: "PENDING" | "IN_PROGRESS" | "SUBMITTED" | "ACCEPTED" | "REVISION_REQUESTED";
+  approvedAt?: string;
   submittedAt?: string;
   reviewedAt?: string;
   createdAt: string;
@@ -96,6 +97,21 @@ export async function reviewCheckpoint(
   const envelope = await res.json();
   if (!res.ok) {
     throw new Error(envelope?.message || "Failed to review checkpoint");
+  }
+
+  return envelope.data;
+}
+
+export async function approveTarget(checkpointId: string): Promise<ProjectCheckpoint> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/milestones/${checkpointId}/approve-target`, {
+    method: "POST",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to approve target");
   }
 
   return envelope.data;

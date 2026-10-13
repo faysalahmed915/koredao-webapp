@@ -42,6 +42,8 @@ export interface Order {
   deliveryNotes?: string;
   revisionNotes?: string;
   disputeReason?: string;
+  customerAcceptedAt?: string;
+  vendorAcceptedAt?: string;
   createdAt: string;
   customer?: {
     id: string;
@@ -116,6 +118,21 @@ export async function createOrder(payload: {
   const envelope = await res.json();
   if (!res.ok) {
     throw new Error(envelope?.message || "Failed to create order");
+  }
+
+  return envelope.data;
+}
+
+export async function vendorAcceptOrder(orderId: string): Promise<Order> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}/vendor-accept`, {
+    method: "POST",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to accept order");
   }
 
   return envelope.data;
