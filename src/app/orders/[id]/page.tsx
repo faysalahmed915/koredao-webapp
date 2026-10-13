@@ -56,6 +56,8 @@ function OrderWorkspaceContent() {
 
   const [loading, setLoading] = React.useState(true);
   const [order, setOrder] = React.useState<Order | null>(null);
+  // Stable "now" captured once on mount for render-time timer math.
+  const [nowTs] = React.useState(() => Date.now());
 
   // Helper Delivery Submission State
   const [deliveryFileUrl, setDeliveryFileUrl] = React.useState("");
@@ -91,10 +93,23 @@ function OrderWorkspaceContent() {
   }, [id]);
 
   React.useEffect(() => {
-    if (id) {
-      loadOrder();
-    }
-  }, [id, loadOrder]);
+    if (!id) return;
+    let isMounted = true;
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchOrderById(id);
+        if (isMounted) setOrder(data);
+      } catch {
+        if (isMounted) setOrder(null);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   const isCustomer = session?.user?.id === order?.customerId;
   const isHelper = session?.user?.id === order?.vendorProfile?.userId;
@@ -103,11 +118,14 @@ function OrderWorkspaceContent() {
     const paymentStatus = searchParams?.get("payment");
     if (paymentStatus === "success") {
       toast.success("Payment confirmed! Escrow deposit held safely.");
-      loadOrder();
+      // Defer to a microtask so the refresh's setState is not synchronous within
+      // this effect (React Compiler set-state-in-effect).
+      queueMicrotask(() => loadOrder());
     } else if (paymentStatus === "failed") {
       toast.error("Payment failed or was cancelled. Please try again.");
     }
-  }, [searchParams, loadOrder]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleInitiatePayment = async () => {
     if (!order) return;
@@ -268,9 +286,10 @@ function OrderWorkspaceContent() {
     );
   }
 
-  // 72-Hour Timer Calculation
+  // 72-Hour Timer Calculation. `nowTs` is captured once on mount so we don't call
+  // the impure Date.now() during render (React Compiler purity).
   const autoReleaseHoursLeft = order.autoReleaseAt
-    ? Math.max(0, Math.ceil((new Date(order.autoReleaseAt).getTime() - Date.now()) / (1000 * 60 * 60)))
+    ? Math.max(0, Math.ceil((new Date(order.autoReleaseAt).getTime() - nowTs) / (1000 * 60 * 60)))
     : null;
 
   return (

@@ -64,8 +64,10 @@ export default function AdminModerationPage() {
       router.push("/dashboard");
       return;
     }
-    loadConversations();
-  }, [session, sessionLoading, isStaff, router, loadConversations]);
+    // Defer so the loader's setState is not synchronous within this effect.
+    queueMicrotask(() => loadConversations());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user, sessionLoading, isStaff, router]);
 
   const openConversation = async (conv: ModerationConversation) => {
     setSelected(conv);

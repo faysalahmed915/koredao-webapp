@@ -83,8 +83,10 @@ export function MilestoneWorkspace({
   }, [orderId]);
 
   React.useEffect(() => {
-    loadCheckpoints();
-  }, [loadCheckpoints]);
+    // Defer so the loader's setState is not synchronous within this effect.
+    queueMicrotask(() => loadCheckpoints());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId]);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

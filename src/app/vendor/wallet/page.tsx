@@ -53,11 +53,13 @@ export default function VendorWalletPage() {
 
   React.useEffect(() => {
     if (session?.user) {
-      loadWallet();
+      // Defer so the loader's setState is not synchronous within this effect.
+      queueMicrotask(() => loadWallet());
     } else if (!isSessionLoading) {
-      setLoading(false);
+      queueMicrotask(() => setLoading(false));
     }
-  }, [session, isSessionLoading, loadWallet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user, isSessionLoading]);
 
   const handleWithdrawSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
