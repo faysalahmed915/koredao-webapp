@@ -8,8 +8,6 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronRight,
-  Clock,
-  User as UserIcon,
   RefreshCw,
   ShoppingBag,
 } from "lucide-react";
@@ -21,33 +19,55 @@ export default function MessagesInboxPage() {
   const { data: session, isPending: isSessionLoading } = useSession();
   const [conversations, setConversations] = React.useState<Conversation[]>([]);
   const [selectedConv, setSelectedConv] = React.useState<Conversation | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  // `initialLoading` gates the full-page spinner and only runs once. Selecting a
+  // conversation or a Better-Auth session refetch never blanks/reloads the page.
+  const [initialLoading, setInitialLoading] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const loadConversations = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await fetchMyConversations();
-      setConversations(data);
-      if (data.length > 0 && !selectedConv) {
-        setSelectedConv(data[0]);
-      }
-    } catch {
-      // Failed to load
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedConv]);
+  // Depend on the stable user id, not the whole `session` object. Better-Auth's
+  // useSession() returns a NEW object reference on window-focus/interval refetch
+  // even when the data is unchanged — keying off the id prevents needless refetches.
+  const sessionUserId = session?.user?.id;
 
+  const hasLoadedRef = React.useRef(false);
+
+  // The list is fetched ONCE per signed-in session (keyed on the stable id).
+  // Selecting a conversation or a background session refetch never re-runs this,
+  // so the page never blanks/reloads. `initialLoading` starts true and only the
+  // very first fetch clears it. Fetch is done inline in the effect (lint-safe).
   React.useEffect(() => {
-    if (session?.user) {
-      loadConversations();
-    } else if (!isSessionLoading) {
-      setLoading(false);
-    }
-  }, [session, isSessionLoading, loadConversations]);
+    if (!sessionUserId) return;
 
-  if (isSessionLoading || loading) {
+    let isMounted = true;
+    (async () => {
+      try {
+        const data = await fetchMyConversations();
+        if (!isMounted) return;
+        setConversations(data);
+        // Auto-select the first conversation only on the very first load.
+        setSelectedConv((prev) => prev ?? (data.length > 0 ? data[0] : null));
+      } catch {
+        // Failed to load — leave existing state intact.
+      } finally {
+        if (isMounted) {
+          hasLoadedRef.current = true;
+          setInitialLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [sessionUserId]);
+
+  // Full-page spinner only while the session is resolving or during the very
+  // first conversation fetch for a signed-in user. When there is no session and
+  // it has finished resolving, we fall through to the sign-in prompt below.
+  const showFullPageLoader =
+    isSessionLoading || (Boolean(sessionUserId) && initialLoading);
+
+  if (showFullPageLoader) {
     return (
       <div className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-[60vh]">
         <div className="flex items-center gap-3 text-muted-foreground animate-pulse">
