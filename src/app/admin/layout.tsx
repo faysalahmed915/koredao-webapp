@@ -14,8 +14,13 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  const [isAuthorized, setIsAuthorized] = React.useState(false);
 
+  // Derive authorization during render instead of storing it in state + an effect
+  // (avoids set-state-in-effect and is a pure function of the session).
+  const currentUser = session?.user;
+  const isAuthorized = !isPending && currentUser != null && canAccessAdmin(currentUser);
+
+  // Redirect unauthenticated / unauthorized users as a side effect.
   React.useEffect(() => {
     if (isPending) return;
 
@@ -28,10 +33,7 @@ export default function AdminLayout({
     if (!canAccessAdmin(session.user)) {
       toast.error("Access restricted: Administrator role required");
       router.replace("/");
-      return;
     }
-
-    setIsAuthorized(true);
   }, [session, isPending, router]);
 
   if (isPending || !isAuthorized) {

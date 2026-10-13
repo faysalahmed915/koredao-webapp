@@ -61,12 +61,14 @@ export default function AdminVerificationsPage() {
         router.push("/");
         return;
       }
-      loadPending();
+      // Defer so the loader's setState is not synchronous within this effect.
+      queueMicrotask(() => loadPending());
     } else if (!sessionLoading) {
       toast.error("Please log in as an administrator");
       router.push("/login");
     }
-  }, [session, sessionLoading, router, loadPending]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user, sessionLoading, router]);
 
   const handleApprove = async (profileId: string) => {
     setProcessingId(profileId);

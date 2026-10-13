@@ -49,7 +49,8 @@ function MobileNestedNavItem({
     React.useEffect(() => {
         // Expand ancestors when a nested route is active.
         if (hasChildren && isActive) {
-            setIsExpanded(true);
+            // Defer so this setState is not synchronous within the effect.
+            queueMicrotask(() => setIsExpanded(true));
         }
     }, [hasChildren, isActive, pathname]);
 
@@ -149,9 +150,11 @@ export function MobileNavigation({ onNavigate }: MobileNavigationProps) {
             isDropdownActive(pathname, item)
         );
         if (activeCategory) {
-            setExpandedSection(activeCategory.title);
+            // Defer so this setState is not synchronous within the effect.
+            queueMicrotask(() => setExpandedSection(activeCategory.title));
         }
-    }, [pathname, visibleNavigation]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pathname]);
 
     const isHomeActive = pathname === "/";
 

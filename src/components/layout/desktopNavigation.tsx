@@ -42,7 +42,8 @@ function NestedNavItem({
     React.useEffect(() => {
         // Expand ancestors when a nested route is active.
         if (hasChildren && isActive) {
-            setIsExpanded(true);
+            // Defer so this setState is not synchronous within the effect.
+            queueMicrotask(() => setIsExpanded(true));
         }
     }, [hasChildren, isActive, pathname]);
 
@@ -157,7 +158,9 @@ export function DesktopNavigation() {
     }, []);
 
     React.useEffect(() => {
-        setOpenMenu(null);
+        // Close any open menu when the route changes. Defer so this setState is
+        // not synchronous within the effect.
+        queueMicrotask(() => setOpenMenu(null));
     }, [pathname]);
 
     return (

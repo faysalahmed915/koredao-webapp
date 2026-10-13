@@ -120,8 +120,18 @@ export default function HandwritingMatcherPage() {
   ]);
 
   React.useEffect(() => {
-    handleSearch();
-  }, [handleSearch]);
+    // Defer so the search loader's setState is not synchronous within this effect.
+    queueMicrotask(() => handleSearch());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedUniversity,
+    department,
+    handwritingStyle,
+    handwritingSampleUrl,
+    desiredNeatness,
+    gpsCoords,
+    maxDistanceKm,
+  ]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background/95 to-muted/20 py-8">

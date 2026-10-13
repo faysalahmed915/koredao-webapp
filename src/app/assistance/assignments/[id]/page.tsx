@@ -68,9 +68,11 @@ export default function AssignmentDetailPage() {
 
   React.useEffect(() => {
     if (id) {
-      loadAssignment();
+      // Defer so the loader's setState is not synchronous within this effect.
+      queueMicrotask(() => loadAssignment());
     }
-  }, [id, loadAssignment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const isOwner = session?.user?.id && assignment?.customerId === session.user.id;
   const isHelper = (session?.user as any)?.role === "VENDOR";

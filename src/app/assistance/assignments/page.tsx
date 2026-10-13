@@ -31,6 +31,9 @@ export default function AssignmentsFeedPage() {
   const [loading, setLoading] = React.useState(true);
   const [assignments, setAssignments] = React.useState<Assignment[]>([]);
   const [total, setTotal] = React.useState(0);
+  // Stable "now" captured once on mount for render-time "days left" math
+  // (avoids the impure Date.now() call during render).
+  const [nowTs] = React.useState(() => Date.now());
 
   const loadAssignments = React.useCallback(async () => {
     setLoading(true);
@@ -192,7 +195,7 @@ export default function AssignmentsFeedPage() {
           {assignments.map((assignment) => {
             const deadlineDate = new Date(assignment.deadline);
             const daysLeft = Math.ceil(
-              (deadlineDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+              (deadlineDate.getTime() - nowTs) / (1000 * 60 * 60 * 24),
             );
 
             return (

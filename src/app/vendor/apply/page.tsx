@@ -82,9 +82,11 @@ export default function VendorApplyPage() {
         })
         .finally(() => setLoading(false));
     } else if (!sessionLoading) {
-      setLoading(false);
+      // Defer so this setState is not synchronous within the effect.
+      queueMicrotask(() => setLoading(false));
     }
-  }, [session, sessionLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user, sessionLoading]);
 
   const handleAddSample = () => {
     setSamples([

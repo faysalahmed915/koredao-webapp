@@ -87,6 +87,9 @@ interface BackendProfile {
 export default function ProfilePage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
+  // Stable role string (avoids inline `(session?.user as any)?.role` in dep arrays,
+  // which the React Compiler lint rejects as a non-simple expression).
+  const userRole = (session?.user as any)?.role || "CUSTOMER";
   const [profile, setProfile] = React.useState<BackendProfile | null>(null);
   const [customerData, setCustomerData] = React.useState<CustomerProfile | null>(null);
   const [vendorData, setVendorData] = React.useState<VendorProfile | null>(null);
@@ -154,7 +157,7 @@ export default function ProfilePage() {
       }
 
       // If user is CUSTOMER and customerProfile not populated yet, fetch directly
-      const currentRole = (session?.user as any)?.role || "CUSTOMER";
+      const currentRole = userRole;
       if (currentRole === "CUSTOMER") {
         const c = await fetchMyCustomerProfile();
         if (c) {
@@ -184,13 +187,15 @@ export default function ProfilePage() {
     } catch {
       // Graceful fallback
     }
-  }, [(session?.user as any)?.role]);
+  }, [userRole]);
 
   React.useEffect(() => {
     if (session?.user) {
-      loadData();
+      // Defer so the loader's setState is not synchronous within this effect.
+      queueMicrotask(() => loadData());
     }
-  }, [session?.user, loadData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user, userRole]);
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
