@@ -107,6 +107,37 @@ export async function fetchMessages(conversationId: string): Promise<ChatMessage
   return envelope.data || [];
 }
 
+export interface ModerationConversation extends Conversation {
+  _count?: { messages: number };
+}
+
+export async function fetchModerationConversations(params: {
+  flaggedOnly?: boolean;
+  page?: number;
+  limit?: number;
+} = {}): Promise<{ items: ModerationConversation[]; total: number; totalPages: number }> {
+  const query = new URLSearchParams();
+  if (params.flaggedOnly !== undefined) query.set("flaggedOnly", String(params.flaggedOnly));
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+
+  const res = await fetch(
+    `${NEXT_PUBLIC_BACKEND_URL}/chat/moderation/conversations?${query.toString()}`,
+    {
+      method: "GET",
+      headers: getApiHeaders(),
+      credentials: "include",
+    },
+  );
+
+  const envelope = await res.json();
+  if (!res.ok) {
+    throw new Error(envelope?.message || "Failed to fetch moderation conversations");
+  }
+
+  return envelope.data || { items: [], total: 0, totalPages: 0 };
+}
+
 export async function sendChatMessage(payload: {
   conversationId: string;
   content: string;

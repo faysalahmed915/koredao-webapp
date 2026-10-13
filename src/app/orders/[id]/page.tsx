@@ -37,6 +37,7 @@ import {
   acceptDelivery,
   requestRevision,
   raiseDispute,
+  vendorAcceptOrder,
   Order,
 } from "@/lib/orders-api";
 import {
@@ -65,6 +66,7 @@ function OrderWorkspaceContent() {
   const [actionLoading, setActionLoading] = React.useState(false);
   const [revisionNotes, setRevisionNotes] = React.useState("");
   const [showRevisionModal, setShowRevisionModal] = React.useState(false);
+  const [isAcceptingOrder, setIsAcceptingOrder] = React.useState(false);
 
   // Payment Gateway Modal State
   const [showPaymentModal, setShowPaymentModal] = React.useState(false);
@@ -168,6 +170,21 @@ function OrderWorkspaceContent() {
       toast.error(err.message || "Failed to submit delivery");
     } finally {
       setSubmittingDelivery(false);
+    }
+  };
+
+  // Helper accepts a gig-order opened by the customer (pre-payment handshake)
+  const handleVendorAccept = async () => {
+    if (!order) return;
+    setIsAcceptingOrder(true);
+    try {
+      await vendorAcceptOrder(order.id);
+      toast.success("You accepted the job. The customer can now fund escrow to activate it.");
+      loadOrder();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to accept order");
+    } finally {
+      setIsAcceptingOrder(false);
     }
   };
 
@@ -366,6 +383,29 @@ function OrderWorkspaceContent() {
                     To protect both parties, the helper cannot submit deliverables until the ৳
                     {order.totalAmount} deposit is confirmed in KoreDao escrow.
                   </p>
+                  {isHelper && (
+                    <div className="mt-2">
+                      {order.vendorAcceptedAt ? (
+                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                          Accepted. Waiting for the customer to fund escrow.
+                        </p>
+                      ) : (
+                        <Button
+                          onClick={handleVendorAccept}
+                          disabled={isAcceptingOrder}
+                          className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold text-xs shrink-0 shadow-sm"
+                        >
+                          {isAcceptingOrder ? (
+                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Check className="mr-1.5 h-3.5 w-3.5" />
+                          )}
+                          Accept This Job
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
                 </div>
                 {isCustomer && (
                   <Button

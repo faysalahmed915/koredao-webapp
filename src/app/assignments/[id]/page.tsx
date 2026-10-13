@@ -33,6 +33,7 @@ import {
   Assignment,
   Bid,
 } from "@/lib/assignments-api";
+import { getOrCreateConversation } from "@/lib/chat-api";
 
 export default function AssignmentDetailPage() {
   const params = useParams();
@@ -125,6 +126,22 @@ export default function AssignmentDetailPage() {
       toast.error(err.message || "Failed to accept proposal");
     } finally {
       setAcceptingBidId(null);
+    }
+  };
+
+  const handleMessageBidder = async (bid: Bid) => {
+    if (!session?.user) {
+      toast.error("Please sign in to message the helper.");
+      router.push("/login");
+      return;
+    }
+    if (!bid.vendorProfile?.id) return;
+    try {
+      await getOrCreateConversation({ vendorProfileId: bid.vendorProfile.id });
+      toast.success("Conversation opened with the helper.");
+      router.push("/messages");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to open conversation.");
     }
   };
 
@@ -297,7 +314,15 @@ export default function AssignmentDetailPage() {
                     </div>
 
                     {isOwner && assignment.status === "OPEN" && (
-                      <div className="mt-4 pt-3 border-t border-border/40 flex justify-end">
+                      <div className="mt-4 pt-3 border-t border-border/40 flex flex-wrap justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMessageBidder(bid)}
+                          className="text-xs font-semibold"
+                        >
+                          Message Helper
+                        </Button>
                         <Button
                           size="sm"
                           disabled={acceptingBidId === bid.id}
@@ -309,7 +334,7 @@ export default function AssignmentDetailPage() {
                           ) : (
                             <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
                           )}
-                          Accept Proposal & Hire
+                          Accept Proposal &amp; Hire
                         </Button>
                       </div>
                     )}

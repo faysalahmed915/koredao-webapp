@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Loader2,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -24,15 +25,21 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { fetchGigBySlug, Gig, GigPackage } from "@/lib/gigs-api";
+import { createOrder } from "@/lib/orders-api";
+import { getOrCreateConversation } from "@/lib/chat-api";
+import { useSession } from "@/lib/auth-client";
 
 export default function GigDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params?.slug as string;
+  const { data: session } = useSession();
 
   const [loading, setLoading] = React.useState(true);
   const [gig, setGig] = React.useState<Gig | null>(null);
   const [selectedTierIndex, setSelectedTierIndex] = React.useState(0);
+  const [isOrdering, setIsOrdering] = React.useState(false);
+  const [isMessaging, setIsMessaging] = React.useState(false);
 
   React.useEffect(() => {
     if (slug) {
@@ -73,10 +80,42 @@ export default function GigDetailPage() {
       ? gig.packages[selectedTierIndex] || gig.packages[0]
       : undefined;
 
-  const handleOrderClick = () => {
-    toast.info(
-      `Package '${selectedPackage?.name}' selected. Escrow checkout will be available in Phase 4!`,
-    );
+  const handleOrderClick = async () => {
+    if (!gig || !selectedPackage) return;
+    if (!session?.user) {
+      toast.error("Please sign in as a student to order this service.");
+      router.push("/login");
+      return;
+    }
+    setIsOrdering(true);
+    try {
+      const order = await createOrder({ gigId: gig.id, packageIndex: selectedTierIndex });
+      toast.success("Order created! Review targets and fund escrow to activate the job.");
+      router.push(`/orders/${order.id}`);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to create order. Please try again.");
+    } finally {
+      setIsOrdering(false);
+    }
+  };
+
+  const handleMessageHelper = async () => {
+    if (!gig?.vendorProfile?.id) return;
+    if (!session?.user) {
+      toast.error("Please sign in to message the helper.");
+      router.push("/login");
+      return;
+    }
+    setIsMessaging(true);
+    try {
+      await getOrCreateConversation({ vendorProfileId: gig.vendorProfile.id });
+      toast.success("Conversation opened. You can chat before ordering.");
+      router.push("/messages");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to open conversation.");
+    } finally {
+      setIsMessaging(false);
+    }
   };
 
   return (
@@ -282,13 +321,33 @@ export default function GigDetailPage() {
                   </div>
                 </CardContent>
 
-                <CardFooter className="p-6 pt-0">
+                <CardFooter className="p-6 pt-0 flex flex-col gap-2.5">
                   <Button
                     onClick={handleOrderClick}
+                    disabled={isOrdering}
                     className="w-full bg-indigo-600 text-white hover:bg-indigo-700 font-semibold py-6 text-base shadow-md shadow-indigo-600/20"
                   >
+                    {isOrdering ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
                     Continue (৳{selectedPackage.price})
                   </Button>
+                  <Button
+                    onClick={handleMessageHelper}
+                    disabled={isMessaging}
+                    variant="outline"
+                    className="w-full font-semibold py-5 text-sm"
+                  >
+                    {isMessaging ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                    )}
+                    Message Helper First
+                  </Button>
+                  <p className="text-[11px] text-center text-muted-foreground pt-1">
+                    Chat with the helper to agree on details before ordering. Payment is held in escrow until you approve.
+                  </p>
                 </CardFooter>
               </>
             )}

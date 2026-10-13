@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   CheckCircle2,
+  Check,
   Clock,
   AlertCircle,
   FileText,
@@ -28,6 +29,7 @@ import {
   submitCheckpointProgress,
   reviewCheckpoint,
   deleteCheckpoint,
+  approveTarget,
   type ProjectCheckpoint,
 } from "@/lib/milestones-api";
 
@@ -184,9 +186,21 @@ export function MilestoneWorkspace({
     }
   };
 
+  const handleApproveTarget = async (cp: ProjectCheckpoint) => {
+    try {
+      await approveTarget(cp.id);
+      toast.success("Target approved. You can now fund escrow to activate the job.");
+      loadCheckpoints();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to approve target");
+    }
+  };
+
   const completedCount = checkpoints.filter((cp) => cp.status === "ACCEPTED").length;
   const progressPercent = checkpoints.length > 0 ? Math.round((completedCount / checkpoints.length) * 100) : 0;
   const isOrderActive = orderStatus === "ESCROW_HELD" || orderStatus === "IN_PROGRESS";
+  const isPendingPayment = orderStatus === "PENDING_PAYMENT";
+  const canDefineTargets = isOrderActive || isPendingPayment;
 
   return (
     <div className="space-y-6">
@@ -203,7 +217,7 @@ export function MilestoneWorkspace({
             </p>
           </div>
 
-          {isHelper && isOrderActive && (
+          {isHelper && canDefineTargets && (
             <Button
               size="sm"
               onClick={() => setShowAddModal(true)}
@@ -249,7 +263,7 @@ export function MilestoneWorkspace({
               ? "Add checkpoints (e.g. Outline, 50% Draft, Sample Handwriting Page) so the client can monitor your progress with confidence."
               : "The helper has not yet created milestone checkpoints for this assignment. Casual updates can still be coordinated in the chat."}
           </p>
-          {isHelper && isOrderActive && (
+          {isHelper && canDefineTargets && (
             <Button
               size="sm"
               onClick={() => setShowAddModal(true)}
@@ -385,6 +399,22 @@ export function MilestoneWorkspace({
                           Accept
                         </Button>
                       </div>
+                    )}
+
+                    {isCustomer && cp.status === "PENDING" && !cp.approvedAt && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleApproveTarget(cp)}
+                        className="text-xs h-7 px-2.5 bg-indigo-600 hover:bg-indigo-700 text-white"
+                        title="Approve this target as part of the plan"
+                      >
+                        <Check className="h-3 w-3 mr-1" /> Approve Target
+                      </Button>
+                    )}
+                    {cp.approvedAt && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30">
+                        <Check className="h-3 w-3" /> Target Approved
+                      </span>
                     )}
                   </div>
                 </div>

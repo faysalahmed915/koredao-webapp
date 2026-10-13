@@ -15,6 +15,7 @@ import {
   DollarSign,
   Briefcase,
   Wallet,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -241,6 +242,16 @@ export default function OrdersDashboardPage() {
                         View Order Workspace <ArrowRight className="h-3.5 w-3.5" />
                       </Button>
                     </Link>
+                    {isClient && order.status === "PENDING_PAYMENT" && (
+                      <Link href={`/orders/${order.id}#payment`}>
+                        <Button
+                          size="sm"
+                          className="gap-1.5 text-xs bg-amber-600 text-white hover:bg-amber-700"
+                        >
+                          <CreditCard className="h-3.5 w-3.5" /> Pay Now
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </Card>
