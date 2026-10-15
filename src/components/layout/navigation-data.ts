@@ -282,11 +282,13 @@ export const publicNavigation: DropdownNavItem[] = [
             title: "Study Guides",
             href: "/resources/study-guides",
             children: [
-              { title: "SSC Guides", href: "/resources/study-guides/ssc" },
-              { title: "HSC Guides", href: "/resources/study-guides/hsc" },
+              // Level guides live as anchored sections on the single study-guides
+              // page, so these links resolve instead of 404ing.
+              { title: "SSC Guides", href: "/resources/study-guides#ssc" },
+              { title: "HSC Guides", href: "/resources/study-guides#hsc" },
               {
                 title: "University Guides",
-                href: "/resources/study-guides/university",
+                href: "/resources/study-guides#university",
               },
             ],
           },

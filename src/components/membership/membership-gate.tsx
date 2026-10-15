@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, Lock, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowRight, Loader2, Lock, Sparkles } from "lucide-react";
 import { cn } from "cn";
 
 import { Badge } from "@/components/ui/badge";
@@ -53,22 +53,31 @@ const ACTION_COPY: Record<
 /**
  * Returns whether a gated marketplace action is currently locked for this user.
  * Platform staff are never locked out.
+ *
+ * When the membership lookup itself failed the state is **unknown**, not
+ * "locked": the caller must not block or upsell a user whose status we could not
+ * read.
  */
 export function useMembershipGate(action: GatedAction) {
   const { data: session, isPending: isSessionPending } = useSession();
-  const { membership, isLoading } = useMembership();
+  const { membership, isLoading, error, refresh } = useMembership();
 
   const user = session?.user;
   const exempt = isMembershipExempt(user);
   const unlocked = membership.isMember || exempt;
+  const isUnknown = Boolean(user) && !isLoading && error !== null;
 
   return {
     action,
     /** True while we cannot yet answer the question — do not flash the gate. */
     isLoading: isSessionPending || (Boolean(user) && isLoading),
+    /** The lookup failed; treat as "unknown" and offer a retry. */
+    isUnknown,
+    error,
+    refresh,
     isAuthenticated: Boolean(user),
     unlocked,
-    locked: Boolean(user) && !isLoading && !unlocked,
+    locked: Boolean(user) && !isLoading && !isUnknown && !unlocked,
     membership,
   };
 }
@@ -85,8 +94,38 @@ export function MembershipGate({
   action: GatedAction;
   className?: string;
 }) {
-  const { locked } = useMembershipGate(action);
+  const { locked, isUnknown, error, refresh } = useMembershipGate(action);
   const copy = ACTION_COPY[action];
+
+  // A failed lookup must never be presented as "you need to pay".
+  if (isUnknown) {
+    return (
+      <Card className={cn("border-amber-500/30 bg-amber-500/5", className)}>
+        <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
+            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">
+              We could not verify your membership
+            </p>
+            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+              {error ??
+                "Your membership status is temporarily unavailable."}{" "}
+              Nothing has changed about your account — retry before purchasing.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void refresh()}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 cursor-pointer")}
+          >
+            Retry
+          </button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!locked) return null;
 
@@ -153,22 +192,30 @@ export function MembershipGate({
 }
 
 /**
- * Submit button for a gated action. While locked it renders as a link to the
- * pricing page with an explicit "Membership required" label instead of a
- * disabled, unexplained button.
+ * Submit button for a gated action.
+ *
+ * While locked it renders as a link to the pricing page with an explicit
+ * "Membership required" label instead of a disabled, unexplained button. While
+ * the surrounding form is submitting it is genuinely disabled and shows a
+ * spinner, so a slow request can never be double-submitted into two
+ * assignments/gigs.
  */
 export function MembershipAwareSubmit({
   action,
   label,
   lockedLabel,
   className,
+  isSubmitting = false,
 }: {
   action: GatedAction;
   label: string;
   lockedLabel?: string;
   className?: string;
+  /** The owning form's in-flight state. */
+  isSubmitting?: boolean;
 }) {
-  const { locked, isLoading } = useMembershipGate(action);
+  const { locked, isLoading, isUnknown, error, refresh } =
+    useMembershipGate(action);
 
   if (locked) {
     return (
@@ -182,13 +229,40 @@ export function MembershipAwareSubmit({
     );
   }
 
+  // Unknown state: keep the action available (the API is the real gate) but make
+  // the uncertainty visible instead of silently disabling the button.
+  if (isUnknown) {
+    return (
+      <button
+        type="button"
+        onClick={() => void refresh()}
+        title={error ?? "Membership status unavailable"}
+        className={cn(buttonVariants({ variant: "outline", size: "default" }), "gap-2", className)}
+      >
+        <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+        Retry membership check
+      </button>
+    );
+  }
+
+  const disabled = isSubmitting || isLoading;
+
   return (
     <button
       type="submit"
-      disabled={isLoading}
-      className={cn(buttonVariants({ size: "default" }), "gap-2", className)}
+      disabled={disabled}
+      aria-busy={isSubmitting}
+      className={cn(
+        buttonVariants({ size: "default" }),
+        "gap-2 disabled:pointer-events-none disabled:opacity-50",
+        className
+      )}
     >
-      <Sparkles className="h-4 w-4" aria-hidden="true" />
+      {isSubmitting ? (
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+      ) : (
+        <Sparkles className="h-4 w-4" aria-hidden="true" />
+      )}
       {label}
     </button>
   );

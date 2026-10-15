@@ -3,7 +3,6 @@ import {
   ROLE_HIERARCHY,
   MEMBERSHIP_EXEMPT_ROLES,
   normalizeRole,
-  type Role,
 } from "@/types/role";
 
 /**
@@ -68,6 +67,8 @@ export function isSuperAdmin(user: unknown): boolean {
 
 /**
  * Checks if the user has administrative privileges (ADMIN or SUPER_ADMIN).
+ * Moderators are deliberately excluded — use {@link canAccessAdminArea} for the
+ * shared operations area.
  */
 export function isAdmin(user: unknown): boolean {
   const role = getUserRole(user);
@@ -75,8 +76,8 @@ export function isAdmin(user: unknown): boolean {
 }
 
 /**
- * Convenience helper for admin route and layout access.
- * Only ADMIN and SUPER_ADMIN roles return true.
+ * Convenience helper for full admin-only surfaces (destructive platform
+ * operations). Only ADMIN and SUPER_ADMIN return true.
  */
 export function canAccessAdmin(user: unknown): boolean {
   return isAdmin(user);
@@ -91,6 +92,17 @@ export function isModerator(user: unknown): boolean {
 }
 
 /**
+ * Access to the shared `/admin` operations area.
+ *
+ * Moderators own the moderation queue and the helper-verification desk, so they
+ * must be able to reach the routes the dashboard sidebar advertises to them.
+ * Individual admin-only actions are still enforced by the API (`@MinRole`).
+ */
+export function canAccessAdminArea(user: unknown): boolean {
+  return isModerator(user);
+}
+
+/**
  * Checks if the user is a Vendor or higher.
  */
 export function isVendor(user: unknown): boolean {
@@ -101,10 +113,10 @@ export function isVendor(user: unknown): boolean {
 /**
  * Checks whether the user's *stored role* is literally MEMBER.
  *
- * Note: on the server membership is granted by an active subscription and does
- * NOT overwrite the base role, so a subscribed customer still reports
- * `CUSTOMER`. Prefer {@link hasMarketplaceAccess}, which accepts the membership
- * state as well.
+ * This is a display/labelling helper only. Holding the stored role is **not**
+ * proof of payment: the value is admin-assignable and survives expiry, so the
+ * backend deliberately does not treat it as a membership. Authorization always
+ * uses {@link hasMarketplaceAccess} with the membership report from the API.
  */
 export function isMemberRole(user: unknown): boolean {
   return getUserRole(user) === UserRole.MEMBER;
@@ -122,6 +134,10 @@ export function isMembershipExempt(user: unknown): boolean {
  * Whether the user may perform the paid marketplace actions (post a job,
  * take a job).
  *
+ * Mirrors `RolesGuard` on the server exactly: an active subscription, or a
+ * platform-staff role. The stored `MEMBER` role alone is intentionally not
+ * enough, so the UI can never advertise access the API would refuse.
+ *
  * @param user       the session user (or a role string)
  * @param isMember   the authoritative membership flag from `/subscriptions/me`
  */
@@ -129,7 +145,7 @@ export function hasMarketplaceAccess(
   user: unknown,
   isMember: boolean
 ): boolean {
-  return Boolean(user) && (isMember || isMemberRole(user) || isMembershipExempt(user));
+  return Boolean(user) && (isMember || isMembershipExempt(user));
 }
 
 /**

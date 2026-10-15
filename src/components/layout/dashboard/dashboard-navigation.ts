@@ -448,6 +448,3 @@ export function getDashboardNavigation(
     }))
     .filter((section) => section.items.length > 0);
 }
-
-/** Small helper icon set re-exported for the sidebar's upgrade card. */
-export const DashboardNavIcons = { Sparkles, Users } as const;

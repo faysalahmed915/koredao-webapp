@@ -90,36 +90,59 @@ export default function DashboardPage() {
     );
   }
 
-  return (
-    <>
-      {metrics.role === "MEMBER" && (
+  // Exhaustive switch with a fallback: an unknown role from the API must render
+  // something actionable rather than a silent blank page.
+  switch (metrics.role) {
+    case "MEMBER":
+      return (
         <MemberDashboardView
           metrics={metrics}
           userName={session?.user?.name || "Member"}
         />
-      )}
-      {metrics.role === "CUSTOMER" && (
+      );
+    case "CUSTOMER":
+      return (
         <StudentDashboardView
           metrics={metrics}
           userName={session?.user?.name || "Student"}
         />
-      )}
-      {metrics.role === "VENDOR" && (
+      );
+    case "VENDOR":
+      return (
         <VendorDashboardView
           metrics={metrics}
           userName={session?.user?.name || "Academic Helper"}
         />
-      )}
-      {(metrics.role === "ADMIN" ||
-        metrics.role === "SUPER_ADMIN" ||
-        metrics.role === "MODERATOR") && (
+      );
+    case "ADMIN":
+    case "SUPER_ADMIN":
+    case "MODERATOR":
+      return (
         <AdminDashboardView
           metrics={metrics}
           userName={session?.user?.name || "Admin"}
         />
-      )}
-    </>
-  );
+      );
+    default:
+      return (
+        <div className="mx-auto max-w-lg py-16 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+            <AlertCircle className="h-7 w-7" aria-hidden="true" />
+          </div>
+          <h2 className="text-xl font-bold">No workspace for this role</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            We could not match your account to a dashboard view. Please contact
+            support so we can restore access.
+          </p>
+          <Link
+            href="/contact"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-6")}
+          >
+            Contact support
+          </Link>
+        </div>
+      );
+  }
 }
 
 // ==========================================

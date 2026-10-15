@@ -339,8 +339,9 @@ export default function CreateAssignmentPage() {
           <CardFooter className="flex justify-end border-t border-border/40 pt-4">
             <MembershipAwareSubmit
               action="post-job"
+              isSubmitting={submitting}
               lockedLabel="Membership required to post"
-              label={submitting ? "Posting..." : "Post Assignment Request"}
+              label="Post Assignment Request"
               className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
             />
           </CardFooter>

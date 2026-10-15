@@ -44,7 +44,27 @@ export function MemberDashboardView({
   metrics: MemberDashboardMetrics;
   userName: string;
 }) {
-  const { membership, perks, stats } = metrics;
+  // Defensive defaults: a malformed payload must degrade, not blank the page.
+  const membership = metrics.membership ?? {
+    isMember: false,
+    plan: null,
+    planName: null,
+    status: null,
+    startedAt: null,
+    expiresAt: null,
+    daysRemaining: null,
+    autoRenew: false,
+  };
+  const perks = metrics.perks ?? {
+    canPostJobs: false,
+    canTakeJobs: false,
+    platformFeePercent: 10,
+    feeDiscountPercent: 0,
+  };
+  const stats = metrics.stats;
+  const recentOrders = metrics.recentOrders ?? [];
+  const recentAssignments = metrics.recentAssignments ?? [];
+  const recommendedGigs = metrics.recommendedGigs ?? [];
 
   return (
     <div className="space-y-6">
@@ -231,12 +251,12 @@ export function MemberDashboardView({
               </Link>
             </CardHeader>
             <CardContent className="space-y-3">
-              {metrics.recentOrders.length === 0 ? (
+              {recentOrders.length === 0 ? (
                 <p className="py-8 text-center text-xs text-muted-foreground">
                   No orders yet. Browse services or post a job to get started.
                 </p>
               ) : (
-                metrics.recentOrders.map((order) => (
+                recentOrders.map((order) => (
                   <div
                     key={order.id}
                     className="flex flex-col justify-between gap-3 rounded-xl border border-border/50 bg-background/60 p-4 transition-colors hover:border-indigo-500/40 sm:flex-row sm:items-center"
@@ -288,12 +308,12 @@ export function MemberDashboardView({
               </Link>
             </CardHeader>
             <CardContent className="space-y-3">
-              {metrics.recentAssignments.length === 0 ? (
+              {recentAssignments.length === 0 ? (
                 <p className="py-8 text-center text-xs text-muted-foreground">
                   You have no active briefs. Post one to receive proposals.
                 </p>
               ) : (
-                metrics.recentAssignments.map((assignment) => (
+                recentAssignments.map((assignment) => (
                   <div
                     key={assignment.id}
                     className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-background/60 p-4 transition-colors hover:border-emerald-500/40"
@@ -371,12 +391,12 @@ export function MemberDashboardView({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {metrics.recommendedGigs.length === 0 ? (
+              {recommendedGigs.length === 0 ? (
                 <p className="py-6 text-center text-xs text-muted-foreground">
                   No services published yet.
                 </p>
               ) : (
-                metrics.recommendedGigs.map((gig) => (
+                recommendedGigs.map((gig) => (
                   <div
                     key={gig.id}
                     className="rounded-lg border border-border/50 bg-background/40 p-3 transition-colors hover:border-indigo-500/40"

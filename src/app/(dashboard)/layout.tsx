@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,7 +21,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
   const { data: session, isPending } = useSession();
 
   const isAuthenticated = Boolean(session?.user);
@@ -29,9 +28,16 @@ export default function DashboardLayout({
   React.useEffect(() => {
     if (isPending || isAuthenticated) return;
 
+    // Built from the live location so the query string survives re-login, and
+    // from `window` (not a URL param) so there is no injection surface.
+    const target =
+      typeof window === "undefined"
+        ? "/dashboard"
+        : `${window.location.pathname}${window.location.search}`;
+
     toast.error("Please sign in to continue");
-    router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
-  }, [isPending, isAuthenticated, pathname, router]);
+    router.replace(`/login?redirect=${encodeURIComponent(target)}`);
+  }, [isPending, isAuthenticated, router]);
 
   if (isPending || !isAuthenticated) {
     return (

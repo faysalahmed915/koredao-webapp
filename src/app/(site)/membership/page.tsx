@@ -24,14 +24,27 @@ import { useSession } from "@/lib/auth-client";
 import {
   checkoutMembership,
   confirmMembership,
+  cancelMembership,
   fetchMembershipPlans,
   formatBdt,
   type MembershipCheckoutResult,
   type MembershipPlan,
   type SubscriptionGateway,
 } from "@/lib/subscriptions-api";
+import { isSafeExternalUrl } from "@/lib/safe-redirect";
 
 type CheckoutPhase = "idle" | "starting" | "awaiting-payment" | "confirming";
+
+/**
+ * Sandbox checkout only exists for local development. In a production build the
+ * UI must never offer it, otherwise a membership could be obtained without
+ * payment — the backend refuses sandbox in production too, so this is
+ * defence-in-depth rather than the only control.
+ */
+const SANDBOX_ENABLED = process.env.NODE_ENV !== "production";
+const DEFAULT_GATEWAY: SubscriptionGateway = SANDBOX_ENABLED
+  ? "sandbox"
+  : "aamarpay";
 
 /**
  * `useSearchParams()` opts a route into client-side rendering, so the content is
@@ -89,9 +102,12 @@ function MembershipPageContent() {
     };
   }, []);
 
-  // Surface the gateway redirect outcome.
+  // Surface the gateway redirect outcome, then clear the param so a reload does
+  // not re-toast or re-refresh forever.
   React.useEffect(() => {
     const status = searchParams.get("status");
+    if (!status) return;
+
     if (status === "success") {
       toast.success("Membership activated", {
         description: "Your MEMBER role is now active.",
@@ -102,7 +118,9 @@ function MembershipPageContent() {
         description: "The gateway could not verify the payment. No membership was granted.",
       });
     }
-  }, [searchParams, refresh]);
+
+    router.replace("/membership");
+  }, [searchParams, refresh, router]);
 
   const requireLogin = React.useCallback(() => {
     toast.info("Please sign in first", {
@@ -125,7 +143,28 @@ function MembershipPageContent() {
 
         // Real gateways hand back a hosted page — send the browser there.
         if (checkout.paymentUrl) {
+          if (!isSafeExternalUrl(checkout.paymentUrl)) {
+            toast.error("Unsafe checkout link rejected", {
+              description:
+                "The payment gateway returned an unexpected address. No payment was taken.",
+            });
+            setPhase("idle");
+            setSelectedPlan(null);
+            return;
+          }
           window.location.assign(checkout.paymentUrl);
+          return;
+        }
+
+        // A sandbox response in a production build means the backend is
+        // misconfigured; never let the browser activate a free membership.
+        if (checkout.sandbox && !SANDBOX_ENABLED) {
+          toast.error("Checkout unavailable", {
+            description:
+              "This deployment is not accepting online payments right now. Please contact support.",
+          });
+          setPhase("idle");
+          setSelectedPlan(null);
           return;
         }
 
@@ -145,6 +184,18 @@ function MembershipPageContent() {
 
   const handleConfirmSandbox = React.useCallback(async () => {
     if (!pendingCheckout) return;
+
+    // Hard stop: a production build must never self-activate a membership.
+    if (!SANDBOX_ENABLED) {
+      toast.error("Sandbox checkout is disabled", {
+        description: "Please complete payment through the payment gateway.",
+      });
+      setPendingCheckout(null);
+      setPhase("idle");
+      setSelectedPlan(null);
+      return;
+    }
+
     setPhase("confirming");
     try {
       const result = await confirmMembership(pendingCheckout.subscriptionId);
@@ -159,10 +210,31 @@ function MembershipPageContent() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Could not confirm the payment";
-      toast.error("Activation failed", { description: message });
+      toast.error("Activation failed", {
+        description: `${message} You can retry the confirmation below.`,
+      });
       setPhase("awaiting-payment");
     }
   }, [pendingCheckout, refresh, router]);
+
+  const [isCancelling, setIsCancelling] = React.useState(false);
+
+  const handleCancelAutoRenew = React.useCallback(async () => {
+    setIsCancelling(true);
+    try {
+      await cancelMembership();
+      await refresh();
+      toast.success("Auto-renew cancelled", {
+        description: "You keep access until the paid period ends.",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Could not cancel auto-renewal";
+      toast.error("Cancellation failed", { description: message });
+    } finally {
+      setIsCancelling(false);
+    }
+  }, [refresh]);
 
   const isBusy = phase !== "idle";
 
@@ -217,13 +289,29 @@ function MembershipPageContent() {
                   </p>
                 </div>
               </div>
-              <Link
-                href="/dashboard"
-                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
-              >
-                Go to dashboard
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </Link>
+              <div className="flex flex-wrap items-center gap-2">
+                {membership.autoRenew && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="cursor-pointer gap-1.5"
+                    onClick={handleCancelAutoRenew}
+                    disabled={isCancelling}
+                  >
+                    {isCancelling && (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                    )}
+                    Cancel auto-renew
+                  </Button>
+                )}
+                <Link
+                  href="/dashboard"
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
+                >
+                  Go to dashboard
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-4 text-center text-xs text-muted-foreground">
@@ -315,8 +403,8 @@ function MembershipPageContent() {
                           plan.highlight && "bg-indigo-600 text-white hover:bg-indigo-700"
                         )}
                         variant={plan.highlight ? "default" : "outline"}
-                        disabled={isBusy || isCurrent}
-                        onClick={() => handleChoosePlan(plan, "sandbox")}
+                        disabled={isBusy || isCurrent || isSessionPending}
+                        onClick={() => handleChoosePlan(plan, DEFAULT_GATEWAY)}
                       >
                         {isThisBusy ? (
                           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -325,7 +413,7 @@ function MembershipPageContent() {
                         )}
                         {isCurrent ? "Current plan" : "Choose plan"}
                       </Button>
-                      {plan.highlight && (
+                      {plan.highlight && SANDBOX_ENABLED && (
                         <p className="text-center text-[10px] text-muted-foreground">
                           Sandbox checkout for local development
                         </p>

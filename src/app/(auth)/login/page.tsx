@@ -26,11 +26,14 @@ import { Badge } from "@/components/ui/badge";
 import { loginSchema, LoginInput } from "@/lib/schemas/auth.schema";
 import { useLanguage } from "@/components/providers/language-provider";
 import { signIn, useSession, setStoredAuthToken } from "@/lib/auth-client";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 
 function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/dashboard";
+  // Never trust `?redirect=` verbatim: an absolute or protocol-relative URL would
+  // turn the login page into an open redirect (and `/login` itself into a loop).
+  const redirectUrl = safeRedirectPath(searchParams.get("redirect"));
 
   const { t } = useLanguage();
   const { data: session, isPending: isSessionPending } = useSession();

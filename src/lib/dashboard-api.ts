@@ -190,10 +190,20 @@ export async function fetchDashboardMetrics(): Promise<DashboardResponse> {
     credentials: "include",
   });
 
-  const envelope = await res.json();
+  // A proxy or gateway failure can return HTML; `.json()` would otherwise throw
+  // an opaque "Unexpected token '<'".
+  const envelope = await res.json().catch(() => null);
+
   if (!res.ok) {
-    throw new Error(envelope?.message || "Failed to fetch dashboard metrics");
+    throw new Error(
+      (typeof envelope?.message === "string" && envelope.message) ||
+        "Failed to fetch dashboard metrics"
+    );
   }
 
-  return envelope.data;
+  if (!envelope || typeof envelope !== "object" || !("data" in envelope)) {
+    throw new Error("The server returned an unexpected response");
+  }
+
+  return envelope.data as DashboardResponse;
 }

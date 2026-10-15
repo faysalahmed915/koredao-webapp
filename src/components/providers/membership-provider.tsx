@@ -12,6 +12,12 @@ interface MembershipContextValue {
   membership: MembershipSummary;
   /** True while the membership state for a signed-in user is still loading. */
   isLoading: boolean;
+  /**
+   * Set when the membership lookup failed. Consumers must treat this as
+   * "unknown", never as "not a member" — otherwise a paying member is silently
+   * shown the upgrade prompts and has their submit buttons removed.
+   */
+  error: string | null;
   /** Re-reads membership state from the backend (e.g. after a purchase). */
   refresh: () => Promise<void>;
 }
@@ -19,6 +25,7 @@ interface MembershipContextValue {
 const MembershipContext = React.createContext<MembershipContextValue>({
   membership: NO_MEMBERSHIP,
   isLoading: false,
+  error: null,
   refresh: async () => {},
 });
 
@@ -41,6 +48,7 @@ export function MembershipProvider({
   const [membership, setMembership] =
     React.useState<MembershipSummary>(NO_MEMBERSHIP);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   // Guard against out-of-order responses and unmount writes.
   const requestId = React.useRef(0);
@@ -49,6 +57,7 @@ export function MembershipProvider({
     if (!userId) {
       setMembership(NO_MEMBERSHIP);
       setIsLoading(false);
+      setError(null);
       return;
     }
 
@@ -58,11 +67,18 @@ export function MembershipProvider({
       const next = await fetchMyMembership();
       if (current === requestId.current) {
         setMembership(next);
+        setError(null);
       }
-    } catch {
-      // A failed lookup must never be read as "is a member".
+    } catch (err) {
+      // Never read a failed lookup as "is not a member" silently — surface it so
+      // the UI can ask the user to retry instead of upselling them.
       if (current === requestId.current) {
         setMembership(NO_MEMBERSHIP);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Could not check your membership status"
+        );
       }
     } finally {
       if (current === requestId.current) {
@@ -85,8 +101,8 @@ export function MembershipProvider({
   }, [load]);
 
   const value = React.useMemo(
-    () => ({ membership, isLoading, refresh }),
-    [membership, isLoading, refresh]
+    () => ({ membership, isLoading, error, refresh }),
+    [membership, isLoading, error, refresh]
   );
 
   return (

@@ -54,9 +54,14 @@ export interface MembershipCheckoutResult {
   durationDays: number;
   gateway: SubscriptionGateway;
   paymentUrl: string | null;
+  /**
+   * Our merchant transaction reference. The payment is bound to this value
+   * server-side; the browser never decides which plan a payment applies to.
+   */
   transactionRef: string | null;
   sandbox: boolean;
-  expiresAt: string;
+  /** Estimated end date — the period only starts when the membership is confirmed. */
+  expectedExpiresAt: string;
 }
 
 /** Empty membership state used before the first load and for guests. */
@@ -86,16 +91,26 @@ export function formatBdt(poisha: number, options?: { withPoisha?: boolean }): s
 async function readEnvelope<T>(res: Response): Promise<T> {
   const envelope = await res.json().catch(() => null);
   if (!res.ok) {
+    // `message` is the platform-wide contract; `error` may be an object, so
+    // never interpolate it directly into a toast.
+    const rawMessage = envelope?.message ?? envelope?.error;
     const message =
-      envelope?.message ||
-      envelope?.error ||
-      `Request failed with status ${res.status}`;
+      typeof rawMessage === "string" && rawMessage.length > 0
+        ? rawMessage
+        : `Request failed with status ${res.status}`;
     const error = new Error(message) as Error & { status?: number; code?: string };
     error.status = res.status;
-    error.code = envelope?.code;
+    error.code = typeof envelope?.code === "string" ? envelope.code : undefined;
     throw error;
   }
-  return envelope?.data as T;
+
+  // A 200 without a `data` key (e.g. a proxy's HTML error page parsed as JSON)
+  // must not be handed to callers as `undefined`.
+  if (!envelope || typeof envelope !== "object" || !("data" in envelope)) {
+    throw new Error("The server returned an unexpected response");
+  }
+
+  return envelope.data as T;
 }
 
 /** Public plan catalogue — safe to call without a session. */

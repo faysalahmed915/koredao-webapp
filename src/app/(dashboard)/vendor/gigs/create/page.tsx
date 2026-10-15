@@ -477,8 +477,9 @@ export default function CreateGigPage() {
           <CardFooter className="flex justify-end border-t border-border/40 pt-4">
             <MembershipAwareSubmit
               action="create-gig"
+              isSubmitting={submitting}
               lockedLabel="Membership required to publish"
-              label={submitting ? "Publishing..." : "Publish Service Gig"}
+              label="Publish Service Gig"
               className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
             />
           </CardFooter>
