@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Fraunces, Geist_Mono } from "next/font/google";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LanguageProvider } from "@/components/providers/language-provider";
+import { MembershipProvider } from "@/components/providers/membership-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
@@ -89,6 +88,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/**
+ * Root layout — providers only.
+ *
+ * Page chrome is intentionally NOT rendered here. The application has two
+ * distinct shells, each owned by a route group:
+ *
+ * - `app/(site)`      → public marketing header + footer
+ * - `app/(dashboard)` → role-aware sidebar shell
+ * - `app/(auth)`      → focused, chrome-free authentication pages
+ *
+ * Keeping the root layout free of header/footer lets the dashboard shell own the
+ * full viewport instead of fighting the marketing chrome for space.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -100,7 +112,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${fraunces.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-screen flex flex-col bg-background font-sans text-foreground antialiased selection:bg-emerald-500/20 selection:text-emerald-950 dark:selection:bg-emerald-500/30 dark:selection:text-emerald-100">
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-emerald-500/20 selection:text-emerald-950 dark:selection:bg-emerald-500/30 dark:selection:text-emerald-100">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -108,12 +120,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <Toaster position="top-right" richColors />
+            <MembershipProvider>
+              {children}
+              <Toaster position="top-right" richColors />
+            </MembershipProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

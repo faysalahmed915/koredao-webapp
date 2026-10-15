@@ -1,7 +1,24 @@
 import { BACKEND_URL, getApiHeaders } from "./api-client";
 
+/**
+ * Membership snapshot returned alongside every dashboard payload, so the UI can
+ * render member badges, renewal countdowns and upgrade prompts without a second
+ * request.
+ */
+export interface MembershipSnapshot {
+  isMember: boolean;
+  plan: string | null;
+  planName: string | null;
+  status: string | null;
+  startedAt: string | null;
+  expiresAt: string | null;
+  daysRemaining: number | null;
+  autoRenew: boolean;
+}
+
 export interface CustomerDashboardMetrics {
   role: "CUSTOMER";
+  membership?: MembershipSnapshot;
   stats: {
     activeOrdersCount: number;
     underReviewOrdersCount: number;
@@ -50,6 +67,7 @@ export interface VendorDashboardMetrics {
   role: "VENDOR";
   isApproved: boolean;
   verificationStatus: string;
+  membership?: MembershipSnapshot;
   stats: {
     availableBalance: number;
     pendingEscrowBalance: number;
@@ -139,8 +157,29 @@ export interface AdminDashboardMetrics {
   }>;
 }
 
+/**
+ * Workspace shown to a user who holds the subscription-backed MEMBER role while
+ * their base role is CUSTOMER: the student view plus membership state and the
+ * marketplace capabilities it unlocks.
+ */
+export interface MemberDashboardMetrics {
+  role: "MEMBER";
+  membership: MembershipSnapshot;
+  perks: {
+    canPostJobs: boolean;
+    canTakeJobs: boolean;
+    platformFeePercent: number;
+    feeDiscountPercent: number;
+  };
+  stats: CustomerDashboardMetrics["stats"];
+  recentOrders: CustomerDashboardMetrics["recentOrders"];
+  recentAssignments: CustomerDashboardMetrics["recentAssignments"];
+  recommendedGigs: CustomerDashboardMetrics["recommendedGigs"];
+}
+
 export type DashboardResponse =
   | CustomerDashboardMetrics
+  | MemberDashboardMetrics
   | VendorDashboardMetrics
   | AdminDashboardMetrics;
 
@@ -151,10 +190,20 @@ export async function fetchDashboardMetrics(): Promise<DashboardResponse> {
     credentials: "include",
   });
 
-  const envelope = await res.json();
+  // A proxy or gateway failure can return HTML; `.json()` would otherwise throw
+  // an opaque "Unexpected token '<'".
+  const envelope = await res.json().catch(() => null);
+
   if (!res.ok) {
-    throw new Error(envelope?.message || "Failed to fetch dashboard metrics");
+    throw new Error(
+      (typeof envelope?.message === "string" && envelope.message) ||
+        "Failed to fetch dashboard metrics"
+    );
   }
 
-  return envelope.data;
+  if (!envelope || typeof envelope !== "object" || !("data" in envelope)) {
+    throw new Error("The server returned an unexpected response");
+  }
+
+  return envelope.data as DashboardResponse;
 }

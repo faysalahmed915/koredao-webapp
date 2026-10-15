@@ -32,6 +32,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    // `/helpers` and `/helpers/:id` were linked from the homepage hero, the gig
+    // detail page, the handwriting matcher, the assistance directory and the
+    // footer, but the routes were never created. The helpers directory and the
+    // public helper profile already live under `/assistance`, so consolidate
+    // there instead of duplicating two more route trees.
+    return [
+      { source: "/helpers", destination: "/assistance", permanent: true },
+      {
+        source: "/helpers/:id",
+        destination: "/assistance/:id",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
