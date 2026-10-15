@@ -19,10 +19,10 @@ const HOVER_CLOSE_DELAY_MS = 120;
 const HOVER_OPEN_DELAY_MS = 60;
 
 /** Direct links that are useful to everyone and need no dropdown. */
-const PUBLIC_DIRECT_LINKS = [
-  { title: "Membership", href: "/membership" },
-  { title: "About", href: "/about" },
-] as const;
+// const PUBLIC_DIRECT_LINKS = [
+//   { title: "Membership", href: "/membership" },
+//   { title: "About", href: "/about" },
+// ] as const;
 
 /**
  * Desktop mega-menu.
@@ -216,7 +216,7 @@ export function DesktopNav() {
       })}
 
       {/* Direct links that are useful to everyone and need no dropdown */}
-      {PUBLIC_DIRECT_LINKS.map((link) => {
+      {/* {PUBLIC_DIRECT_LINKS.map((link) => {
         const active = isRouteActive(pathname, link);
         return (
           <Link
@@ -233,7 +233,7 @@ export function DesktopNav() {
             {link.title}
           </Link>
         );
-      })}
+      })} */}
     </nav>
   );
 }
