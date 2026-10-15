@@ -38,6 +38,7 @@ import {
   VendorDashboardMetrics,
   AdminDashboardMetrics,
 } from "@/lib/dashboard-api";
+import { MemberDashboardView } from "@/components/dashboard/member-dashboard";
 import { cn } from "cn";
 
 export default function DashboardPage() {
@@ -74,12 +75,14 @@ export default function DashboardPage() {
 
   if (error || !metrics) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-16 text-center">
+      <div className="mx-auto max-w-4xl py-16 text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
-          <AlertCircle className="h-7 w-7" />
+          <AlertCircle className="h-7 w-7" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-bold">Unable to Load Dashboard</h2>
-        <p className="text-sm text-muted-foreground mt-2">{error || "No metrics returned."}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {error || "No metrics returned."}
+        </p>
         <Button onClick={() => window.location.reload()} className="mt-6">
           Retry
         </Button>
@@ -88,21 +91,34 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 py-8 md:py-12">
-      <div className="container mx-auto max-w-7xl px-4 sm:px-8 space-y-8">
-        {metrics.role === "CUSTOMER" && (
-          <StudentDashboardView metrics={metrics} userName={session?.user?.name || "Student"} />
-        )}
-        {metrics.role === "VENDOR" && (
-          <VendorDashboardView metrics={metrics} userName={session?.user?.name || "Academic Helper"} />
-        )}
-        {(metrics.role === "ADMIN" ||
-          metrics.role === "SUPER_ADMIN" ||
-          metrics.role === "MODERATOR") && (
-          <AdminDashboardView metrics={metrics} userName={session?.user?.name || "Admin"} />
-        )}
-      </div>
-    </div>
+    <>
+      {metrics.role === "MEMBER" && (
+        <MemberDashboardView
+          metrics={metrics}
+          userName={session?.user?.name || "Member"}
+        />
+      )}
+      {metrics.role === "CUSTOMER" && (
+        <StudentDashboardView
+          metrics={metrics}
+          userName={session?.user?.name || "Student"}
+        />
+      )}
+      {metrics.role === "VENDOR" && (
+        <VendorDashboardView
+          metrics={metrics}
+          userName={session?.user?.name || "Academic Helper"}
+        />
+      )}
+      {(metrics.role === "ADMIN" ||
+        metrics.role === "SUPER_ADMIN" ||
+        metrics.role === "MODERATOR") && (
+        <AdminDashboardView
+          metrics={metrics}
+          userName={session?.user?.name || "Admin"}
+        />
+      )}
+    </>
   );
 }
 

@@ -12,13 +12,20 @@ import {
   CheckCircle2,
   Download,
   ArrowLeft,
+  ArrowRight,
+  BadgeCheck,
   Users,
   Star,
   Send,
   Loader2,
   Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "cn";
+import {
+  MembershipGate,
+  useMembershipGate,
+} from "@/components/membership/membership-gate";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,6 +84,10 @@ export default function AssignmentDetailPage() {
 
   const isOwner = session?.user?.id && assignment?.customerId === session.user.id;
   const isHelper = (session?.user as any)?.role === "VENDOR";
+
+  // Paid marketplace gate: taking a job requires an active MEMBER membership.
+  const { locked: bidLocked, isLoading: bidGateLoading } =
+    useMembershipGate("take-job");
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -382,18 +393,58 @@ export default function AssignmentDetailPage() {
             </div>
           </Card>
 
-          {/* Proposal Submission Form (Visible to Helpers) */}
+          {/* Proposal Submission — gated by helper verification AND membership */}
           {!isOwner && assignment.status === "OPEN" && (
-            <Card className="border-indigo-500/30 p-6 shadow-md">
-              <CardHeader className="p-0 pb-4">
-                <CardTitle className="text-base font-bold flex items-center gap-2">
-                  <Send className="h-4 w-4 text-indigo-500" /> Submit a Proposal
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Propose your price and turnaround speed. You may submit counter-offers if needed.
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleBidSubmit} className="space-y-4">
+            <div className="space-y-4">
+              {!isHelper && (
+                <Card className="border-amber-500/30 bg-amber-500/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <BadgeCheck
+                      className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400"
+                      aria-hidden="true"
+                    />
+                    <div className="space-y-2">
+                      <h2 className="text-sm font-bold text-foreground">
+                        Verified helper profile required
+                      </h2>
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        Taking a job needs two things: an approved helper profile
+                        and an active membership. Get verified first, then unlock
+                        bidding with a plan.
+                      </p>
+                      <div className="flex flex-wrap gap-2 pt-0.5">
+                        <Link
+                          href="/vendor/apply"
+                          className={cn(buttonVariants({ size: "sm" }), "gap-1.5 bg-indigo-600 text-white hover:bg-indigo-700")}
+                        >
+                          Become a verified helper
+                          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Link>
+                        <Link
+                          href="/membership"
+                          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
+                        >
+                          View membership plans
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {isHelper && <MembershipGate action="take-job" />}
+
+              {isHelper && !bidLocked && !bidGateLoading && (
+                <Card className="border-indigo-500/30 p-6 shadow-md">
+                  <CardHeader className="p-0 pb-4">
+                    <CardTitle className="text-base font-bold flex items-center gap-2">
+                      <Send className="h-4 w-4 text-indigo-500" /> Submit a Proposal
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Propose your price and turnaround speed. You may submit counter-offers if needed.
+                    </CardDescription>
+                  </CardHeader>
+                  <form onSubmit={handleBidSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs">Your Price (৳) *</Label>
@@ -451,7 +502,9 @@ export default function AssignmentDetailPage() {
                   Submit Proposal
                 </Button>
               </form>
-            </Card>
+                </Card>
+              )}
+            </div>
           )}
         </div>
       </div>

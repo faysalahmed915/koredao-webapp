@@ -22,6 +22,10 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { createAssignment } from "@/lib/assignments-api";
+import {
+  MembershipAwareSubmit,
+  MembershipGate,
+} from "@/components/membership/membership-gate";
 
 export default function CreateAssignmentPage() {
   const router = useRouter();
@@ -98,9 +102,9 @@ export default function CreateAssignmentPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-12 sm:px-8">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
-      <div className="mb-8">
+      <div>
         <Link href="/assignments">
           <Button variant="ghost" size="sm" className="gap-2 text-xs text-muted-foreground mb-3">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Job Board
@@ -115,6 +119,9 @@ export default function CreateAssignmentPage() {
           Describe what you need, set your budget range, and receive proposals from qualified campus helpers.
         </p>
       </div>
+
+      {/* Paid marketplace gate */}
+      <MembershipGate action="post-job" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -330,19 +337,12 @@ export default function CreateAssignmentPage() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-end border-t border-border/40 pt-4">
-            <Button
-              type="submit"
-              disabled={submitting}
+            <MembershipAwareSubmit
+              action="post-job"
+              lockedLabel="Membership required to post"
+              label={submitting ? "Posting..." : "Post Assignment Request"}
               className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Posting...
-                </>
-              ) : (
-                "Post Assignment Request"
-              )}
-            </Button>
+            />
           </CardFooter>
         </Card>
       </form>

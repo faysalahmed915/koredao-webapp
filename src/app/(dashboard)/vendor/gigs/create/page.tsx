@@ -22,6 +22,10 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { createGig, GigPackage } from "@/lib/gigs-api";
+import {
+  MembershipAwareSubmit,
+  MembershipGate,
+} from "@/components/membership/membership-gate";
 
 export default function CreateGigPage() {
   const router = useRouter();
@@ -142,9 +146,9 @@ export default function CreateGigPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-8">
+    <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
-      <div className="mb-8">
+      <div>
         <Link href="/gigs">
           <Button variant="ghost" size="sm" className="gap-2 text-xs text-muted-foreground mb-3">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Services
@@ -160,6 +164,9 @@ export default function CreateGigPage() {
           packages (Basic, Standard, Premium).
         </p>
       </div>
+
+      {/* Paid marketplace gate */}
+      <MembershipGate action="create-gig" />
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Step 1: Overview */}
@@ -468,19 +475,12 @@ export default function CreateGigPage() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-end border-t border-border/40 pt-4">
-            <Button
-              type="submit"
-              disabled={submitting}
+            <MembershipAwareSubmit
+              action="create-gig"
+              lockedLabel="Membership required to publish"
+              label={submitting ? "Publishing..." : "Publish Service Gig"}
               className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Publishing...
-                </>
-              ) : (
-                "Publish Service Gig"
-              )}
-            </Button>
+            />
           </CardFooter>
         </Card>
       </form>

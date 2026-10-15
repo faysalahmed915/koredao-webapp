@@ -1,6 +1,7 @@
 import {
   UserRole,
   ROLE_HIERARCHY,
+  MEMBERSHIP_EXEMPT_ROLES,
   normalizeRole,
   type Role,
 } from "@/types/role";
@@ -95,6 +96,40 @@ export function isModerator(user: unknown): boolean {
 export function isVendor(user: unknown): boolean {
   const role = getUserRole(user);
   return role === UserRole.VENDOR || isAdmin(user);
+}
+
+/**
+ * Checks whether the user's *stored role* is literally MEMBER.
+ *
+ * Note: on the server membership is granted by an active subscription and does
+ * NOT overwrite the base role, so a subscribed customer still reports
+ * `CUSTOMER`. Prefer {@link hasMarketplaceAccess}, which accepts the membership
+ * state as well.
+ */
+export function isMemberRole(user: unknown): boolean {
+  return getUserRole(user) === UserRole.MEMBER;
+}
+
+/**
+ * Platform staff are never blocked by billing.
+ */
+export function isMembershipExempt(user: unknown): boolean {
+  const role = getUserRole(user);
+  return role !== null && MEMBERSHIP_EXEMPT_ROLES.includes(role);
+}
+
+/**
+ * Whether the user may perform the paid marketplace actions (post a job,
+ * take a job).
+ *
+ * @param user       the session user (or a role string)
+ * @param isMember   the authoritative membership flag from `/subscriptions/me`
+ */
+export function hasMarketplaceAccess(
+  user: unknown,
+  isMember: boolean
+): boolean {
+  return Boolean(user) && (isMember || isMemberRole(user) || isMembershipExempt(user));
 }
 
 /**

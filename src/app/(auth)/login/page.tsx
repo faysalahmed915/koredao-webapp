@@ -146,14 +146,22 @@ function LoginFormContent() {
             </span>
             <span className="text-[10px] text-muted-foreground font-mono">Password123!</span>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <button
               type="button"
               onClick={() => fillDemoAccount("saad.student@koredao.com")}
               className="px-2 py-1.5 rounded-lg border border-border/60 bg-background/80 hover:border-indigo-500/60 text-[11px] font-semibold text-foreground transition-all hover:shadow-sm text-left cursor-pointer"
             >
-              <span className="block text-[10px] text-indigo-500">👤 Student</span>
+              <span className="block text-[10px] text-indigo-500">💎 Member</span>
               <span className="truncate block font-mono">Saad (DU)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fillDemoAccount("lamia.student@koredao.com")}
+              className="px-2 py-1.5 rounded-lg border border-border/60 bg-background/80 hover:border-amber-500/60 text-[11px] font-semibold text-foreground transition-all hover:shadow-sm text-left cursor-pointer"
+            >
+              <span className="block text-[10px] text-amber-500">👤 Student</span>
+              <span className="truncate block font-mono">Lamia (NSU)</span>
             </button>
             <button
               type="button"
