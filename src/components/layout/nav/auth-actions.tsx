@@ -11,6 +11,7 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -111,20 +112,22 @@ export function AuthActions() {
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel className="flex flex-col gap-0.5">
-            <span className="truncate text-xs font-semibold text-foreground">
-              {user.name || "Account"}
-            </span>
-            <span className="truncate text-[11px] font-normal text-muted-foreground">
-              {user.email}
-            </span>
-            {role && (
-              <span className="text-[10px] font-medium uppercase tracking-wide text-indigo-500">
-                {ROLE_LABELS[role]}
-                {membership.isMember && role !== "MEMBER" ? " • Member" : ""}
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="flex flex-col gap-0.5">
+              <span className="truncate text-xs font-semibold text-foreground">
+                {user.name || "Account"}
               </span>
-            )}
-          </DropdownMenuLabel>
+              <span className="truncate text-[11px] font-normal text-muted-foreground">
+                {user.email}
+              </span>
+              {role && (
+                <span className="text-[10px] font-medium uppercase tracking-wide text-indigo-500">
+                  {ROLE_LABELS[role]}
+                  {membership.isMember && role !== "MEMBER" ? " • Member" : ""}
+                </span>
+              )}
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="cursor-pointer gap-2" render={<Link href="/dashboard" />}>
             <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
