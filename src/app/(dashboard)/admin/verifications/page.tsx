@@ -13,6 +13,8 @@ import {
   Loader2,
   AlertCircle,
   Eye,
+  User,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -39,6 +41,8 @@ export default function AdminVerificationsPage() {
   // Reject Modal state
   const [rejectingProfile, setRejectingProfile] = React.useState<VendorProfile | null>(null);
   const [rejectionReason, setRejectionReason] = React.useState("");
+  // Real name input per pending application (staff-only identity verification field)
+  const [realNameInputs, setRealNameInputs] = React.useState<Record<string, string>>({});
 
   const loadPending = React.useCallback(async () => {
     setLoading(true);
@@ -70,10 +74,10 @@ export default function AdminVerificationsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user, sessionLoading, router]);
 
-  const handleApprove = async (profileId: string) => {
+  const handleApprove = async (profileId: string, realName?: string) => {
     setProcessingId(profileId);
     try {
-      await reviewVendorApplication(profileId, "APPROVED");
+      await reviewVendorApplication(profileId, "APPROVED", undefined, realName);
       toast.success("Vendor application approved! User promoted to Helper.");
       setApplications((prev) => prev.filter((app) => app.id !== profileId));
       setTotal((prev) => Math.max(0, prev - 1));
@@ -278,6 +282,32 @@ export default function AdminVerificationsPage() {
                 </div>
               </CardContent>
 
+              {/* Verified Real Name (staff-only identity verification field) */}
+              {app.user?.realName && (
+                <div className="flex items-center gap-2 p-3 rounded-lg border border-border bg-amber-50/50">
+                  <User className="h-4 w-4 text-amber-600" />
+                  <span className="text-xs font-semibold text-amber-700">Verified Real Name:</span>{" "}
+                  <span className="text-sm text-foreground">{app.user.realName}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/20">
+                <UserPlus className="h-4 w-4 text-muted-foreground" />
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Enter Verified Real Name
+                </label>
+                <Input
+                  value={realNameInputs[app.id] || ""}
+                  onChange={(e) =>
+                    setRealNameInputs({
+                      ...realNameInputs,
+                      [app.id]: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. John Doe"
+                  disabled={processingId === app.id}
+                />
+              </div>
+
               <CardFooter className="flex justify-end gap-3 border-t border-border/40 pt-4 bg-muted/10">
                 <Button
                   variant="outline"
@@ -290,7 +320,7 @@ export default function AdminVerificationsPage() {
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => handleApprove(app.id)}
+                  onClick={() => handleApprove(app.id, realNameInputs[app.id] || undefined)}
                   disabled={processingId === app.id}
                   className="bg-emerald-600 text-white hover:bg-emerald-700 font-medium"
                 >

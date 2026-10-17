@@ -32,6 +32,7 @@ export interface VendorProfile {
     email?: string;
     image?: string;
     role?: string;
+    realName?: string;
   };
   handwritingSamples?: HandwritingSample[];
 }
@@ -220,12 +221,13 @@ export async function reviewVendorApplication(
   profileId: string,
   status: "APPROVED" | "REJECTED",
   rejectionReason?: string,
+  realName?: string,
 ): Promise<VendorProfile> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/admin/review/${profileId}`, {
     method: "POST",
     headers: getApiHeaders(),
     credentials: "include",
-    body: JSON.stringify({ status, rejectionReason }),
+    body: JSON.stringify({ status, rejectionReason, ...(realName ? { realName } : {}) }),
   });
 
   const envelope = await res.json();
