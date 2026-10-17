@@ -63,6 +63,7 @@ import { cn } from "cn";
 interface BackendProfile {
   id: string;
   name: string;
+  realName?: string;
   email: string;
   emailVerified: boolean;
   role: "CUSTOMER" | "VENDOR" | "MODERATOR" | "ADMIN" | "SUPER_ADMIN" | string;
@@ -355,6 +356,14 @@ export default function ProfilePage() {
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                   {userDisplayName}
                 </h1>
+                {profile?.realName && (
+                  <Badge
+                    variant="secondary"
+                    className="text-xs font-semibold bg-amber-500/10 text-amber-700 border-amber-500/20"
+                  >
+                    <User className="mr-1 h-3 w-3" /> Verified Real Name
+                  </Badge>
+                )}
                 <Badge
                   variant="outline"
                   className={cn(
