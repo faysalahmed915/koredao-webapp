@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { canAccessAdminArea } from "@/lib/access-control";
+import { buildLoginHref } from "@/lib/auth-redirect";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -35,7 +36,9 @@ export default function AdminLayout({
 
     if (!session?.user) {
       toast.error("Please log in with staff credentials");
-      router.replace("/login?redirect=/admin");
+      // buildLoginHref captures the exact admin sub-path the visitor tried to
+      // reach (e.g. /admin/verifications), so re-login resumes there.
+      router.replace(buildLoginHref());
       return;
     }
 

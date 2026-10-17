@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { DashboardShell } from "@/components/layout/dashboard/dashboard-shell";
 import { useSession } from "@/lib/auth-client";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 /**
  * Authenticated workspace shell.
@@ -28,15 +29,12 @@ export default function DashboardLayout({
   React.useEffect(() => {
     if (isPending || isAuthenticated) return;
 
-    // Built from the live location so the query string survives re-login, and
-    // from `window` (not a URL param) so there is no injection surface.
-    const target =
-      typeof window === "undefined"
-        ? "/dashboard"
-        : `${window.location.pathname}${window.location.search}`;
-
+    // buildLoginHref() snapshots the live location (path + query) into
+    // `?redirect=` and saves the current scroll position, so re-login returns
+    // the visitor to this exact page and offset. Both are read from `window`
+    // (not URL params) so there is no injection surface.
     toast.error("Please sign in to continue");
-    router.replace(`/login?redirect=${encodeURIComponent(target)}`);
+    router.replace(buildLoginHref());
   }, [isPending, isAuthenticated, router]);
 
   if (isPending || !isAuthenticated) {

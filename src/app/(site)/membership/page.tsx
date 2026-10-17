@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useMembership } from "@/components/providers/membership-provider";
 import { useSession } from "@/lib/auth-client";
+import { buildLoginHref, saveReturnPoint } from "@/lib/auth-redirect";
 import {
   checkoutMembership,
   confirmMembership,
@@ -126,7 +127,8 @@ function MembershipPageContent() {
     toast.info("Please sign in first", {
       description: "You need an account to activate a membership.",
     });
-    router.push("/login?redirect=/membership");
+    // Preserves the current page (with query) + scroll for the return trip.
+    router.push(buildLoginHref());
   }, [router]);
 
   const handleChoosePlan = React.useCallback(
@@ -495,7 +497,8 @@ function MembershipPageContent() {
       {!user && !isSessionPending && (
         <div className="mx-auto mt-10 max-w-md text-center">
           <Link
-            href="/register"
+            href="/register?redirect=/membership"
+            onClick={() => saveReturnPoint(window.scrollY, "/membership")}
             className={cn(buttonVariants({ size: "lg" }), "gap-2 bg-indigo-600 text-white hover:bg-indigo-700")}
           >
             Create an account
@@ -503,7 +506,11 @@ function MembershipPageContent() {
           </Link>
           <p className="mt-2 text-xs text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login?redirect=/membership" className="font-semibold text-primary hover:underline">
+            <Link
+              href="/login?redirect=/membership"
+              onClick={() => saveReturnPoint(window.scrollY, "/membership")}
+              className="font-semibold text-primary hover:underline"
+            >
               Sign in
             </Link>
           </p>

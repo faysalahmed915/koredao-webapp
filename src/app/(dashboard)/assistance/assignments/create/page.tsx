@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { createAssignment } from "@/lib/assignments-api";
+import { buildLoginHref } from "@/lib/auth-redirect";
 import {
   MembershipAwareSubmit,
   MembershipGate,
@@ -50,7 +51,7 @@ export default function CreateAssignmentPage() {
   React.useEffect(() => {
     if (!sessionLoading && !session?.user) {
       toast.error("Please log in to post an assignment request");
-      router.push("/login");
+      router.push(buildLoginHref());
     }
   }, [session, sessionLoading, router]);
 

@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { fetchMyOrders, Order } from "@/lib/orders-api";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function OrdersDashboardPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function OrdersDashboardPage() {
         .finally(() => setLoading(false));
     } else if (!sessionLoading) {
       toast.error("Please log in to view your orders");
-      router.push("/login");
+      router.push(buildLoginHref());
     }
   }, [session, sessionLoading, router]);
 

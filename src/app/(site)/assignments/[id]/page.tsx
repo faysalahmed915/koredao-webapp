@@ -41,6 +41,7 @@ import {
   Bid,
 } from "@/lib/assignments-api";
 import { getOrCreateConversation } from "@/lib/chat-api";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function AssignmentDetailPage() {
   const params = useParams();
@@ -94,7 +95,7 @@ export default function AssignmentDetailPage() {
 
     if (!session?.user) {
       toast.error("Please log in to submit a proposal");
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
 
@@ -145,7 +146,7 @@ export default function AssignmentDetailPage() {
   const handleMessageBidder = async (bid: Bid) => {
     if (!session?.user) {
       toast.error("Please sign in to message the helper.");
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
     if (!bid.vendorProfile?.id) return;

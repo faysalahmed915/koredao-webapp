@@ -28,6 +28,7 @@ import {
   reviewVendorApplication,
   VendorProfile,
 } from "@/lib/profiles-api";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function AdminVerificationsPage() {
   const router = useRouter();
@@ -69,7 +70,7 @@ export default function AdminVerificationsPage() {
       queueMicrotask(() => loadPending());
     } else if (!sessionLoading) {
       toast.error("Please log in as an administrator");
-      router.push("/login");
+      router.push(buildLoginHref());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user, sessionLoading, router]);

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -27,21 +27,58 @@ import { Badge } from "@/components/ui/badge";
 import { registerSchema, RegisterInput } from "@/lib/schemas/auth.schema";
 import { useLanguage } from "@/components/providers/language-provider";
 import { signUp, useSession, setStoredAuthToken } from "@/lib/auth-client";
+import { safeRedirectPath } from "@/lib/safe-redirect";
+import {
+  finishAuthNavigation,
+  roleBasedLandingPath,
+} from "@/lib/auth-redirect";
 import { cn } from "cn";
 
-export default function RegisterPage() {
+function RegisterFormContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useLanguage();
   const { data: session, isPending: isSessionPending } = useSession();
   const [showPassword, setShowPassword] = React.useState(false);
   const [accountType, setAccountType] = React.useState<"STUDENT" | "HELPER">("STUDENT");
   const [isLoading, setIsLoading] = React.useState(false);
+  // Set in the submit handler (an event, not an effect) so the session-change
+  // effect below never fights the post-sign-up navigation with a second one.
+  const [hasSubmitted, setHasSubmitted] = React.useState(false);
+
+  // Never trust `?redirect=` verbatim — same safety rules as the login page.
+  const rawRedirect = searchParams.get("redirect");
+  const redirectUrl = safeRedirectPath(rawRedirect);
+  // "Create an account" clicked from the login page must keep the original
+  // destination, so the visitor returns there after registering too.
+  const loginHref =
+    rawRedirect !== null
+      ? `/login?redirect=${encodeURIComponent(redirectUrl)}`
+      : "/login";
+
+  // Destination priority (handled by finishAuthNavigation): explicit
+  // `?redirect=` > role-aware landing. New HELPER signups without a redirect
+  // land on the vendor application flow.
+  //
+  // Two entry points, never both: an already-signed-in visitor is sent away by
+  // the effect below (replace); a fresh sign-up is completed by onSubmit (push)
+  // and the effect then stands down via `hasSubmitted`.
+  const completeAuth = React.useCallback(
+    (user: unknown, method: "push" | "replace") => {
+      const fallback =
+        accountType === "HELPER" && method === "push"
+          ? "/vendor/apply"
+          : roleBasedLandingPath(user);
+      finishAuthNavigation(router, { redirectParam: rawRedirect, fallback }, method);
+    },
+    [router, rawRedirect, accountType]
+  );
 
   React.useEffect(() => {
-    if (session?.user) {
-      router.replace("/dashboard");
+    if (session?.user && !hasSubmitted) {
+      completeAuth(session.user, "replace");
     }
-  }, [session, router]);
+  }, [session, hasSubmitted, completeAuth]);
 
   const {
     register,
@@ -85,6 +122,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
+    setHasSubmitted(true);
     try {
       const result = await signUp.email({
         email: data.email,
@@ -107,12 +145,7 @@ export default function RegisterPage() {
         description: `Welcome to KoreDao, ${result.data?.user?.name || data.name}!`,
       });
 
-      if (accountType === "HELPER") {
-        router.push("/vendor/apply");
-      } else {
-        router.push("/dashboard");
-      }
-      router.refresh();
+      completeAuth(result.data?.user, "push");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to connect to authentication server.";
       toast.error("Registration Error", {
@@ -349,12 +382,26 @@ export default function RegisterPage() {
 
           <CardFooter className="justify-center border-t border-border/40 py-4 text-xs text-muted-foreground">
             <span>{t.auth.alreadyHaveAccount}</span>
-            <Link href="/login" className="ml-1 font-semibold text-indigo-500 hover:underline">
+            <Link href={loginHref} className="ml-1 font-semibold text-indigo-500 hover:underline">
               {t.nav.login}
             </Link>
           </CardFooter>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+        </div>
+      }
+    >
+      <RegisterFormContent />
+    </React.Suspense>
   );
 }

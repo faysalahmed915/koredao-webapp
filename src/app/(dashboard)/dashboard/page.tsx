@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   GraduationCap,
   Sparkles,
@@ -42,25 +41,23 @@ import { MemberDashboardView } from "@/components/dashboard/member-dashboard";
 import { cn } from "cn";
 
 export default function DashboardPage() {
-  const router = useRouter();
   const { data: session, isPending: sessionLoading } = useSession();
   const [metrics, setMetrics] = React.useState<DashboardResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
+  // Auth redirect is handled once by the (dashboard) layout guard — this page
+  // only fetches once a session is confirmed. (The guard also prevents this
+  // component from rendering at all when signed out, so the early return is
+  // just belt-and-braces for session expiry between renders.)
   React.useEffect(() => {
-    if (!sessionLoading && !session?.user) {
-      router.push("/login?redirect=/dashboard");
-      return;
-    }
+    if (!session?.user) return;
 
-    if (session?.user) {
-      fetchDashboardMetrics()
-        .then((data) => setMetrics(data))
-        .catch((err) => setError(err.message || "Failed to load dashboard data"))
-        .finally(() => setLoading(false));
-    }
-  }, [session, sessionLoading, router]);
+    fetchDashboardMetrics()
+      .then((data) => setMetrics(data))
+      .catch((err) => setError(err.message || "Failed to load dashboard data"))
+      .finally(() => setLoading(false));
+  }, [session]);
 
   if (sessionLoading || loading) {
     return (

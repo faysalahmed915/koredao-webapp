@@ -33,6 +33,7 @@ import {
   Assignment,
   Bid,
 } from "@/lib/assignments-api";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function AssignmentDetailPage() {
   const params = useParams();
@@ -82,7 +83,7 @@ export default function AssignmentDetailPage() {
 
     if (!session?.user) {
       toast.error("Please log in to submit a proposal");
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
 

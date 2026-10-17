@@ -27,24 +27,55 @@ import { loginSchema, LoginInput } from "@/lib/schemas/auth.schema";
 import { useLanguage } from "@/components/providers/language-provider";
 import { signIn, useSession, setStoredAuthToken } from "@/lib/auth-client";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import {
+  finishAuthNavigation,
+  roleBasedLandingPath,
+} from "@/lib/auth-redirect";
 
 function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   // Never trust `?redirect=` verbatim: an absolute or protocol-relative URL would
   // turn the login page into an open redirect (and `/login` itself into a loop).
-  const redirectUrl = safeRedirectPath(searchParams.get("redirect"));
+  const rawRedirect = searchParams.get("redirect");
+  const redirectUrl = safeRedirectPath(rawRedirect);
+  // "Create an account" clicked here must keep the original destination, so the
+  // visitor returns there after registering too.
+  const registerHref =
+    rawRedirect !== null
+      ? `/register?redirect=${encodeURIComponent(redirectUrl)}`
+      : "/register";
 
   const { t } = useLanguage();
   const { data: session, isPending: isSessionPending } = useSession();
   const [showPassword, setShowPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  // Set in the submit handler (an event, not an effect) so the session-change
+  // effect below never fights the post-sign-in navigation with a second one.
+  const [hasSubmitted, setHasSubmitted] = React.useState(false);
+
+  // Destination priority (handled by finishAuthNavigation): explicit
+  // `?redirect=` > role-aware landing.
+  //
+  // Two entry points, never both: a visitor who is already signed in is sent
+  // away by the effect below (replace); a fresh sign-in is completed by
+  // onSubmit (push) and the effect then stands down via `hasSubmitted`.
+  const completeAuth = React.useCallback(
+    (user: unknown, method: "push" | "replace") => {
+      finishAuthNavigation(
+        router,
+        { redirectParam: rawRedirect, fallback: roleBasedLandingPath(user) },
+        method
+      );
+    },
+    [router, rawRedirect]
+  );
 
   React.useEffect(() => {
-    if (session?.user) {
-      router.replace(redirectUrl);
+    if (session?.user && !hasSubmitted) {
+      completeAuth(session.user, "replace");
     }
-  }, [session, router, redirectUrl]);
+  }, [session, hasSubmitted, completeAuth]);
 
   const {
     register,
@@ -62,6 +93,7 @@ function LoginFormContent() {
 
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
+    setHasSubmitted(true);
     try {
       const result = await signIn.email({
         email: data.email,
@@ -83,8 +115,7 @@ function LoginFormContent() {
       toast.success("Welcome back!", {
         description: `Signed in as ${result.data?.user?.name || data.email}`,
       });
-      router.push(redirectUrl);
-      router.refresh();
+      completeAuth(result.data?.user, "push");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to connect to backend authentication service.";
       toast.error("Authentication Error", {
@@ -284,7 +315,7 @@ function LoginFormContent() {
 
           <CardFooter className="justify-center border-t border-border/40 py-4 text-xs text-muted-foreground">
             <span>{t.auth.dontHaveAccount}</span>
-            <Link href="/register" className="ml-1 font-semibold text-indigo-500 hover:underline">
+            <Link href={registerHref} className="ml-1 font-semibold text-indigo-500 hover:underline">
               {t.nav.register}
             </Link>
           </CardFooter>

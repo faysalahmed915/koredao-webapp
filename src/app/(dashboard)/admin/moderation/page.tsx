@@ -25,6 +25,7 @@ import {
   type ModerationConversation,
   type ChatMessage,
 } from "@/lib/chat-api";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function AdminModerationPage() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function AdminModerationPage() {
   React.useEffect(() => {
     if (sessionLoading) return;
     if (!session?.user) {
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
     if (!isStaff) {
