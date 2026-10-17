@@ -88,7 +88,7 @@ export default function MessagesInboxPage() {
             Direct communications and project workspace conversations require signing in.
           </p>
           <Link
-            href="/login"
+            href="/login?redirect=/messages"
             className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md shadow-indigo-500/20 transition-all"
           >
             Sign In Now

@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchPublicVendorProfile, VendorProfile } from "@/lib/profiles-api";
 import { getOrCreateConversation } from "@/lib/chat-api";
 import { useSession } from "@/lib/auth-client";
+import { buildLoginHref } from "@/lib/auth-redirect";
 import { toast } from "sonner";
 
 export default function HelperDetailPage() {
@@ -48,7 +49,7 @@ export default function HelperDetailPage() {
     if (!vendor) return;
     if (!session?.user) {
       toast.error("Please sign in to contact this helper.");
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
     setIsContacting(true);

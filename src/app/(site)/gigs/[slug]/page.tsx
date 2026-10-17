@@ -28,6 +28,7 @@ import { fetchGigBySlug, Gig, GigPackage } from "@/lib/gigs-api";
 import { createOrder } from "@/lib/orders-api";
 import { getOrCreateConversation } from "@/lib/chat-api";
 import { useSession } from "@/lib/auth-client";
+import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function GigDetailPage() {
   const params = useParams();
@@ -84,7 +85,7 @@ export default function GigDetailPage() {
     if (!gig || !selectedPackage) return;
     if (!session?.user) {
       toast.error("Please sign in as a student to order this service.");
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
     setIsOrdering(true);
@@ -103,7 +104,7 @@ export default function GigDetailPage() {
     if (!gig?.vendorProfile?.id) return;
     if (!session?.user) {
       toast.error("Please sign in to message the helper.");
-      router.push("/login");
+      router.push(buildLoginHref());
       return;
     }
     setIsMessaging(true);
