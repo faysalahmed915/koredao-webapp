@@ -1,7 +1,10 @@
 import { getStoredAuthToken } from "./auth-client";
 
 export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api/v1";
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://koredao-server.onrender.com/api/v1"
+    : "http://localhost:3000/api/v1");
 
 /**
  * Constructs unified request headers for backend API requests.

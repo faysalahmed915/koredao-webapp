@@ -38,8 +38,20 @@ export function setStoredAuthToken(token: string | null): void {
   }
 }
 
+export function getAuthBaseUrl(): string | undefined {
+  if (process.env.NEXT_PUBLIC_AUTH_URL) {
+    return process.env.NEXT_PUBLIC_AUTH_URL.replace(/\/+$/, "");
+  }
+  if (typeof window !== "undefined" && window.location) {
+    return window.location.origin;
+  }
+  return process.env.NODE_ENV === "production"
+    ? "https://koredao-server.onrender.com"
+    : undefined;
+}
+
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_AUTH_URL,
+  baseURL: getAuthBaseUrl(),
   fetchOptions: {
     credentials: "include",
     auth: {

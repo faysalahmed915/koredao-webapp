@@ -131,6 +131,7 @@ function RegisterFormContent() {
       });
 
       if (result?.error) {
+        setHasSubmitted(false);
         toast.error("Registration failed", {
           description: result.error.message || "Failed to create account. Email may already be registered.",
         });
@@ -147,6 +148,7 @@ function RegisterFormContent() {
 
       completeAuth(result.data?.user, "push");
     } catch (err: unknown) {
+      setHasSubmitted(false);
       const message = err instanceof Error ? err.message : "Failed to connect to authentication server.";
       toast.error("Registration Error", {
         description: message,
@@ -155,14 +157,6 @@ function RegisterFormContent() {
       setIsLoading(false);
     }
   };
-
-  if (isSessionPending) {
-    return (
-      <div className="container mx-auto flex min-h-[calc(100vh-8rem)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-      </div>
-    );
-  }
 
   if (session?.user) {
     return (
