@@ -10,6 +10,8 @@ const envSchema = z.object({
   ),
   NEXT_PUBLIC_BACKEND_URL: z.string().url().default("http://localhost:3000/api/v1"),
   NEXT_PUBLIC_AUTH_URL: z.string().url().default("http://localhost:3000"),
+  // Socket.io origin for real-time chat — direct backend, NOT the Next proxy.
+  NEXT_PUBLIC_WS_URL: z.string().url().default("http://localhost:3000"),
 });
 
 export const env = envSchema.parse({
@@ -20,4 +22,5 @@ export const env = envSchema.parse({
   NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
   NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
   NEXT_PUBLIC_AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
+  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
 });

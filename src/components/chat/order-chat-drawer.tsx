@@ -24,6 +24,7 @@ import {
   fetchMessages,
   sendChatMessage,
   markConversationRead,
+  getChatSocketBaseUrl,
   type ChatMessage,
   type Conversation,
 } from "@/lib/chat-api";
@@ -164,9 +165,11 @@ export function OrderChatDrawer({
       ? conversation.vendorProfile?.userId
       : conversation.customerId;
 
-    const wsUrl = process.env.NEXT_PUBLIC_BACKEND_URL
-      ? process.env.NEXT_PUBLIC_BACKEND_URL.replace("/api/v1", "")
-      : "http://localhost:3000";
+    // Socket.io MUST connect directly to the NestJS backend (`/chat`
+    // namespace) — Next.js rewrites cannot proxy WebSocket upgrades.
+    // getChatSocketBaseUrl() resolves this production-safely:
+    // explicit NEXT_PUBLIC_WS_URL > direct BACKEND origin > env default.
+    const wsUrl = getChatSocketBaseUrl();
 
     const socket = io(`${wsUrl}/chat`, {
       transports: ["websocket", "polling"],

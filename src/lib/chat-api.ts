@@ -58,13 +58,62 @@ export interface Conversation {
 }
 
 import { BACKEND_URL, getApiHeaders } from "./api-client";
-const NEXT_PUBLIC_BACKEND_URL = BACKEND_URL;
+
+// REST base URL (may be the same-origin Next.js proxy — fine for fetch,
+// but NEVER for WebSockets; use getChatSocketBaseUrl() for socket.io).
+const REST_BASE_URL = BACKEND_URL;
+
+/**
+ * Resolves the Socket.io origin for real-time chat (`/chat` namespace).
+ *
+ * REST goes through the Next.js same-origin proxy (`:3001/api/v1` -> `:3000`),
+ * but WebSocket upgrades CANNOT be proxied by Next.js rewrites — the browser
+ * must connect directly to the NestJS backend that hosts the ChatGateway.
+ *
+ * Resolution order (production-safe):
+ *  1. Explicit override `NEXT_PUBLIC_WS_URL` (e.g. Render URL in prod).
+ *  2. Origin of `REST_BASE_URL` when it points at a DIFFERENT
+ *     origin than the webapp (direct-backend deployments).
+ *  3. Proxy fallback — `REST_BASE_URL` is same-origin as the
+ *     webapp, so fall back to the known backend defaults:
+ *       dev  -> http://localhost:3000
+ *       prod -> https://koredao-server.onrender.com
+ */
+export function getChatSocketBaseUrl(): string {
+  const trimTrailing = (u: string) => u.replace(/\/+$/, "");
+
+  const explicit = process.env.NEXT_PUBLIC_WS_URL?.trim();
+  if (explicit) return trimTrailing(explicit);
+
+  const backend = (BACKEND_URL || "").trim();
+
+  try {
+    if (backend) {
+      const backendOrigin = new URL(backend).origin;
+      if (
+        typeof window !== "undefined" &&
+        window.location?.origin &&
+        backendOrigin === window.location.origin
+      ) {
+        // Same-origin proxy — cannot use it for WebSockets.
+      } else {
+        return backendOrigin;
+      }
+    }
+  } catch {
+    // Fall through to defaults below.
+  }
+
+  return process.env.NODE_ENV === "production"
+    ? "https://koredao-server.onrender.com"
+    : "http://localhost:3000";
+}
 
 export async function getOrCreateConversation(payload: {
   orderId?: string;
   vendorProfileId?: string;
 }): Promise<Conversation> {
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations`, {
+  const res = await fetch(`${REST_BASE_URL}/chat/conversations`, {
     method: "POST",
     headers: getApiHeaders(),
     credentials: "include",
@@ -80,7 +129,7 @@ export async function getOrCreateConversation(payload: {
 }
 
 export async function fetchMyConversations(): Promise<Conversation[]> {
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/me`, {
+  const res = await fetch(`${REST_BASE_URL}/chat/conversations/me`, {
     method: "GET",
     headers: getApiHeaders(),
     credentials: "include",
@@ -95,7 +144,7 @@ export async function fetchMyConversations(): Promise<Conversation[]> {
 }
 
 export async function fetchMessages(conversationId: string): Promise<ChatMessage[]> {
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/${conversationId}/messages`, {
+  const res = await fetch(`${REST_BASE_URL}/chat/conversations/${conversationId}/messages`, {
     method: "GET",
     headers: getApiHeaders(),
     credentials: "include",
@@ -124,7 +173,7 @@ export async function fetchModerationConversations(params: {
   if (params.limit !== undefined) query.set("limit", String(params.limit));
 
   const res = await fetch(
-    `${NEXT_PUBLIC_BACKEND_URL}/chat/moderation/conversations?${query.toString()}`,
+    `${REST_BASE_URL}/chat/moderation/conversations?${query.toString()}`,
     {
       method: "GET",
       headers: getApiHeaders(),
@@ -144,7 +193,7 @@ export async function markConversationRead(
   conversationId: string,
 ): Promise<{ updatedCount: number; messageIds: string[] }> {
   const res = await fetch(
-    `${NEXT_PUBLIC_BACKEND_URL}/chat/conversations/${conversationId}/read`,
+    `${REST_BASE_URL}/chat/conversations/${conversationId}/read`,
     {
       method: "POST",
       headers: getApiHeaders(),
@@ -161,7 +210,7 @@ export async function markConversationRead(
 }
 
 export async function updatePresence(): Promise<{ userId: string; lastSeenAt: string }> {
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/presence`, {
+  const res = await fetch(`${REST_BASE_URL}/chat/presence`, {
     method: "POST",
     headers: getApiHeaders(),
     credentials: "include",
@@ -181,7 +230,7 @@ export async function sendChatMessage(payload: {
   attachments?: string[];
   checkpointId?: string;
 }): Promise<ChatMessage> {
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/chat/messages`, {
+  const res = await fetch(`${REST_BASE_URL}/chat/messages`, {
     method: "POST",
     headers: getApiHeaders(),
     credentials: "include",
@@ -195,3 +244,4 @@ export async function sendChatMessage(payload: {
 
   return envelope.data;
 }
+
