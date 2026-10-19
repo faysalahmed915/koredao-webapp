@@ -149,6 +149,17 @@ const CUSTOMER_NAVIGATION: DashboardNavSection[] = [
     ],
   },
   {
+    title: "Payments",
+    items: [
+      {
+        title: "Wallet & Transactions",
+        href: "/customer/wallet",
+        icon: Wallet,
+        description: "View your balance, payment history, refunds and transaction details.",
+      },
+    ],
+  },
+  {
     title: "Membership",
     items: [
       {
@@ -162,90 +173,6 @@ const CUSTOMER_NAVIGATION: DashboardNavSection[] = [
         href: "/vendor/apply",
         icon: BadgeCheck,
         description: "Get verified to bid on jobs and sell gigs.",
-      },
-    ],
-  },
-  accountSection(),
-];
-
-const MEMBER_NAVIGATION: DashboardNavSection[] = [
-  {
-    title: "Overview",
-    items: [
-      {
-        title: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-        exact: true,
-      },
-      {
-        title: "My Orders",
-        href: "/orders",
-        icon: Receipt,
-      },
-    ],
-  },
-  {
-    title: "Buy & Hire",
-    items: [
-      {
-        title: "Post a Job",
-        href: "/assignments/create",
-        icon: PlusCircle,
-        description: "Member perk — publish unlimited briefs.",
-      },
-      {
-        title: "Browse Services",
-        href: "/gigs",
-        icon: Compass,
-      },
-      {
-        title: "Handwriting Matcher",
-        href: "/handwriting-matcher",
-        icon: PenTool,
-      },
-    ],
-  },
-  {
-    title: "Work & Earn",
-    items: [
-      {
-        title: "Find Jobs",
-        href: "/assignments",
-        icon: Briefcase,
-        description: "Bid on open student requests.",
-        requiresVerifiedHelper: true,
-      },
-      {
-        title: "Create a Gig",
-        href: "/vendor/gigs/create",
-        icon: FileText,
-        description: "Publish service packages for students.",
-        requiresVerifiedHelper: true,
-      },
-      {
-        title: "Wallet & Payouts",
-        href: "/vendor/wallet",
-        icon: Wallet,
-        description: "Escrow balance and bKash/Nagad withdrawals.",
-        requiresVerifiedHelper: true,
-      },
-      {
-        title: "Become a Helper",
-        href: "/vendor/apply",
-        icon: BadgeCheck,
-        description: "Verification is required before you can bid.",
-      },
-    ],
-  },
-  {
-    title: "Membership",
-    items: [
-      {
-        title: "My Membership",
-        href: "/membership",
-        icon: Sparkles,
-        description: "Plan, billing period and renewal.",
       },
     ],
   },
@@ -318,6 +245,88 @@ const VENDOR_NAVIGATION: DashboardNavSection[] = [
   accountSection(),
 ];
 
+const MEMBER_NAVIGATION: DashboardNavSection[] = [
+  {
+    title: "Overview",
+    items: [
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        exact: true,
+      },
+      {
+        title: "My Orders",
+        href: "/orders",
+        icon: Receipt,
+      },
+    ],
+  },
+  {
+    title: "Buy & Hire",
+    items: [
+      {
+        title: "Post a Job",
+        href: "/assignments/create",
+        icon: PlusCircle,
+        description: "Member perk — publish unlimited briefs.",
+      },
+      {
+        title: "Browse Services",
+        href: "/gigs",
+        icon: Compass,
+      },
+      {
+        title: "Handwriting Matcher",
+        href: "/handwriting-matcher",
+        icon: PenTool,
+      },
+    ],
+  },
+  {
+    title: "Work & Earn",
+    items: [
+      {
+        title: "Find Jobs",
+        href: "/assignments",
+        icon: Briefcase,
+        description: "Bid on open student requests.",
+        requiresVerifiedHelper: true,
+      },
+      {
+        title: "Create a Gig",
+        href: "/vendor/gigs/create",
+        icon: FileText,
+        description: "Publish service packages for students.",
+        requiresVerifiedHelper: true,
+      }
+    ],
+  },
+  {
+    title: "Wallet & Transactions",
+    items: [
+      {
+        title: "My Wallet",
+        href: "/member/wallet",
+        icon: Wallet,
+        description: "Manage your earnings, purchases, refunds and transaction history.",
+      },
+    ],
+  },
+  {
+    title: "Membership",
+    items: [
+      {
+        title: "My Membership",
+        href: "/membership",
+        icon: Sparkles,
+        description: "Plan, billing period and renewal.",
+      },
+    ],
+  },
+  accountSection(),
+];
+
 const MODERATOR_NAVIGATION: DashboardNavSection[] = [
   {
     title: "Overview",
@@ -327,12 +336,13 @@ const MODERATOR_NAVIGATION: DashboardNavSection[] = [
         href: "/dashboard",
         icon: Gauge,
         exact: true,
-        description: "Trust & safety telemetry.",
+        description: "Monitor moderation activity and trust & safety metrics.",
       },
       {
         title: "My Orders",
         href: "/orders",
         icon: Receipt,
+        description: "Track your orders and project progress.",
       },
     ],
   },
@@ -343,13 +353,13 @@ const MODERATOR_NAVIGATION: DashboardNavSection[] = [
         title: "Moderation Queue",
         href: "/admin/moderation",
         icon: Gavel,
-        description: "Reported conversations and disputes.",
+        description: "Review reported content, conversations and disputes.",
       },
       {
         title: "Helper Verifications",
         href: "/admin/verifications",
         icon: ClipboardCheck,
-        description: "Review academic ID and handwriting evidence.",
+        description: "Review helper applications and verification evidence.",
       },
     ],
   },
@@ -365,12 +375,13 @@ const ADMIN_NAVIGATION: DashboardNavSection[] = [
         href: "/dashboard",
         icon: Gauge,
         exact: true,
-        description: "Platform telemetry, GMV and escrow health.",
+        description: "Monitor platform performance, GMV and escrow health.",
       },
       {
         title: "My Orders",
         href: "/orders",
         icon: Receipt,
+        description: "Track your orders and project progress.",
       },
     ],
   },
@@ -387,30 +398,92 @@ const ADMIN_NAVIGATION: DashboardNavSection[] = [
         title: "Moderation Queue",
         href: "/admin/moderation",
         icon: ShieldCheck,
-        description: "Disputes and zero-leakage safety alerts.",
+        description: "Manage disputes, reports and platform safety incidents.",
       },
       {
         title: "Membership Plans",
         href: "/membership",
         icon: Handshake,
-        description: "Public pricing table and plan catalogue.",
+        description: "Manage membership plans, pricing and benefits.",
       },
     ],
   },
   {
-    title: "Insights",
+    title: "Finance & Support",
     items: [
       {
         title: "Payouts & Ledger",
-        href: "/vendor/wallet",
+        href: "/admin/wallet",
         icon: Banknote,
-        description: "Wallet transactions across the platform.",
+        description: "Review platform-wide wallet transactions and payouts.",
       },
       {
         title: "Support Desk",
         href: "/contact",
         icon: LifeBuoy,
-        description: "Escalation channel for platform issues.",
+        description: "Handle escalations and platform support issues.",
+      },
+    ],
+  },
+  accountSection(),
+];
+
+const SUPER_ADMIN_NAVIGATION: DashboardNavSection[] = [
+  {
+    title: "Command Centre",
+    items: [
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: Gauge,
+        exact: true,
+        description: "Oversee platform performance, GMV and escrow health.",
+      },
+      {
+        title: "My Orders",
+        href: "/orders",
+        icon: Receipt,
+        description: "Track your orders and project progress.",
+      },
+    ],
+  },
+  {
+    title: "Platform Management",
+    items: [
+      {
+        title: "Helper Verifications",
+        href: "/admin/verifications",
+        icon: UserCheck,
+        description: "Oversee helper applications and verification decisions.",
+      },
+      {
+        title: "Moderation Queue",
+        href: "/admin/moderation",
+        icon: ShieldCheck,
+        description: "Oversee disputes, reports and platform safety incidents.",
+      },
+      {
+        title: "Membership Plans",
+        href: "/membership",
+        icon: Handshake,
+        description: "Manage membership plans, pricing and benefits.",
+      },
+    ],
+  },
+  {
+    title: "Finance & Support",
+    items: [
+      {
+        title: "Payouts & Ledger",
+        href: "/admin/wallet",
+        icon: Banknote,
+        description: "Audit platform-wide transactions, escrow and payouts.",
+      },
+      {
+        title: "Support Desk",
+        href: "/contact",
+        icon: LifeBuoy,
+        description: "Oversee escalations and platform support operations.",
       },
     ],
   },
@@ -418,7 +491,7 @@ const ADMIN_NAVIGATION: DashboardNavSection[] = [
 ];
 
 export const DASHBOARD_NAVIGATION: Record<UserRole, DashboardNavSection[]> = {
-  [UserRole.SUPER_ADMIN]: ADMIN_NAVIGATION,
+  [UserRole.SUPER_ADMIN]: SUPER_ADMIN_NAVIGATION,
   [UserRole.ADMIN]: ADMIN_NAVIGATION,
   [UserRole.MODERATOR]: MODERATOR_NAVIGATION,
   [UserRole.VENDOR]: VENDOR_NAVIGATION,

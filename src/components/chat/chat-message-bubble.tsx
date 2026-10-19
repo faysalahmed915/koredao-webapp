@@ -32,11 +32,10 @@ export default function ChatMessageBubble({
       className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
     >
       <div
-        className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed space-y-1 ${
-          isMe
+        className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed space-y-1 ${isMe
             ? "bg-indigo-600 text-white rounded-br-none shadow-sm shadow-indigo-600/20"
             : "bg-muted text-foreground rounded-bl-none border border-border/50"
-        }`}
+          }`}
       >
         {!isMe && (
           <span className="block font-bold text-[10px] text-indigo-500 dark:text-indigo-400">
@@ -54,11 +53,10 @@ export default function ChatMessageBubble({
                 href={att}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
-                  isMe
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${isMe
                     ? "bg-white/15 text-white hover:bg-white/25"
                     : "bg-background text-indigo-600 dark:text-indigo-400 border border-border/60 hover:bg-accent"
-                }`}
+                  }`}
               >
                 <span>View Attachment #{aIdx + 1}</span>
                 <ExternalLink className="h-3 w-3" />
@@ -70,11 +68,10 @@ export default function ChatMessageBubble({
         {msg.checkpoint && (
           <a
             href={orderId ? `/orders/${orderId}` : "#"}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all border ${
-              isMe
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all border ${isMe
                 ? "bg-white/15 text-white border-white/20 hover:bg-white/25"
                 : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/20"
-            }`}
+              }`}
           >
             <Target className="h-3 w-3 shrink-0" />
             <span className="truncate max-w-[180px]">
@@ -94,9 +91,8 @@ export default function ChatMessageBubble({
         )}
 
         <div
-          className={`flex items-center justify-end gap-1 text-[9px] pt-1 ${
-            isMe ? "text-indigo-200" : "text-muted-foreground"
-          }`}
+          className={`flex items-center justify-end gap-1 text-[9px] pt-1 ${isMe ? "text-indigo-200" : "text-muted-foreground"
+            }`}
         >
           <span>
             {new Date(msg.createdAt).toLocaleTimeString([], {

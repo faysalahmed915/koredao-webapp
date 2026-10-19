@@ -55,7 +55,7 @@ export default function GigsMarketplacePage() {
         sortBy,
       });
 
-      console.log("data", data)
+      // console.log("data", data)
       setGigs(data.items);
       setTotal(data.total);
     } catch {
@@ -100,8 +100,8 @@ export default function GigsMarketplacePage() {
               type="button"
               onClick={() => setCategory(cat.value)}
               className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all ${isSelected
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
-                  : "border border-border/60 bg-card text-muted-foreground hover:border-indigo-500/30 hover:text-foreground"
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
+                : "border border-border/60 bg-card text-muted-foreground hover:border-indigo-500/30 hover:text-foreground"
                 }`}
             >
               {Icon && <Icon className="h-3.5 w-3.5" />}
@@ -161,8 +161,8 @@ export default function GigsMarketplacePage() {
                 setRequiresHardcopy((prev) => (prev === true ? undefined : true))
               }
               className={`rounded-full px-3 py-1 font-medium transition-colors ${requiresHardcopy === true
-                  ? "bg-purple-600 text-white"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
+                ? "bg-purple-600 text-white"
+                : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
             >
               <PenTool className="inline-block mr-1 h-3 w-3" /> Handwritten Hardcopy Available

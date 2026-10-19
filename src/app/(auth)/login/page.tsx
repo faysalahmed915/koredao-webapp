@@ -201,6 +201,14 @@ function LoginFormContent() {
             </button>
             <button
               type="button"
+              onClick={() => fillDemoAccount("shakil.sust@koredao.com")}
+              className="px-2 py-1.5 rounded-lg border border-border/60 bg-background/80 hover:border-emerald-500/60 text-[11px] font-semibold text-foreground transition-all hover:shadow-sm text-left cursor-pointer"
+            >
+              <span className="block text-[10px] text-emerald-500">🎓 Moderator</span>
+              <span className="truncate block font-mono">Shakil (Moderator)</span>
+            </button>
+            <button
+              type="button"
               onClick={() => fillDemoAccount("admin@koredao.com")}
               className="px-2 py-1.5 rounded-lg border border-border/60 bg-background/80 hover:border-rose-500/60 text-[11px] font-semibold text-foreground transition-all hover:shadow-sm text-left cursor-pointer"
             >

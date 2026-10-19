@@ -134,7 +134,7 @@ export default function MessagesInboxPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background/95 to-muted/20 py-8">
-      <div className="container mx-auto px-4 sm:px-8 max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-8">
         {/* Header Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mb-4">
           <Link href="/" className="hover:text-foreground">Home</Link>
