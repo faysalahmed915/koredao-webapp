@@ -23,8 +23,8 @@ import {
   fetchModerationConversations,
   fetchMessages,
   type ModerationConversation,
-  type ChatMessage,
 } from "@/lib/chat-api";
+import type { ChatMessage } from "@/types/chat/chat-types";
 import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function AdminModerationPage() {
@@ -74,8 +74,8 @@ export default function AdminModerationPage() {
     setSelected(conv);
     setMessagesLoading(true);
     try {
-      const msgs = await fetchMessages(conv.id);
-      setMessages(msgs);
+      const page = await fetchMessages(conv.id);
+      setMessages(page.messages);
     } catch (err: any) {
       toast.error(err?.message || "Failed to load transcript");
     } finally {
@@ -240,7 +240,7 @@ function TranscriptPanel({
                 <p className="mt-1 text-sm whitespace-pre-wrap break-words">{m.content}</p>
                 {m.attachments?.length > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1">
-                    {m.attachments.map((a, i) => (
+                    {m.attachments.map((a: string, i: number) => (
                       <a
                         key={i}
                         href={a}
