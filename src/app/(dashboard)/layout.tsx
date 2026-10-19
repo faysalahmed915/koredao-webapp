@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard/dashboard-shell";
 import { useSession } from "@/lib/auth-client";
 import { buildLoginHref } from "@/lib/auth-redirect";
+import { ChatSocketProvider } from "@/components/chat/socket-provider";
 
 /**
  * Authenticated workspace shell.
@@ -48,5 +49,9 @@ export default function DashboardLayout({
     );
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <ChatSocketProvider userId={session?.user?.id ?? null}>
+      <DashboardShell>{children}</DashboardShell>
+    </ChatSocketProvider>
+  );
 }

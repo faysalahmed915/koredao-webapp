@@ -1,62 +1,4 @@
-export interface ChatCheckpointTarget {
-  id: string;
-  title: string;
-  targetDate?: string;
-  status: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  sender: {
-    id: string;
-    name: string;
-    image?: string;
-  };
-  content: string;
-  attachments: string[];
-  checkpoint?: ChatCheckpointTarget | null;
-  hasSafetyWarning: boolean;
-  safetyWarningNote?: string;
-  isRead: boolean;
-  createdAt: string;
-}
-
-export interface Conversation {
-  id: string;
-  orderId?: string;
-  customerId: string;
-  vendorProfileId: string;
-  lastMessageAt: string;
-  customer?: {
-    id: string;
-    name: string;
-    image?: string;
-    email?: string;
-    lastSeenAt?: string;
-  };
-  vendorProfile?: {
-    id: string;
-    userId: string;
-    university: string;
-    department: string;
-    user?: {
-      id: string;
-      name: string;
-      image?: string;
-      lastSeenAt?: string;
-    };
-  };
-  order?: {
-    id: string;
-    orderNumber: string;
-    title: string;
-    status: string;
-  };
-  messages?: ChatMessage[];
-}
-
+import { ChatMessage, Conversation } from "@/types/chat/chat-types";
 import { BACKEND_URL, getApiHeaders } from "./api-client";
 
 // REST base URL (may be the same-origin Next.js proxy — fine for fetch,
@@ -83,28 +25,42 @@ export function getChatSocketBaseUrl(): string {
   const trimTrailing = (u: string) => u.replace(/\/+$/, "");
 
   const explicit = process.env.NEXT_PUBLIC_WS_URL?.trim();
-  if (explicit) return trimTrailing(explicit);
+  const isProduction = process.env.NODE_ENV === "production";
+  if (explicit) {
+    const url = trimTrailing(explicit);
+    if (isProduction && url.startsWith("http://")) {
+      throw new Error(
+        `SECURITY: NEXT_PUBLIC_WS_URL must use https:// in production. Got: ${url}`
+      );
+    }
+    return url;
+  }
 
   const backend = (BACKEND_URL || "").trim();
 
-  try {
-    if (backend) {
+  if (backend) {
+    try {
       const backendOrigin = new URL(backend).origin;
       if (
         typeof window !== "undefined" &&
         window.location?.origin &&
         backendOrigin === window.location.origin
       ) {
-        // Same-origin proxy — cannot use it for WebSockets.
+        // Same-origin proxy — cannot use it for WebSockets. Fall through.
       } else {
+        if (isProduction && backendOrigin.startsWith("http://")) {
+          throw new Error(
+            `SECURITY: Backend URL must use https:// in production. Got: ${backendOrigin}`
+          );
+        }
         return backendOrigin;
       }
+    } catch {
+      // Invalid URL — fall through to defaults below.
     }
-  } catch {
-    // Fall through to defaults below.
   }
 
-  return process.env.NODE_ENV === "production"
+  return isProduction
     ? "https://koredao-server.onrender.com"
     : "http://localhost:3000";
 }
@@ -143,8 +99,23 @@ export async function fetchMyConversations(): Promise<Conversation[]> {
   return envelope.data || [];
 }
 
-export async function fetchMessages(conversationId: string): Promise<ChatMessage[]> {
-  const res = await fetch(`${REST_BASE_URL}/chat/conversations/${conversationId}/messages`, {
+export interface MessagesPage {
+  messages: ChatMessage[];
+  hasMore: boolean;
+}
+
+export async function fetchMessages(
+  conversationId: string,
+  opts?: { before?: string; limit?: number }
+): Promise<MessagesPage> {
+  const query = new URLSearchParams();
+  if (opts?.before) query.set("before", opts.before);
+  if (opts?.limit) query.set("limit", String(opts.limit));
+
+  const url = `${REST_BASE_URL}/chat/conversations/${conversationId}/messages${query.toString() ? "?" + query.toString() : ""
+    }`;
+
+  const res = await fetch(url, {
     method: "GET",
     headers: getApiHeaders(),
     credentials: "include",
@@ -155,7 +126,16 @@ export async function fetchMessages(conversationId: string): Promise<ChatMessage
     throw new Error(envelope?.message || "Failed to fetch messages");
   }
 
-  return envelope.data || [];
+  const data = envelope?.data;
+  // Backward-compatible: if the API still returns a plain array (not yet
+  // paginated on the backend), wrap it defensively.
+  if (Array.isArray(data)) {
+    return { messages: data, hasMore: false };
+  }
+  return {
+    messages: data?.messages || [],
+    hasMore: data?.hasMore ?? false,
+  };
 }
 
 export interface ModerationConversation extends Conversation {
@@ -229,6 +209,7 @@ export async function sendChatMessage(payload: {
   content: string;
   attachments?: string[];
   checkpointId?: string;
+  clientTempId?: string;
 }): Promise<ChatMessage> {
   const res = await fetch(`${REST_BASE_URL}/chat/messages`, {
     method: "POST",

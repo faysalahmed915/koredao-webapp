@@ -12,7 +12,8 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import { fetchMyConversations, type Conversation } from "@/lib/chat-api";
+import { fetchMyConversations } from "@/lib/chat-api";
+import { Conversation } from "@/types/chat/chat-types";
 import { OrderChatDrawer } from "@/components/chat/order-chat-drawer";
 
 export default function MessagesInboxPage() {
@@ -30,6 +31,9 @@ export default function MessagesInboxPage() {
   const sessionUserId = session?.user?.id;
 
   const hasLoadedRef = React.useRef(false);
+  // Log on component render: shows the current `conversations` state (initially []).
+  // This runs on EVERY render, so it reflects whatever state is currently active.
+  // console.log("conversations fetch before useEffect", conversations);
 
   // The list is fetched ONCE per signed-in session (keyed on the stable id).
   // Selecting a conversation or a background session refetch never re-runs this,
@@ -44,8 +48,23 @@ export default function MessagesInboxPage() {
         const data = await fetchMyConversations();
         if (!isMounted) return;
         setConversations(data);
-        // Auto-select the first conversation only on the very first load.
+
+        // Auto-select the first conversation ONLY on the very first load.
+        // `prev` is null initially, so we pick the first item from the fetched
+        // list if the API returned any conversations.
         setSelectedConv((prev) => prev ?? (data.length > 0 ? data[0] : null));
+
+        // IMPORTANT: log the `data` (fetched result) instead of the stale
+        // `conversations` closure variable. The `conversations` variable still
+        // holds the OLD state (`[]` or previously selected item) at this point
+        // because `setConversations()` is asynchronous and hasn't triggered a
+        // re-render yet.
+        // console.log(
+        //   "conversations fetch after useEffect",
+        //   data,
+        //   "instance count:",
+        //   data?.length
+        // );
       } catch {
         // Failed to load — leave existing state intact.
       } finally {
@@ -181,11 +200,10 @@ export default function MessagesInboxPage() {
                       key={conv.id}
                       type="button"
                       onClick={() => setSelectedConv(conv)}
-                      className={`w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 ${
-                        isSelected
-                          ? "border-indigo-500 bg-indigo-500/10 shadow-sm"
-                          : "border-border/40 hover:bg-accent/40"
-                      }`}
+                      className={`w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 ${isSelected
+                        ? "border-indigo-500 bg-indigo-500/10 shadow-sm"
+                        : "border-border/40 hover:bg-accent/40"
+                        }`}
                     >
                       <div className="h-9 w-9 rounded-full bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                         {otherName.charAt(0).toUpperCase()}
@@ -256,8 +274,11 @@ export default function MessagesInboxPage() {
                 )}
 
                 <OrderChatDrawer
-                  orderId={selectedConv.orderId}
-                  vendorProfileId={selectedConv.vendorProfileId}
+                  key={selectedConv.id}
+                  conversationId={selectedConv.id}
+                  initialConversation={selectedConv}
+                  orderId={selectedConv.orderId ?? selectedConv.order?.id}
+                  vendorProfileId={selectedConv.vendorProfileId ?? selectedConv.vendorProfile?.id}
                   currentUserId={currentUserId}
                   currentUserName={currentUserName}
                   otherPartyName={
