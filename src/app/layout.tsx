@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Fraunces, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Fraunces, Geist_Mono, Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LanguageProvider } from "@/components/providers/language-provider";
 import { MembershipProvider } from "@/components/providers/membership-provider";
@@ -7,22 +7,43 @@ import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-sans",
+// const plusJakartaSans = Plus_Jakarta_Sans({
+//   variable: "--font-sans",
+//   subsets: ["latin"],
+//   display: "swap",
+//   weight: ["300", "400", "500", "600", "700", "800"],
+// });
+
+// const fraunces = Fraunces({
+//   variable: "--font-serif",
+//   subsets: ["latin"],
+//   display: "swap",
+//   weight: ["400", "500", "600", "700"],
+// });
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-mono",
+//   subsets: ["latin"],
+//   display: "swap",
+// });
+
+
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const fraunces = Fraunces({
-  variable: "--font-serif",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-mono",
+  variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
 });
@@ -110,7 +131,8 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${fraunces.variable} ${geistMono.variable}`}
+      // className={`${plusJakartaSans.variable} ${fraunces.variable} ${geistMono.variable}`}
+      className={`${hankenGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-emerald-500/20 selection:text-emerald-950 dark:selection:bg-emerald-500/30 dark:selection:text-emerald-100">
         <ThemeProvider

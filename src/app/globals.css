@@ -91,188 +91,228 @@
   --color-pink-800: var(--pink-800);
   --color-pink-900: var(--pink-900);
   --color-pink-950: var(--pink-950);
+
+  --color-section-dark: var(--section-dark);
+  --color-section-dark-foreground: var(--section-dark-foreground);
+
+
+
+  --font-sans: var(--font-hanken), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, "Times New Roman", serif;
+  --font-heading: var(--font-instrument), Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 :root {
-  /* ==========================================================================
-     LIGHT MOOD: Upwork Signature Aesthetics
-     Clean warm-off-white canvas, trustworthy green accents, soft neutral cards
-     ========================================================================== */
-  --background: oklch(0.995 0.003 140);
-  --foreground: oklch(0.185 0.015 145);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.185 0.015 145);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.185 0.015 145);
-  --primary: oklch(0.535 0.19 142.5);
-  /* Upwork Primary Green #14a800 */
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.965 0.012 142);
-  --secondary-foreground: oklch(0.19 0.02 145);
-  --muted: oklch(0.968 0.008 140);
-  --muted-foreground: oklch(0.48 0.018 140);
-  --accent: oklch(0.955 0.028 142);
-  --accent-foreground: oklch(0.18 0.025 142);
-  --destructive: oklch(0.58 0.22 28);
-  --border: oklch(0.915 0.008 140);
-  --input: oklch(0.915 0.008 140);
-  --ring: oklch(0.535 0.19 142.5);
-  --radius: 0.75rem;
+  /* LIGHT: buttercream + plum ink + persimmon */
+  --background: oklch(0.982 0.012 85);
+  --foreground: oklch(0.22 0.04 340);
+  --card: oklch(0.995 0.005 85);
+  --card-foreground: oklch(0.22 0.04 340);
+  --popover: oklch(0.995 0.005 85);
+  --popover-foreground: oklch(0.22 0.04 340);
+  --primary: oklch(0.58 0.18 35);
+  --primary-foreground: oklch(0.99 0.008 85);
+  --secondary: oklch(0.95 0.03 95);
+  --secondary-foreground: oklch(0.28 0.05 340);
+  --muted: oklch(0.955 0.015 85);
+  --muted-foreground: oklch(0.5 0.04 340);
+  --accent: oklch(0.94 0.035 25);
+  --accent-foreground: oklch(0.32 0.1 30);
+  --highlight: oklch(0.82 0.15 88);
+  --highlight-foreground: oklch(0.28 0.06 80);
+  --destructive: oklch(0.52 0.2 25);
+  --border: oklch(0.91 0.02 70);
+  --input: oklch(0.91 0.02 70);
+  --ring: oklch(0.58 0.18 35);
+  --radius: 1rem;
 
-  --sidebar: oklch(0.99 0.005 140);
-  --sidebar-foreground: oklch(0.185 0.015 145);
-  --sidebar-primary: oklch(0.535 0.19 142.5);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.955 0.028 142);
-  --sidebar-accent-foreground: oklch(0.18 0.025 142);
-  --sidebar-border: oklch(0.915 0.008 140);
-  --sidebar-ring: oklch(0.535 0.19 142.5);
+  --sidebar: oklch(0.968 0.016 85);
+  --sidebar-foreground: oklch(0.22 0.04 340);
+  --sidebar-primary: oklch(0.58 0.18 35);
+  --sidebar-primary-foreground: oklch(0.99 0.008 85);
+  --sidebar-accent: oklch(0.94 0.035 25);
+  --sidebar-accent-foreground: oklch(0.32 0.1 30);
+  --sidebar-border: oklch(0.91 0.02 70);
+  --sidebar-ring: oklch(0.58 0.18 35);
 
-  --chart-1: oklch(0.535 0.19 142.5);
-  --chart-2: oklch(0.45 0.12 180);
-  --chart-3: oklch(0.65 0.17 75);
-  --chart-4: oklch(0.70 0.18 135);
-  --chart-5: oklch(0.35 0.08 150);
+  --chart-1: oklch(0.58 0.18 35);
+  /* persimmon */
+  --chart-2: oklch(0.4 0.09 340);
+  /* plum */
+  --chart-3: oklch(0.82 0.15 88);
+  /* butter */
+  --chart-4: oklch(0.65 0.09 160);
+  /* sage */
+  --chart-5: oklch(0.7 0.1 15);
+  /* blush */
 
-  /* Light Mood: Upwork Signature Green scale */
-  --indigo-50: #f2fcf4;
-  --indigo-100: #e2f8e7;
-  --indigo-200: #c4eed0;
-  --indigo-300: #93dead;
-  --indigo-400: #55c87a;
-  --indigo-500: #1eb547;
-  --indigo-600: #14a800;
-  /* Upwork Green */
-  --indigo-700: #108a00;
-  --indigo-800: #0f6c03;
-  --indigo-900: #0d5607;
-  --indigo-950: #042e05;
+  /* Scales (names kept for compatibility): indigo = persimmon, purple = plum, pink = butter */
+  --indigo-50: #fff4ef;
+  --indigo-100: #ffe5da;
+  --indigo-200: #ffc8b3;
+  --indigo-300: #ffa282;
+  --indigo-400: #f87850;
+  --indigo-500: #e95a30;
+  --indigo-600: #cf4a22;
+  --indigo-700: #aa391b;
+  --indigo-800: #882f1b;
+  --indigo-900: #6f2a1a;
+  --indigo-950: #3c1209;
 
-  --purple-50: #f0fdf9;
-  --purple-100: #dcfce7;
-  --purple-200: #a7f3d0;
-  --purple-300: #6ee7b7;
-  --purple-400: #34d399;
-  --purple-500: #10b981;
-  --purple-600: #0d534d;
-  --purple-700: #13544e;
-  --purple-800: #0f403c;
-  --purple-900: #001e00;
-  --purple-950: #001200;
+  --purple-50: #fbf5f8;
+  --purple-100: #f5e8ef;
+  --purple-200: #ead0de;
+  --purple-300: #d9a9c3;
+  --purple-400: #c07aa0;
+  --purple-500: #a15580;
+  --purple-600: #833f66;
+  --purple-700: #6a3354;
+  --purple-800: #512844;
+  --purple-900: #3b1d32;
+  --purple-950: #240f1e;
 
-  --pink-50: #f7fee7;
-  --pink-100: #ecfccb;
-  --pink-200: #d9f99d;
-  --pink-300: #bef264;
-  --pink-400: #a3e635;
-  --pink-500: #84cc16;
-  --pink-600: #65a30d;
-  --pink-700: #4d7c0f;
-  --pink-800: #3f6212;
-  --pink-900: #365314;
-  --pink-950: #1a2e05;
+  --pink-50: #fffbe8;
+  --pink-100: #fff6c2;
+  --pink-200: #ffec8a;
+  --pink-300: #ffdd4d;
+  --pink-400: #f9c81f;
+  --pink-500: #e4ad0c;
+  --pink-600: #bc8506;
+  --pink-700: #926208;
+  --pink-800: #794e0e;
+  --pink-900: #66400f;
+  --pink-950: #3a2104;
+
+
+
+  --section-dark: oklch(0.22 0.04 340);
+  --section-dark-foreground: oklch(0.96 0.012 85);
 }
 
 .dark {
-  /* ==========================================================================
-     DARK MOOD: Sleek Midnight Obsidian & Electric Indigo/Violet (ZERO GREEN)
-     Deep graphite background, high-contrast platinum font, crisp cyber accents
-     ========================================================================== */
-  --background: oklch(0.12 0.012 265);
-  /* Deep midnight obsidian #090a10 */
-  --foreground: oklch(0.97 0.005 260);
-  /* High-clarity platinum font #f8fafc */
-  --card: oklch(0.16 0.015 265);
-  /* Elevated dark graphite card #12141c */
-  --card-foreground: oklch(0.97 0.005 260);
-  --popover: oklch(0.17 0.016 265);
-  /* Elevated dark popover #141620 */
-  --popover-foreground: oklch(0.97 0.005 260);
-  --primary: oklch(0.62 0.22 265);
-  /* Electric Indigo #6366f1 (Zero green!) */
-  --primary-foreground: oklch(0.99 0 0);
-  /* Pure white font on button */
-  --secondary: oklch(0.22 0.02 265);
-  /* Sleek dark slate #191c28 */
-  --secondary-foreground: oklch(0.94 0.008 260);
-  --muted: oklch(0.19 0.016 265);
-  /* Muted background #151824 */
-  --muted-foreground: oklch(0.68 0.02 260);
-  /* High-readability silver font #94a3b8 */
-  --accent: oklch(0.24 0.035 265);
-  /* Refined dark hover #1e2236 */
-  --accent-foreground: oklch(0.97 0.005 260);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(0.26 0.02 265 / 65%);
-  /* Subtle dark slate border #23273a */
-  --input: oklch(0.26 0.02 265 / 65%);
-  --ring: oklch(0.62 0.22 265);
-  /* Electric Indigo focus ring */
-  --radius: 0.75rem;
+  /* DARK: deep warm cocoa, soft cream text, quiet persimmon */
+  --background: oklch(0.15 0.01 30);
+  --foreground: oklch(0.87 0.014 85);
+  --card: oklch(0.185 0.011 30);
+  --card-foreground: oklch(0.87 0.014 85);
+  --popover: oklch(0.205 0.012 30);
+  --popover-foreground: oklch(0.87 0.014 85);
+  --primary: oklch(0.68 0.12 42);
+  --primary-foreground: oklch(0.16 0.015 30);
+  --secondary: oklch(0.225 0.012 40);
+  --secondary-foreground: oklch(0.85 0.016 85);
+  --muted: oklch(0.21 0.01 35);
+  --muted-foreground: oklch(0.66 0.018 75);
+  --accent: oklch(0.255 0.026 35);
+  --accent-foreground: oklch(0.88 0.04 50);
+  --highlight: oklch(0.78 0.1 88);
+  --highlight-foreground: oklch(0.2 0.03 80);
+  --destructive: oklch(0.63 0.15 25);
+  --border: oklch(0.87 0.014 85 / 8%);
+  --input: oklch(0.87 0.014 85 / 10%);
+  --ring: oklch(0.68 0.12 42);
 
-  --sidebar: oklch(0.13 0.014 265);
-  /* Deep obsidian sidebar #0b0d14 */
-  --sidebar-foreground: oklch(0.97 0.005 260);
-  --sidebar-primary: oklch(0.62 0.22 265);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.22 0.025 265);
-  --sidebar-accent-foreground: oklch(0.97 0.005 260);
-  --sidebar-border: oklch(0.26 0.02 265 / 65%);
-  --sidebar-ring: oklch(0.62 0.22 265);
+  --sidebar: oklch(0.125 0.009 30);
+  --sidebar-foreground: oklch(0.87 0.014 85);
+  --sidebar-primary: oklch(0.68 0.12 42);
+  --sidebar-primary-foreground: oklch(0.16 0.015 30);
+  --sidebar-accent: oklch(0.255 0.026 35);
+  --sidebar-accent-foreground: oklch(0.88 0.04 50);
+  --sidebar-border: oklch(0.87 0.014 85 / 8%);
+  --sidebar-ring: oklch(0.68 0.12 42);
 
-  --chart-1: oklch(0.62 0.22 265);
-  /* Electric Indigo */
-  --chart-2: oklch(0.68 0.18 200);
-  /* Cyan */
-  --chart-3: oklch(0.70 0.19 320);
-  /* Neon Fuchsia */
-  --chart-4: oklch(0.75 0.18 75);
-  /* Golden Amber */
-  --chart-5: oklch(0.65 0.22 25);
-  /* Coral */
+  --chart-1: oklch(0.68 0.12 42);
+  --chart-2: oklch(0.68 0.07 345);
+  --chart-3: oklch(0.78 0.1 88);
+  --chart-4: oklch(0.7 0.07 160);
+  --chart-5: oklch(0.72 0.07 15);
 
-  /* Dark Mood: Electric Indigo / Violet scale (Zero green tint!) */
-  --indigo-50: #eef2ff;
-  --indigo-100: #e0e7ff;
-  --indigo-200: #c7d2fe;
-  --indigo-300: #a5b4fc;
-  --indigo-400: #818cf8;
-  --indigo-500: #6366f1;
-  --indigo-600: #4f46e5;
-  /* Electric Indigo */
-  --indigo-700: #4338ca;
-  --indigo-800: #3730a3;
-  --indigo-900: #312e81;
-  --indigo-950: #1e1b4b;
+  /* Scales flipped (unchanged from before) */
+  --indigo-50: #3c1209;
+  --indigo-100: #6f2a1a;
+  --indigo-200: #882f1b;
+  --indigo-300: #aa391b;
+  --indigo-400: #cf4a22;
+  --indigo-500: #e95a30;
+  --indigo-600: #f87850;
+  --indigo-700: #ffa282;
+  --indigo-800: #ffc8b3;
+  --indigo-900: #ffe5da;
+  --indigo-950: #fff4ef;
 
-  --purple-50: #f5f3ff;
-  --purple-100: #ede9fe;
-  --purple-200: #ddd6fe;
-  --purple-300: #c4b5fd;
-  --purple-400: #a78bfa;
-  --purple-500: #8b5cf6;
-  --purple-600: #7c3aed;
-  /* Vibrant Violet */
-  --purple-700: #6d28d9;
-  --purple-800: #5b21b6;
-  --purple-900: #4c1d95;
-  --purple-950: #2e1065;
+  --purple-50: #240f1e;
+  --purple-100: #3b1d32;
+  --purple-200: #512844;
+  --purple-300: #6a3354;
+  --purple-400: #833f66;
+  --purple-500: #a15580;
+  --purple-600: #c07aa0;
+  --purple-700: #d9a9c3;
+  --purple-800: #ead0de;
+  --purple-900: #f5e8ef;
+  --purple-950: #fbf5f8;
 
-  --pink-50: #fdf2f8;
-  --pink-100: #fce7f3;
-  --pink-200: #fbcfe8;
-  --pink-300: #f9a8d4;
-  --pink-400: #f472b6;
-  --pink-500: #ec4899;
-  --pink-600: #db2777;
-  /* Neon Rose */
-  --pink-700: #be185d;
-  --pink-800: #9d174d;
-  --pink-900: #831843;
-  --pink-950: #500724;
+  --pink-50: #3a2104;
+  --pink-100: #66400f;
+  --pink-200: #794e0e;
+  --pink-300: #926208;
+  --pink-400: #bc8506;
+  --pink-500: #e4ad0c;
+  --pink-600: #f9c81f;
+  --pink-700: #ffdd4d;
+  --pink-800: #ffec8a;
+  --pink-900: #fff6c2;
+  --pink-950: #fffbe8;
+
+  --section-dark: oklch(0.115 0.008 30);
+  --section-dark-foreground: oklch(0.87 0.014 85);
 }
 
+/* ============================================================================
+   Brand: Hanken + Instrument Serif
+   Academic / Prestigious / Trustworthy
+   ============================================================================ */
+
+/* Sans-serif: clean, authoritative, structured */
+.font-hanken {
+  font-family: var(--font-hanken), var(--font-sans);
+  font-weight: 300 700;
+}
+
+/* Serif: premium, editorial, human touch */
+.font-instrument {
+  font-family: var(--font-instrument), var(--font-serif);
+  font-weight: 400 700;
+}
+
+/* Mono: technical, transparent */
+.font-mono {
+  font-family: var(--font-geist-mono), var(--font-mono);
+}
+
+
+
 @layer base {
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+  }
+
+  h4,
+  h5,
+  h6 {
+    @apply font-sans;
+    font-weight: 600;
+  }
+}
+
+/* @layer base {
   * {
     @apply border-border outline-ring/50;
   }
@@ -296,4 +336,4 @@
   h6 {
     letter-spacing: -0.025em;
   }
-}
+} */

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { HeroSection } from "@/components/sections/hero";
+// import { HeroSection } from "@/components/sections/hero";
 import { StatsSection } from "@/components/sections/stats";
 import { MarketplaceSpotlight } from "@/components/sections/marketplace-spotlight";
 import { FeaturesSection } from "@/components/sections/features";
 import { SecurityShowcase } from "@/components/sections/security-showcase";
 import { CtaBanner } from "@/components/sections/cta-banner";
+import { HeroSectionTwo } from "@/components/sections/hero-section";
 
 export const metadata: Metadata = {
   title: "KoreDao - Bangladesh's Academic & Handwritten Project Marketplace",
@@ -21,11 +22,12 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <HeroSection />
-      <StatsSection />
-      <MarketplaceSpotlight />
+      <HeroSectionTwo />
+      {/* <HeroSection /> */}
       <FeaturesSection />
+      <MarketplaceSpotlight />
       <SecurityShowcase />
+      <StatsSection />
       <CtaBanner />
     </div>
   );
