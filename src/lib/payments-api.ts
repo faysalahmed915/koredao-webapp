@@ -64,3 +64,125 @@ export async function verifyPayment(
 
   return envelope.data;
 }
+
+/**
+ * Customer / Member wallet ledger — escrow deposits, releases, refunds and
+ * membership subscription payments derived from the caller's own orders.
+ */
+export interface PaymentHistoryEntry {
+  id: string;
+  orderId: string;
+  orderNumber: string;
+  title: string;
+  amount: number;
+  type: "ESCROW_DEPOSIT" | "ESCROW_RELEASE" | "REFUND" | "SUBSCRIPTION";
+  status: string;
+  gateway: string | null;
+  transactionRef: string | null;
+  occurredAt: string;
+  vendorName: string | null;
+}
+
+export interface PaymentHistoryResponse {
+  summary: {
+    totalSpent: number;
+    inEscrow: number;
+    totalRefunded: number;
+    pendingPaymentCount: number;
+    subscriptionSpend: number;
+    ordersCount: number;
+  };
+  entries: PaymentHistoryEntry[];
+  orders: Array<{
+    id: string;
+    orderNumber: string;
+    title: string;
+    totalAmount: number;
+    platformFee: number;
+    status: string;
+    escrowStatus: string | null;
+    gateway: string | null;
+    transactionRef: string | null;
+    fundedAt: string | null;
+    releasedAt: string | null;
+    refundedAt: string | null;
+    vendorName: string | null;
+    deadline: string;
+    createdAt: string;
+  }>;
+}
+
+/**
+ * Staff-only platform ledger — every vendor wallet movement, escrow holdings
+ * and revenue / withdrawal totals.
+ */
+export interface PlatformLedgerResponse {
+  summary: {
+    totalEscrowHeld: number;
+    totalPlatformRevenue: number;
+    totalGMV: number;
+    totalWithdrawn: number;
+    escrowHeldCount: number;
+    completedOrdersCount: number;
+  };
+  transactions: Array<{
+    id: string;
+    amount: number;
+    type: string;
+    description: string;
+    payoutMethod: string | null;
+    payoutAccount: string | null;
+    vendorName: string | null;
+    vendorEmail: string | null;
+    vendorUniversity: string | null;
+    createdAt: string;
+  }>;
+  escrowMovements: Array<{
+    id: string;
+    orderNumber: string;
+    title: string;
+    amount: number;
+    status: string;
+    gateway: string | null;
+    customerName: string | null;
+    releasedAt: string | null;
+    refundedAt: string | null;
+    updatedAt: string;
+  }>;
+}
+
+export async function fetchPaymentHistory(): Promise<PaymentHistoryResponse> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/history`, {
+    method: "GET",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  const envelope = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(
+      (typeof envelope?.message === "string" && envelope.message) ||
+        "Failed to fetch payment history"
+    );
+  }
+
+  return envelope.data;
+}
+
+export async function fetchPlatformLedger(): Promise<PlatformLedgerResponse> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/ledger`, {
+    method: "GET",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  const envelope = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(
+      (typeof envelope?.message === "string" && envelope.message) ||
+        "Failed to fetch platform ledger"
+    );
+  }
+
+  return envelope.data;
+}
