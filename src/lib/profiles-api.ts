@@ -134,6 +134,7 @@ export async function submitVendorApplication(payload: {
   bio?: string;
   skills?: string[];
   idCardUrl: string;
+  realName: string;
   handwritingSamples?: Array<{
     sampleUrl: string;
     style: string;
