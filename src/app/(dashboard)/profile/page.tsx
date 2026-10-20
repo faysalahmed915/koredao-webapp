@@ -57,15 +57,17 @@ import {
   CustomerProfile,
   VendorProfile,
 } from "@/lib/profiles-api";
+import { updateUserAccount } from "@/lib/users-api";
 import { toast } from "sonner";
 import { cn } from "cn";
 
 interface BackendProfile {
   id: string;
   name: string;
-  realName?: string;
+  realName?: string | null;
   email: string;
   emailVerified: boolean;
+  image?: string | null;
   role: "CUSTOMER" | "VENDOR" | "MODERATOR" | "ADMIN" | "SUPER_ADMIN" | string;
   createdAt: string;
   updatedAt: string;
@@ -117,6 +119,15 @@ export default function ProfilePage() {
     skills: "",
   });
   const [isSubmittingEdit, setIsSubmittingEdit] = React.useState(false);
+
+  // Edit Modal: Account details (name / email / avatar) via PATCH /users/:id
+  const [isEditAccountOpen, setIsEditAccountOpen] = React.useState(false);
+  const [accountForm, setAccountForm] = React.useState({
+    name: "",
+    email: "",
+    image: "",
+  });
+  const [isSubmittingAccount, setIsSubmittingAccount] = React.useState(false);
 
   const loadData = React.useCallback(async () => {
     try {
@@ -274,6 +285,55 @@ export default function ProfilePage() {
     }
   };
 
+  const openAccountEdit = () => {
+    setAccountForm({
+      name: profile?.name || session?.user?.name || "",
+      email: profile?.email || session?.user?.email || "",
+      image: profile?.image || "",
+    });
+    setIsEditAccountOpen(true);
+  };
+
+  const handleSaveAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const userId = profile?.id || session?.user?.id;
+    if (!userId) {
+      toast.error("Missing user session. Please sign in again.");
+      return;
+    }
+
+    const name = accountForm.name.trim();
+    const email = accountForm.email.trim();
+    if (name.length < 2) {
+      toast.error("Display name must be at least 2 characters");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmittingAccount(true);
+    try {
+      const updated = await updateUserAccount(userId, {
+        name,
+        email,
+        image: accountForm.image.trim() || undefined,
+      });
+      setProfile((prev) =>
+        prev
+          ? { ...prev, ...updated, role: updated.role as BackendProfile["role"] }
+          : prev,
+      );
+      setIsEditAccountOpen(false);
+      toast.success("Account details updated successfully");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update account");
+    } finally {
+      setIsSubmittingAccount(false);
+    }
+  };
+
   if (isPending) {
     return (
       <div className="container mx-auto flex min-h-[65vh] flex-col items-center justify-center px-4 space-y-4">
@@ -346,10 +406,23 @@ export default function ProfilePage() {
         <CardContent className="p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
             <div className={cn(
-              "flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br text-white font-extrabold text-2xl sm:text-3xl shadow-lg",
+              "relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br text-white font-extrabold text-2xl sm:text-3xl shadow-lg",
               roleGradient
             )}>
-              {userDisplayName[0]?.toUpperCase() || "U"}
+              {profile?.image ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.image}
+                    alt={userDisplayName}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                  <span className="relative">{userDisplayName[0]?.toUpperCase() || "U"}</span>
+                </>
+              ) : (
+                userDisplayName[0]?.toUpperCase() || "U"
+              )}
             </div>
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
@@ -425,6 +498,15 @@ export default function ProfilePage() {
               <span>Go to Dashboard</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openAccountEdit}
+              className="gap-1.5 text-xs cursor-pointer"
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+              <span>Edit Account</span>
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -1062,6 +1144,77 @@ export default function ProfilePage() {
       </div>
 
       {/* ======================================================== */}
+      {/* EDIT MODAL: ACCOUNT DETAILS (NAME / EMAIL / AVATAR) */}
+      {/* ======================================================== */}
+      <Dialog open={isEditAccountOpen} onOpenChange={setIsEditAccountOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Account Details</DialogTitle>
+            <DialogDescription>
+              Update your display name, login email, and profile avatar.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSaveAccount} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="acc-name" className="text-xs font-semibold">Display Name</Label>
+              <Input
+                id="acc-name"
+                placeholder="e.g. Alice Johnson"
+                value={accountForm.name}
+                onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="acc-email" className="text-xs font-semibold">Email Address</Label>
+              <Input
+                id="acc-email"
+                type="email"
+                placeholder="e.g. alice@example.com"
+                value={accountForm.email}
+                onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="acc-image" className="text-xs font-semibold">Avatar Image URL</Label>
+              <Input
+                id="acc-image"
+                placeholder="https://example.com/avatar.png"
+                value={accountForm.image}
+                onChange={(e) => setAccountForm({ ...accountForm, image: e.target.value })}
+              />
+            </div>
+
+            <p className="text-[11px] text-muted-foreground">
+              Changing your email may require re-verification depending on your sign-in provider.
+            </p>
+
+            <DialogFooter className="pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditAccountOpen(false)}
+                disabled={isSubmittingAccount}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                disabled={isSubmittingAccount}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                {isSubmittingAccount ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
+                Save Account
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* ======================================================== */}
       {/* EDIT MODAL: STUDENT CUSTOMER PROFILE */}
       {/* ======================================================== */}
       <Dialog open={isEditCustomerOpen} onOpenChange={setIsEditCustomerOpen}>
@@ -1168,6 +1321,22 @@ export default function ProfilePage() {
                   onChange={(e) => setVendorForm({ ...vendorForm, department: e.target.value })}
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="v-academic-level" className="text-xs font-semibold">Academic Level</Label>
+              <select
+                id="v-academic-level"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={vendorForm.academicLevel}
+                onChange={(e) => setVendorForm({ ...vendorForm, academicLevel: e.target.value })}
+              >
+                <option value="UNDERGRADUATE">Undergraduate (Bachelor)</option>
+                <option value="GRADUATE">Graduate (Master)</option>
+                <option value="POSTGRADUATE">Postgraduate</option>
+                <option value="DOCTORATE">Doctorate / PhD</option>
+                <option value="OTHER">Other</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

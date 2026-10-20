@@ -182,7 +182,7 @@ export async function submitBid(
 export async function acceptBid(
   assignmentId: string,
   bidId: string,
-): Promise<{ assignment: Assignment; acceptedBid: Bid }> {
+): Promise<{ assignment: Assignment; acceptedBid: Bid; order?: { id: string; orderNumber: string; status: string } }> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/assignments/${assignmentId}/bids/${bidId}/accept`, {
     method: "POST",
     headers: getApiHeaders(),

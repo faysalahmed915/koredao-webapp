@@ -72,6 +72,7 @@ export async function updateMyVendorProfile(payload: {
   passingYear?: number;
   bio?: string;
   skills?: string[];
+  idCardUrl?: string;
 }): Promise<VendorProfile> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/profiles/vendor/me`, {
     method: "PATCH",
