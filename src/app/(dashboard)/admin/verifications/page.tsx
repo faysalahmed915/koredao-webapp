@@ -15,6 +15,7 @@ import {
   Eye,
   User,
   UserPlus,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -28,6 +29,7 @@ import {
   reviewVendorApplication,
   VendorProfile,
 } from "@/lib/profiles-api";
+import { getOrCreateConversation } from "@/lib/chat-api";
 import { buildLoginHref } from "@/lib/auth-redirect";
 
 export default function AdminVerificationsPage() {
@@ -307,6 +309,32 @@ export default function AdminVerificationsPage() {
                   placeholder="e.g. John Doe"
                   disabled={processingId === app.id}
                 />
+              </div>
+
+              {/* Staff actions: visit the helper's public profile or start a chat */}
+              <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-muted/20">
+                <Link
+                  href={`/assistance/${app.id}`}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Visit Public Profile
+                </Link>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    void getOrCreateConversation({
+                      vendorProfileId: app.id,
+                    }).then(() => {
+                      router.push("/messages");
+                    });
+                  }}
+                  disabled={processingId === app.id}
+                  className="text-sm bg-indigo-600 text-white hover:bg-indigo-700"
+                >
+                  <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                  Chat with Helper
+                </Button>
               </div>
 
               <CardFooter className="flex justify-end gap-3 border-t border-border/40 pt-4 bg-muted/10">

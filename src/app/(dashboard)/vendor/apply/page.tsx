@@ -40,6 +40,7 @@ export default function VendorApplyPage() {
   // Form State
   const [university, setUniversity] = React.useState("");
   const [department, setDepartment] = React.useState("");
+  const [realName, setRealName] = React.useState("");
   const [academicLevel, setAcademicLevel] = React.useState("UNDERGRADUATE");
   const [degree, setDegree] = React.useState("");
   const [passingYear, setPassingYear] = React.useState<number>(new Date().getFullYear());
@@ -72,6 +73,7 @@ export default function VendorApplyPage() {
             setExistingProfile(profile);
             setUniversity(profile.university || "");
             setDepartment(profile.department || "");
+            setRealName(profile.user?.realName || "");
             setAcademicLevel(profile.academicLevel || "UNDERGRADUATE");
             setDegree(profile.degree || "");
             setPassingYear(profile.passingYear || new Date().getFullYear());
@@ -113,6 +115,11 @@ export default function VendorApplyPage() {
       return;
     }
 
+    if (!realName.trim()) {
+      toast.error("Please provide your verified real name (required for helper verification)");
+      return;
+    }
+
     if (!university.trim() || !department.trim()) {
       toast.error("University and Department are required");
       return;
@@ -137,6 +144,7 @@ export default function VendorApplyPage() {
     setSubmitting(true);
     try {
       const result = await submitVendorApplication({
+        realName,
         university,
         department,
         academicLevel,
@@ -265,6 +273,21 @@ export default function VendorApplyPage() {
             </div>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="realName">Verified Real Name *</Label>
+              <Input
+                id="realName"
+                placeholder="e.g. John Doe"
+                value={realName}
+                onChange={(e) => setRealName(e.target.value)}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Obligatory for academic helpers. This is your verified legal name
+                used during moderator verification.
+              </p>
+            </div>
+
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="university">University / Institution *</Label>
               <Input
