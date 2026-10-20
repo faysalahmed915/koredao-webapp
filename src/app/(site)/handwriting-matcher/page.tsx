@@ -140,7 +140,7 @@ export default function HandwritingMatcherPage() {
         <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mb-4">
           <Link href="/" className="hover:text-foreground">Home</Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <Link href="/helpers" className="hover:text-foreground">Helpers</Link>
+          <Link href="/assistance" className="hover:text-foreground">Helpers</Link>
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
             Handwriting & Campus Proximity Matcher
@@ -456,7 +456,7 @@ export default function HandwritingMatcherPage() {
                   {/* Actions */}
                   <div className="flex sm:flex-col gap-2 shrink-0 self-end lg:self-center">
                     <Link
-                      href={`/helpers/${h.helperId}`}
+                      href={`/assistance/${h.helperId}`}
                       className="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-border/80 hover:bg-accent text-xs font-semibold text-foreground transition-all"
                     >
                       View Profile

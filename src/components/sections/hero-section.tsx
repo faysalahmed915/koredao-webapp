@@ -73,7 +73,7 @@ export function HeroSectionTwo() {
                         </Link>
 
                         <Link
-                            href="/helpers"
+                            href="/assistance"
                             className={buttonVariants({
                                 size: "lg",
                                 variant: "outline",
@@ -166,7 +166,7 @@ export function HeroSectionTwo() {
                             </Link>
 
                             <Link
-                                href="/helpers"
+                                href="/assistance"
                                 className="group rounded-2xl border border-border bg-background p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
                             >
                                 <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">

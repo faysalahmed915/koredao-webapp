@@ -43,7 +43,7 @@ export function HeroSection() {
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <Link
-              href="/helpers"
+              href="/assistance"
               className={cn(
                 buttonVariants({ size: "lg" }),
                 "h-12 px-6 gap-2 text-base font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30"

@@ -241,7 +241,7 @@ export default function HelpersDirectoryPage() {
                 </div>
 
                 <CardFooter className="border-t border-border/40 pt-3">
-                  <Link href={`/helpers/${vendor.id}`} className="w-full">
+                  <Link href={`/assistance/${vendor.id}`} className="w-full">
                     <Button variant="ghost" size="sm" className="w-full justify-between text-xs group-hover:bg-indigo-500/10 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
                       View Profile & Handwriting <ArrowRight className="h-3.5 w-3.5" />
                     </Button>

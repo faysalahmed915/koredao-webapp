@@ -143,7 +143,7 @@ export default function GigDetailPage() {
             {/* Helper Quick Bar */}
             <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground border-b border-border/50 pb-4">
               <Link
-                href={`/helpers/${gig.vendorProfile?.id}`}
+                href={`/assistance/${gig.vendorProfile?.id}`}
                 className="flex items-center gap-2 group"
               >
                 <Avatar className="h-7 w-7 border">
@@ -376,7 +376,7 @@ export default function GigDetailPage() {
 
               <div className="mt-4 pt-3 border-t border-border/40 flex justify-between items-center text-xs">
                 <span className="text-muted-foreground">Rating: <strong>{gig.vendorProfile.rating > 0 ? gig.vendorProfile.rating.toFixed(1) : "New"}</strong></span>
-                <Link href={`/helpers/${gig.vendorProfile.id}`}>
+                <Link href={`/assistance/${gig.vendorProfile.id}`}>
                   <Button variant="outline" size="sm" className="text-xs h-7">
                     View Full Profile
                   </Button>

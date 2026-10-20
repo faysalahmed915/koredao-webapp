@@ -112,6 +112,24 @@ export interface PaymentHistoryResponse {
   }>;
 }
 
+export async function fetchPaymentHistory(): Promise<PaymentHistoryResponse> {
+  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/history`, {
+    method: "GET",
+    headers: getApiHeaders(),
+    credentials: "include",
+  });
+
+  const envelope = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(
+      (typeof envelope?.message === "string" && envelope.message) ||
+        "Failed to fetch payment history",
+    );
+  }
+
+  return envelope.data;
+}
+
 /**
  * Staff-only platform ledger — every vendor wallet movement, escrow holdings
  * and revenue / withdrawal totals.
@@ -151,24 +169,6 @@ export interface PlatformLedgerResponse {
   }>;
 }
 
-export async function fetchPaymentHistory(): Promise<PaymentHistoryResponse> {
-  const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/history`, {
-    method: "GET",
-    headers: getApiHeaders(),
-    credentials: "include",
-  });
-
-  const envelope = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(
-      (typeof envelope?.message === "string" && envelope.message) ||
-        "Failed to fetch payment history"
-    );
-  }
-
-  return envelope.data;
-}
-
 export async function fetchPlatformLedger(): Promise<PlatformLedgerResponse> {
   const res = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/payments/ledger`, {
     method: "GET",
@@ -180,7 +180,7 @@ export async function fetchPlatformLedger(): Promise<PlatformLedgerResponse> {
   if (!res.ok) {
     throw new Error(
       (typeof envelope?.message === "string" && envelope.message) ||
-        "Failed to fetch platform ledger"
+        "Failed to fetch platform ledger",
     );
   }
 

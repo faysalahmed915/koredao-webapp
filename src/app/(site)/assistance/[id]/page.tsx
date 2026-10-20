@@ -80,7 +80,7 @@ export default function HelperDetailPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           This helper might not be verified yet or the profile link is invalid.
         </p>
-        <Link href="/helpers" className="mt-6 inline-block">
+        <Link href="/assistance" className="mt-6 inline-block">
           <Button variant="outline" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Helpers Directory
           </Button>
@@ -93,7 +93,7 @@ export default function HelperDetailPage() {
     <div className="container mx-auto max-w-5xl px-4 py-12 sm:px-8">
       {/* Back Button */}
       <div className="mb-6">
-        <Link href="/helpers">
+        <Link href="/assistance">
           <Button variant="ghost" size="sm" className="gap-2 text-xs text-muted-foreground">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to all helpers
           </Button>

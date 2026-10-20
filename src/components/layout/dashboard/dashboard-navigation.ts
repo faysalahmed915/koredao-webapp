@@ -25,13 +25,15 @@ import {
   LifeBuoy,
   MessageSquare,
   PenTool,
+  PiggyBank,
   PlusCircle,
   Receipt,
+  Settings2,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
   User,
   UserCheck,
-  Users,
   Wallet,
 } from "lucide-react";
 
@@ -44,8 +46,12 @@ export interface DashboardNavItem {
   description?: string;
   /** Match the route exactly instead of treating it as a prefix. */
   exact?: boolean;
+
   /** Short status chip rendered on the right (e.g. a count or "New"). */
   badge?: string;
+
+  /** Specific roles permitted to view/access this item. Omit for everyone. */
+  roles?: UserRole[];
   /** Paid marketplace action — locked until the user holds MEMBER. */
   requiresMembership?: boolean;
   /** Only meaningful once the user is an approved, verified helper. */
@@ -82,6 +88,30 @@ export function resolveDashboardRole(
   return isMember ? UserRole.MEMBER : UserRole.CUSTOMER;
 }
 
+/**
+ * Reporting entries that only make sense for a subset of roles.
+ *
+ * `roles` is checked against the *raw* account role, so a subscribed customer
+ * (stored as CUSTOMER) never sees helper or staff reporting, while an
+ * ADMIN/SUPER_ADMIN keeps full visibility of both.
+ */
+const EARNINGS_REPORT_ITEM: DashboardNavItem = {
+  title: "Earnings Report",
+  href: "/analytics/earnings",
+  icon: PiggyBank,
+  description: "Monthly earnings report, pending escrow and withdrawals.",
+  roles: [UserRole.VENDOR, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+};
+
+const PLATFORM_OVERVIEW_ITEM: DashboardNavItem = {
+  title: "Platform Overview",
+  href: "/analytics/platform",
+  icon: TrendingUp,
+  description:
+    "Platform GMV, revenue, escrow and users over the trailing 12 months.",
+  roles: [UserRole.MODERATOR, UserRole.ADMIN, UserRole.SUPER_ADMIN],
+};
+
 const accountSection = (): DashboardNavSection => ({
   title: "Account",
   items: [
@@ -96,6 +126,13 @@ const accountSection = (): DashboardNavSection => ({
       href: "/messages",
       icon: MessageSquare,
       description: "Escrow-safe conversations with your counterpart.",
+    },
+    {
+      title: "Settings",
+      href: "/account/settings",
+      icon: Settings2,
+      description: "Profile, notifications and security preferences.",
+      exact: true,
     },
   ],
 });
@@ -221,7 +258,7 @@ const VENDOR_NAVIGATION: DashboardNavSection[] = [
     ],
   },
   {
-    title: "Earnings",
+    title: "Earn & Wallet",
     items: [
       {
         title: "Wallet & Payouts",
@@ -229,6 +266,7 @@ const VENDOR_NAVIGATION: DashboardNavSection[] = [
         icon: Wallet,
         description: "Escrow balance, ledger and withdrawals.",
       },
+      EARNINGS_REPORT_ITEM,
     ],
   },
   {
@@ -361,6 +399,7 @@ const MODERATOR_NAVIGATION: DashboardNavSection[] = [
         icon: ClipboardCheck,
         description: "Review helper applications and verification evidence.",
       },
+      PLATFORM_OVERVIEW_ITEM,
     ],
   },
   accountSection(),
@@ -409,7 +448,7 @@ const ADMIN_NAVIGATION: DashboardNavSection[] = [
     ],
   },
   {
-    title: "Finance & Support",
+    title: "Finance & Analytics",
     items: [
       {
         title: "Payouts & Ledger",
@@ -417,6 +456,8 @@ const ADMIN_NAVIGATION: DashboardNavSection[] = [
         icon: Banknote,
         description: "Review platform-wide wallet transactions and payouts.",
       },
+      PLATFORM_OVERVIEW_ITEM,
+      EARNINGS_REPORT_ITEM,
       {
         title: "Support Desk",
         href: "/contact",
@@ -471,7 +512,7 @@ const SUPER_ADMIN_NAVIGATION: DashboardNavSection[] = [
     ],
   },
   {
-    title: "Finance & Support",
+    title: "Finance & Analytics",
     items: [
       {
         title: "Payouts & Ledger",
@@ -479,6 +520,8 @@ const SUPER_ADMIN_NAVIGATION: DashboardNavSection[] = [
         icon: Banknote,
         description: "Audit platform-wide transactions, escrow and payouts.",
       },
+      PLATFORM_OVERVIEW_ITEM,
+      EARNINGS_REPORT_ITEM,
       {
         title: "Support Desk",
         href: "/contact",
@@ -514,6 +557,7 @@ export function getDashboardNavigation(
     .map((section) => ({
       ...section,
       items: section.items.filter((item) => {
+        if (item.roles && (!role || !item.roles.includes(role))) return false;
         if (item.requiresMembership && !ctx.isMember) return false;
         if (item.requiresVerifiedHelper && !ctx.isVerifiedHelper) return false;
         return true;

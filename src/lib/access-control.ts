@@ -211,9 +211,20 @@ export function canAccessRoute(
     pathname === "/messages" ||
     pathname.startsWith("/messages/") ||
     pathname === "/profile" ||
-    pathname.startsWith("/profile/")
+    pathname.startsWith("/profile/") ||
+    pathname === "/account" ||
+    pathname.startsWith("/account/")
   ) {
     return isAuthenticated;
+  }
+
+  // Role-scoped reporting — helper earnings and platform analytics.
+  if (pathname === "/analytics/earnings") {
+    return hasMinimumRole(user, UserRole.VENDOR);
+  }
+
+  if (pathname === "/analytics/platform") {
+    return hasMinimumRole(user, UserRole.MODERATOR);
   }
 
   // Vendor restricted sections
