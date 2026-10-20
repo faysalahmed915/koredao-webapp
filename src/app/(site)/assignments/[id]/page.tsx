@@ -133,9 +133,14 @@ export default function AssignmentDetailPage() {
   const handleAcceptBid = async (bidId: string) => {
     setAcceptingBidId(bidId);
     try {
-      await acceptBid(id, bidId);
+      const result = await acceptBid(id, bidId);
       toast.success("Proposal accepted! Helper is now hired for this project.");
-      loadAssignment();
+      // Navigate to the resulting order so the customer can fund escrow and track the job.
+      if (result?.order?.id) {
+        router.push(`/orders/${result.order.id}`);
+      } else {
+        loadAssignment();
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to accept proposal");
     } finally {
