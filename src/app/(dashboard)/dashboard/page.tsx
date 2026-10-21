@@ -37,6 +37,12 @@ import {
   VendorDashboardMetrics,
   AdminDashboardMetrics,
 } from "@/lib/dashboard-api";
+import {
+  fetchPendingHelpRequests,
+  fetchPendingAdminEscalations,
+  type HelpRequestItem,
+  type AdminEscalationItem,
+} from "@/lib/moderation-api";
 import { MemberDashboardView } from "@/components/dashboard/member-dashboard";
 import { cn } from "cn";
 
@@ -45,6 +51,15 @@ export default function DashboardPage() {
   const [metrics, setMetrics] = React.useState<DashboardResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Moderation data (moderator+ roles)
+  const [helpRequests, setHelpRequests] = React.useState<HelpRequestItem[]>([]);
+  const [adminEscalations, setAdminEscalations] = React.useState<AdminEscalationItem[]>([]);
+  const [modLoading, setModLoading] = React.useState(false);
+
+  const userRole = (session?.user as { role?: string })?.role;
+  const isStaff = userRole === "SUPER_ADMIN" || userRole === "ADMIN" || userRole === "MODERATOR";
+  const isAdminOnly = userRole === "SUPER_ADMIN" || userRole === "ADMIN";
 
   // Auth redirect is handled once by the (dashboard) layout guard — this page
   // only fetches once a session is confirmed. (The guard also prevents this
@@ -58,6 +73,34 @@ export default function DashboardPage() {
       .catch((err) => setError(err.message || "Failed to load dashboard data"))
       .finally(() => setLoading(false));
   }, [session]);
+
+  // Load moderation data for staff roles
+  React.useEffect(() => {
+    if (!session?.user || !isStaff) return;
+
+    let cancelled = false;
+    (async () => {
+      setModLoading(true);
+      try {
+        const [helpReqs, adminEsc] = await Promise.all([
+          fetchPendingHelpRequests(),
+          isAdminOnly ? fetchPendingAdminEscalations() : Promise.resolve([] as AdminEscalationItem[]),
+        ]);
+        if (!cancelled) {
+          setHelpRequests(helpReqs);
+          setAdminEscalations(adminEsc);
+        }
+      } catch {
+        // Moderation data is non-critical; fail silently.
+      } finally {
+        if (!cancelled) setModLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session, isStaff, isAdminOnly]);
 
   if (sessionLoading || loading) {
     return (
@@ -118,6 +161,10 @@ export default function DashboardPage() {
         <AdminDashboardView
           metrics={metrics}
           userName={session?.user?.name || "Admin"}
+          isStaff={isStaff}
+          helpRequests={helpRequests}
+          adminEscalations={adminEscalations}
+          isAdminOnly={isAdminOnly}
         />
       );
     default:
@@ -706,9 +753,17 @@ function VendorDashboardView({
 function AdminDashboardView({
   metrics,
   userName,
+  isStaff,
+  helpRequests,
+  adminEscalations,
+  isAdminOnly,
 }: {
   metrics: AdminDashboardMetrics;
   userName: string;
+  isStaff: boolean;
+  helpRequests: HelpRequestItem[];
+  adminEscalations: AdminEscalationItem[];
+  isAdminOnly: boolean;
 }) {
   const isSuperAdmin = metrics.role === "SUPER_ADMIN";
   const isModerator = metrics.role === "MODERATOR";
@@ -840,6 +895,19 @@ function AdminDashboardView({
               {metrics.stats.totalGigs} gigs cataloged
             </div>
           </Card>
+
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Pending Help Requests</span>
+              <AlertCircle className="h-4 w-4 text-indigo-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-indigo-500">
+              {metrics.stats.pendingHelpRequestsCount}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              Awaiting moderator intervention
+            </div>
+          </Card>
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -892,6 +960,19 @@ function AdminDashboardView({
             </div>
             <div className="text-[11px] text-muted-foreground mt-1">
               {metrics.stats.disputedOrdersCount} disputes requiring arbitration
+            </div>
+          </Card>
+
+          <Card className="border-border/60 bg-card p-5">
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">Moderator Escalations</span>
+              <ShieldCheck className="h-4 w-4 text-purple-500" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-purple-500">
+              {metrics.stats.pendingAdminEscalationsCount}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              Requiring admin review
             </div>
           </Card>
         </div>
@@ -980,6 +1061,108 @@ function AdminDashboardView({
           </CardContent>
         </Card>
       </div>
+
+      {/* Moderator Help Requests Queue (Moderator+) */}
+      {isStaff && (
+        <Card className="border-indigo-500/30">
+          <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <div>
+              <CardTitle className="text-lg font-bold">Pending Help Requests</CardTitle>
+              <CardDescription className="text-xs">
+                Customers and vendors requesting moderator intervention on active jobs
+              </CardDescription>
+            </div>
+            <Link
+              href="/admin/moderation"
+              className={cn(buttonVariants({ size: "sm", variant: "outline" }), "text-xs h-7")}
+            >
+              Open Queue
+            </Link>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {helpRequests.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-xs">
+                <AlertCircle className="h-6 w-6 mx-auto mb-2 text-muted-foreground/40" />
+                <p>No pending help requests.</p>
+              </div>
+            ) : (
+              helpRequests.map((req) => (
+                <div
+                  key={req.id}
+                  className="p-3 rounded-lg border border-indigo-500/20 bg-indigo-500/5 flex items-center justify-between gap-3"
+                >
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-bold text-foreground">
+                      {req.requestedByName} ({req.requestedByRole})
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Order #{req.orderNumber} — {req.orderTitle}
+                    </div>
+                    <div className="text-[10px] text-indigo-600 font-semibold">
+                      {req.reason}
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 text-[10px] font-semibold">
+                    PENDING
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Moderator-to-Admin Escalations Queue (Admin Only) */}
+      {isAdminOnly && (
+        <Card className="border-purple-500/30">
+          <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <div>
+              <CardTitle className="text-lg font-bold">Moderator Escalations</CardTitle>
+              <CardDescription className="text-xs">
+                Transaction issues escalated by moderators requiring admin review
+              </CardDescription>
+            </div>
+            <Link
+              href="/admin/moderation"
+              className={cn(buttonVariants({ size: "sm", variant: "outline" }), "text-xs h-7")}
+            >
+              Open Queue
+            </Link>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {adminEscalations.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-xs">
+                <ShieldCheck className="h-6 w-6 mx-auto mb-2 text-muted-foreground/40" />
+                <p>No pending moderator escalations.</p>
+              </div>
+            ) : (
+              adminEscalations.map((req) => (
+                <div
+                  key={req.id}
+                  className="p-3 rounded-lg border border-purple-500/20 bg-purple-500/5 flex items-center justify-between gap-3"
+                >
+                  <div className="space-y-0.5">
+                    <div className="text-xs font-bold text-foreground">
+                      {req.requestedByName} ({req.requestedByRole})
+                    </div>
+                    {req.orderNumber && (
+                      <div className="text-[11px] text-muted-foreground">
+                        Order #{req.orderNumber} — {req.orderTitle}
+                      </div>
+                    )}
+                    <div className="text-[10px] text-purple-600 font-semibold">
+                      {req.reason}
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 text-[10px] font-semibold">
+                    PENDING
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

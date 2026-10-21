@@ -12,11 +12,13 @@ import {
   AlertTriangle,
   ShoppingBag,
   Inbox,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
 import { useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import {
@@ -24,6 +26,11 @@ import {
   fetchMessages,
   type ModerationConversation,
 } from "@/lib/chat-api";
+import {
+  fetchPendingHelpRequests,
+  resolveHelpRequest,
+  type HelpRequestItem,
+} from "@/lib/moderation-api";
 import type { ChatMessage } from "@/types/chat/chat-types";
 import { buildLoginHref } from "@/lib/auth-redirect";
 
@@ -34,6 +41,13 @@ export default function AdminModerationPage() {
   const [loading, setLoading] = React.useState(true);
   const [flaggedOnly, setFlaggedOnly] = React.useState(false);
   const [conversations, setConversations] = React.useState<ModerationConversation[]>([]);
+
+  // Pending moderator help requests
+  const [helpRequests, setHelpRequests] = React.useState<HelpRequestItem[]>([]);
+  const [helpLoading, setHelpLoading] = React.useState(false);
+  const [resolveRequestId, setResolveRequestId] = React.useState<string | null>(null);
+  const [resolveNote, setResolveNote] = React.useState("");
+  const [resolveStatus, setResolveStatus] = React.useState<"RESOLVED" | "DISMISSED">("RESOLVED");
 
   // Selected conversation transcript
   const [selected, setSelected] = React.useState<ModerationConversation | null>(null);
@@ -55,6 +69,18 @@ export default function AdminModerationPage() {
     }
   }, [flaggedOnly]);
 
+  const loadHelpRequests = React.useCallback(async () => {
+    setHelpLoading(true);
+    try {
+      const data = await fetchPendingHelpRequests();
+      setHelpRequests(data);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to load help requests");
+    } finally {
+      setHelpLoading(false);
+    }
+  }, []);
+
   React.useEffect(() => {
     if (sessionLoading) return;
     if (!session?.user) {
@@ -67,8 +93,9 @@ export default function AdminModerationPage() {
     }
     // Defer so the loader's setState is not synchronous within this effect.
     queueMicrotask(() => loadConversations());
+    queueMicrotask(() => loadHelpRequests());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user, sessionLoading, isStaff, router]);
+  }, [session?.user, sessionLoading, isStaff, router, loadConversations, loadHelpRequests]);
 
   const openConversation = async (conv: ModerationConversation) => {
     setSelected(conv);
@@ -80,6 +107,29 @@ export default function AdminModerationPage() {
       toast.error(err?.message || "Failed to load transcript");
     } finally {
       setMessagesLoading(false);
+    }
+  };
+
+  const handleResolveHelpRequest = async (request: HelpRequestItem) => {
+    setResolveRequestId(request.id);
+    setResolveNote("");
+    setResolveStatus("RESOLVED");
+  };
+
+  const submitResolveHelpRequest = async () => {
+    if (!resolveRequestId) return;
+    try {
+      await resolveHelpRequest(resolveRequestId, {
+        status: resolveStatus,
+        moderatorNote: resolveNote.trim(),
+      });
+      toast.success(`Help request ${resolveStatus.toLowerCase()}`);
+      setResolveRequestId(null);
+      await loadHelpRequests();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to resolve help request");
+    } finally {
+      setResolveRequestId(null);
     }
   };
 
@@ -118,6 +168,74 @@ export default function AdminModerationPage() {
           </Button>
           <span className="text-xs text-muted-foreground">{conversations.length} conversation(s)</span>
         </div>
+
+        {/* Pending Moderator Help Requests */}
+        {helpRequests.length > 0 && (
+          <div className="mb-6 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-indigo-500" />
+                <h3 className="font-bold text-indigo-600 dark:text-indigo-400 text-sm">
+                  Pending Moderator Help Requests
+                </h3>
+                <span className="ml-auto px-2 py-0.5 rounded bg-indigo-600/20 text-indigo-600 text-[10px] font-bold">
+                  {helpRequests.length} pending
+                </span>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={loadHelpRequests}
+                disabled={helpLoading}
+                className="text-xs"
+              >
+                {helpLoading ? (
+                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-1 h-3 w-3" />
+                )}
+                Refresh
+              </Button>
+            </div>
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {helpRequests.map((req) => (
+                <Card
+                  key={req.id}
+                  className="border-indigo-500/20 p-3"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-1">
+                        <span className="font-semibold truncate">{req.requestedByName}</span>
+                        <Badge variant="outline" className="text-[10px]">
+                          {req.requestedByRole}
+                        </Badge>
+                        <span>{req.orderNumber}</span>
+                      </div>
+                      <p className="text-sm text-foreground truncate">{req.reason}</p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 text-[10px] font-semibold">
+                      PENDING
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      Order: {req.orderTitle}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleResolveHelpRequest(req)}
+                      className="text-xs px-2 py-1"
+                    >
+                      Resolve
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-2 space-y-2">
@@ -184,6 +302,81 @@ export default function AdminModerationPage() {
           </div>
         </div>
       </div>
+
+      {/* Resolve Help Request Modal */}
+      {resolveRequestId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-indigo-500/30 bg-card p-6 shadow-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertCircle className="h-5 w-5 text-indigo-500" />
+              <h3 className="text-base font-bold text-indigo-600 dark:text-indigo-400">
+                Resolve Help Request
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Record your resolution for this help request. The customer/vendor will be notified.
+            </p>
+            <form onSubmit={(e) => { e.preventDefault(); submitResolveHelpRequest(); }} className="space-y-4">
+              <div>
+                <Label className="text-xs font-semibold text-muted-foreground block mb-1">
+                  Resolution
+                </Label>
+                <div className="flex gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer p-3 rounded-md border border-border hover:bg-accent/50">
+                    <input
+                      type="radio"
+                      name="resolveStatus"
+                      value="RESOLVED"
+                      checked={resolveStatus === "RESOLVED"}
+                      onChange={() => setResolveStatus("RESOLVED")}
+                      className="h-4 w-4 text-indigo-600"
+                    />
+                    Resolved
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer p-3 rounded-md border border-border hover:bg-accent/50">
+                    <input
+                      type="radio"
+                      name="resolveStatus"
+                      value="DISMISSED"
+                      checked={resolveStatus === "DISMISSED"}
+                      onChange={() => setResolveStatus("DISMISSED")}
+                      className="h-4 w-4 text-indigo-600"
+                    />
+                    Dismissed
+                  </label>
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-muted-foreground block mb-1">
+                  Resolution Note
+                </Label>
+                <textarea
+                  rows={3}
+                  className="w-full rounded-md border border-input bg-background p-2.5 text-xs"
+                  placeholder="Describe how you resolved this issue..."
+                  value={resolveNote}
+                  onChange={(e) => setResolveNote(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setResolveRequestId(null)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" disabled={helpLoading}>
+                  {helpLoading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
+                  {resolveStatus === "RESOLVED" ? "Mark Resolved" : "Dismiss Request"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
