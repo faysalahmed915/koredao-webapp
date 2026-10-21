@@ -130,6 +130,8 @@ export interface AdminDashboardMetrics {
     pendingVerificationsCount: number;
     disputedOrdersCount: number;
     safetyAlertsCount: number;
+    pendingHelpRequestsCount: number;
+    pendingAdminEscalationsCount: number;
   };
   pendingVerifications: Array<{
     id: string;
@@ -139,6 +141,27 @@ export interface AdminDashboardMetrics {
     university: string;
     department: string;
     idCardUrl?: string | null;
+    createdAt: string;
+  }>;
+  moderationHelpRequests: Array<{
+    id: string;
+    orderNumber: string;
+    orderTitle: string;
+    orderStatus: string;
+    requestedById: string;
+    requestedByName: string;
+    requestedByRole: string;
+    reason: string;
+    createdAt: string;
+  }>;
+  moderatorAdminEscalations: Array<{
+    id: string;
+    orderNumber?: string | null;
+    orderTitle?: string | null;
+    requestedById: string;
+    requestedByName: string;
+    requestedByRole: string;
+    reason: string;
     createdAt: string;
   }>;
   recentTransactions: Array<{
