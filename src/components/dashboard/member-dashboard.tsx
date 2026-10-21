@@ -63,7 +63,7 @@ export function MemberDashboardView({
   };
   const stats = metrics.stats;
   const recentOrders = metrics.recentOrders ?? [];
-  const recentAssignments = metrics.recentAssignments ?? [];
+  const allAssignments = metrics.allAssignments ?? [];
   const recommendedGigs = metrics.recommendedGigs ?? [];
 
   return (
@@ -308,12 +308,12 @@ export function MemberDashboardView({
               </Link>
             </CardHeader>
             <CardContent className="space-y-3">
-              {recentAssignments.length === 0 ? (
+              {allAssignments.length === 0 ? (
                 <p className="py-8 text-center text-xs text-muted-foreground">
                   You have no active briefs. Post one to receive proposals.
                 </p>
               ) : (
-                recentAssignments.map((assignment) => (
+                allAssignments.map((assignment) => (
                   <div
                     key={assignment.id}
                     className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-background/60 p-4 transition-colors hover:border-emerald-500/40"

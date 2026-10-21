@@ -221,6 +221,19 @@ function StudentDashboardView({
 
         <Card className="border-border/60 bg-card p-5">
           <div className="flex items-center justify-between text-muted-foreground mb-2">
+            <span className="text-xs font-semibold">Total Jobs Posted</span>
+            <FileText className="h-4 w-4 text-blue-500" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
+            {metrics.stats.totalAssignmentsPosted}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            All assignment briefs ever posted
+          </div>
+        </Card>
+
+        <Card className="border-border/60 bg-card p-5">
+          <div className="flex items-center justify-between text-muted-foreground mb-2">
             <span className="text-xs font-semibold">Total Protected Spent</span>
             <ShieldCheck className="h-4 w-4 text-purple-500" />
           </div>
@@ -340,12 +353,12 @@ function StudentDashboardView({
               </Link>
             </CardHeader>
             <CardContent className="space-y-3">
-              {metrics.recentAssignments.length === 0 ? (
+              {metrics.allAssignments.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground text-xs">
-                  You have no active assignment briefs posted.
+                  You have no assignment briefs posted yet.
                 </div>
               ) : (
-                metrics.recentAssignments.map((a) => (
+                metrics.allAssignments.map((a) => (
                   <div
                     key={a.id}
                     className="p-4 rounded-xl border border-border/50 bg-background/60 hover:border-emerald-500/40 transition-colors flex items-center justify-between gap-3"
@@ -525,6 +538,19 @@ function VendorDashboardView({
             Based on {metrics.stats.totalReviews} verified student reviews
           </div>
         </Card>
+
+        <Card className="border-border/60 bg-card p-5">
+          <div className="flex items-center justify-between text-muted-foreground mb-2">
+            <span className="text-xs font-semibold">Total Bids Applied</span>
+            <FileText className="h-4 w-4 text-blue-500" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black font-mono text-foreground">
+            {metrics.stats.totalBidsApplied}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            All proposals submitted on job boards
+          </div>
+        </Card>
       </div>
 
       {/* Main Vendor Content */}
@@ -638,12 +664,12 @@ function VendorDashboardView({
               <CardDescription className="text-xs">Bids placed on student assignment requests</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {metrics.recentBids.length === 0 ? (
+              {metrics.allBids.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground text-xs">
-                  No active bids. Check the job board to find open projects!
+                  No bids submitted yet. Check the job board to find open projects!
                 </div>
               ) : (
-                metrics.recentBids.map((bid) => (
+                metrics.allBids.map((bid) => (
                   <div key={bid.id} className="p-3 rounded-lg border border-border/50 bg-background/40">
                     <div className="flex items-center justify-between text-xs mb-1">
                       <Badge
