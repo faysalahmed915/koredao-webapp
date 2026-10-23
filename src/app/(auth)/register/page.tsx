@@ -65,13 +65,10 @@ function RegisterFormContent() {
   // and the effect then stands down via `hasSubmitted`.
   const completeAuth = React.useCallback(
     (user: unknown, method: "push" | "replace") => {
-      const fallback =
-        accountType === "HELPER" && method === "push"
-          ? "/vendor/apply"
-          : roleBasedLandingPath(user);
+      const fallback = roleBasedLandingPath(user);
       finishAuthNavigation(router, { redirectParam: rawRedirect, fallback }, method);
     },
-    [router, rawRedirect, accountType]
+    [router, rawRedirect]
   );
 
   React.useEffect(() => {

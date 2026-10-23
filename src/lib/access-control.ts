@@ -216,6 +216,11 @@ export function canAccessRoute(
     return isAuthenticated;
   }
 
+  // Vendor application — any authenticated user can apply; verified vendors are redirected client-side.
+  if (pathname === "/vendor/apply") {
+    return isAuthenticated;
+  }
+
   // Vendor restricted sections
   if (pathname.startsWith("/vendor/wallet") || pathname.startsWith("/vendor/gigs/create")) {
     return role === UserRole.VENDOR || role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN;

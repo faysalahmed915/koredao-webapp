@@ -75,6 +75,16 @@ const rawSignOut = authClient.signOut;
 
 export const signOut: typeof rawSignOut = async (options) => {
   setStoredAuthToken(null);
+  // Clear sessionStorage return points to prevent redirect loops
+  // when signing out and signing in as a new user
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.removeItem("koredao:return_path");
+      sessionStorage.removeItem("koredao:scroll_pos");
+    } catch {
+      // fail silently
+    }
+  }
   return rawSignOut(options);
 };
 

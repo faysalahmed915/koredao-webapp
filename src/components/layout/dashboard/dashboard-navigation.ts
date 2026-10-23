@@ -177,10 +177,10 @@ const CUSTOMER_NAVIGATION: DashboardNavSection[] = [
         description: "Unlock posting jobs and taking jobs.",
       },
       {
-        title: "Become a Helper",
+        title: "Apply for Verification",
         href: "/vendor/apply",
         icon: BadgeCheck,
-        description: "Get verified to bid on jobs and sell gigs.",
+        description: "Submit your vendor application for verification.",
       },
     ],
   },
