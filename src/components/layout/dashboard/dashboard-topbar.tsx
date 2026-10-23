@@ -11,6 +11,7 @@ import {
   PanelLeftOpen,
   Sparkles,
   User as UserIcon,
+  Bell,
 } from "lucide-react";
 import { cn } from "cn";
 import { toast } from "sonner";
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useMembership } from "@/components/providers/membership-provider";
 import { signOut, useSession } from "@/lib/auth-client";
+import { fetchUnreadCount } from "@/lib/notifications-api";
 import { getUserRole, isAdmin, isVendor } from "@/lib/access-control";
 import { ROLE_LABELS } from "@/types";
 
@@ -91,6 +93,23 @@ export function DashboardTopbar({
   const { data: session } = useSession();
   const { membership } = useMembership();
   const activeItem = useActiveNavItem();
+
+  const [unreadCount, setUnreadCount] = React.useState(0);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(async () => {
+      try {
+        const { unreadCount } = await fetchUnreadCount();
+        if (!cancelled) setUnreadCount(unreadCount);
+      } catch {
+        if (!cancelled) setUnreadCount(0);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const user = session?.user;
   const role = getUserRole(user);
@@ -176,6 +195,26 @@ export function DashboardTopbar({
 
       <LanguageToggle />
       <ThemeToggle />
+
+      {/* Notifications bell */}
+      <Link
+        href="/notifications"
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon-sm" }),
+          "cursor-pointer relative"
+        )}
+        aria-label="Notifications"
+      >
+        <Bell className="h-4 w-4" aria-hidden="true" />
+        {unreadCount > 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center text-[10px] font-bold"
+          >
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </Badge>
+        )}
+      </Link>
 
       {/* Account */}
       {user && (

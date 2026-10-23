@@ -34,6 +34,7 @@ import {
   UserCheck,
   Users,
   Wallet,
+  Bell,
 } from "lucide-react";
 
 import { UserRole } from "@/types";
@@ -97,6 +98,12 @@ const accountSection = (): DashboardNavSection => ({
       href: "/messages",
       icon: MessageSquare,
       description: "Escrow-safe conversations with your counterpart.",
+    },
+    {
+      title: "Notifications",
+      href: "/notifications",
+      icon: Bell,
+      description: "Platform alerts, dispute SLA warnings and release reminders.",
     },
   ],
 });
@@ -362,6 +369,12 @@ const MODERATOR_NAVIGATION: DashboardNavSection[] = [
         icon: ClipboardCheck,
         description: "Review helper applications and verification evidence.",
       },
+      {
+        title: "SLA Tracker",
+        href: "/notifications/sla-tracker",
+        icon: Gauge,
+        description: "Pending moderation requests vs dispute SLA deadline.",
+      },
     ],
   },
   accountSection(),
@@ -480,6 +493,12 @@ const SUPER_ADMIN_NAVIGATION: DashboardNavSection[] = [
         href: "/admin/settings",
         icon: Settings,
         description: "Configure platform fee, auto-release hours and revisions.",
+      },
+      {
+        title: "SLA Tracker",
+        href: "/notifications/sla-tracker",
+        icon: Gauge,
+        description: "Pending moderation requests vs dispute SLA deadline.",
       },
     ],
   },
