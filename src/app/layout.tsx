@@ -144,7 +144,7 @@ export default function RootLayout({
           <LanguageProvider>
             <MembershipProvider>
               {children}
-              <Toaster position="top-right" richColors />
+              <Toaster position="top-right" richColors closeButton={true} duration={4000} />
             </MembershipProvider>
           </LanguageProvider>
         </ThemeProvider>
