@@ -289,76 +289,194 @@ export default function AssignmentDetailPage() {
             </h2>
 
             {assignment.bids && assignment.bids.length > 0 ? (
-              <div className="space-y-4">
-                {assignment.bids.map((bid) => (
-                  <Card
-                    key={bid.id}
-                    className={`border-border/70 p-5 ${
-                      bid.status === "ACCEPTED" ? "border-emerald-500/60 bg-emerald-500/5" : ""
-                    }`}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border">
-                          <AvatarImage src={bid.vendorProfile?.user?.image || ""} />
-                          <AvatarFallback className="text-xs font-bold bg-indigo-500/10 text-indigo-600">
-                            {bid.vendorProfile?.user?.name?.slice(0, 2).toUpperCase() || "KH"}
+              <div className="space-y-3">
+                {/* Bid Comparison Matrix */}
+                <div className="overflow-x-auto rounded-xl border border-border/60 bg-card shadow-sm">
+                  <table className="w-full text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-border/60 bg-muted/50">
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                          Helper
+                        </th>
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                          Campus / Dept
+                        </th>
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                          Price
+                        </th>
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                          Delivery
+                        </th>
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right">
+                          Rating
+                        </th>
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right">
+                          Reviews
+                        </th>
+                        <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                          Status
+                        </th>
+                        {isOwner && assignment.status === "OPEN" ? (
+                          <th className="p-3 text-[11px] uppercase tracking-wider font-semibold text-muted-foreground text-right">
+                            Action
+                          </th>
+                        ) : null}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {assignment.bids.map((bid) => {
+                        const isAccepted = bid.status === "ACCEPTED";
+                        return (
+                          <tr
+                            key={bid.id}
+                            className={`border-b border-border/50 hover:bg-muted/40 transition-bg ${
+                              isAccepted
+                                ? "bg-emerald-500/5 border-emerald-500/40"
+                                : ""
+                            }`}
+                          >
+                            <td className="p-3">
+                              <div className="flex items-center gap-2">
+                                <Avatar className="h-8 w-8 border">
+                                  <AvatarImage
+                                    src={
+                                      bid.vendorProfile?.user?.image || ""
+                                    }
+                                  />
+                                  <AvatarFallback className="bg-indigo-500/10 text-indigo-600 font-bold text-xs">
+                                    {bid.vendorProfile?.user?.name
+                                      ?.slice(0, 2)
+                                      .toUpperCase() || "KH"}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0">
+                                  <div className="font-semibold text-foreground text-sm truncate">
+                                    {bid.vendorProfile?.user?.name ||
+                                      "Helper"}
+                                  </div>
+                                  <div className="text-[11px] text-muted-foreground truncate">
+                                    {bid.vendorProfile?.university}{" "}
+                                    • {bid.vendorProfile?.department}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-3 text-xs text-muted-foreground">
+                              {bid.vendorProfile?.academicLevel}{" "}
+                              {bid.vendorProfile?.degree
+                                ? `(${bid.vendorProfile.degree})`
+                                : ""}
+                            </td>
+                            <td className="p-3 font-mono text-foreground">
+                              ৳{bid.proposedPrice}
+                            </td>
+                            <td className="p-3 font-mono text-foreground">
+                              {bid.deliveryDays} days
+                            </td>
+                            <td className="p-3 text-xs text-right text-foreground font-semibold">
+                              {bid.vendorProfile?.rating.toFixed(1) ?? "—"}
+                            </td>
+                            <td className="p-3 text-xs text-right text-muted-foreground">
+                              {bid.vendorProfile?.totalReviews ?? 0}
+                            </td>
+                            <td className="p-3">
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                  isAccepted
+                                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                                    : "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                                }`}
+                              >
+                                {isAccepted ? "Accepted" : "Pending"}
+                              </span>
+                            </td>
+                            {isOwner && assignment.status === "OPEN" ? (
+                              <td className="p-3 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      handleMessageBidder(bid)
+                                    }
+                                    className="text-xs font-semibold"
+                                  >
+                                    Message
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    disabled={acceptingBidId === bid.id}
+                                    onClick={() => handleAcceptBid(bid.id)}
+                                    className="bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 shadow-sm"
+                                  >
+                                    {acceptingBidId === bid.id ? (
+                                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                    ) : (
+                                      <CheckCircle2 className="mr-1 h-3 w-3" />
+                                    )}
+                                    Hire
+                                  </Button>
+                                </div>
+                              </td>
+                            ) : null}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Cover letters / details drawer */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Proposal Details
+                  </h3>
+                  {assignment.bids.map((bid) => (
+                    <Card
+                      key={bid.id}
+                      className="border-border/60 p-3"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <Avatar className="h-6 w-6 border">
+                          <AvatarImage
+                            src={bid.vendorProfile?.user?.image || ""}
+                          />
+                          <AvatarFallback className="bg-indigo-500/10 text-indigo-600 font-bold text-[10px]">
+                            {bid.vendorProfile?.user?.name
+                              ?.slice(0, 2)
+                              .toUpperCase() || "KH"}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-sm">
-                              {bid.vendorProfile?.user?.name || "Helper"}
-                            </span>
-                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold text-foreground truncate">
+                            {bid.vendorProfile?.user?.name || "Helper"}
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {bid.vendorProfile?.university} • {bid.vendorProfile?.department}
-                          </p>
+                          <div className="text-[11px] text-muted-foreground">
+                            ৳{bid.proposedPrice} • in {bid.deliveryDays} days
+                          </div>
                         </div>
                       </div>
-
-                      <div className="text-left sm:text-right">
-                        <span className="text-base font-extrabold text-foreground">
-                          ৳{bid.proposedPrice}
-                        </span>
-                        <p className="text-[11px] text-muted-foreground">
-                          in {bid.deliveryDays} days
-                        </p>
+                      <div className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+                        {bid.coverLetter}
                       </div>
-                    </div>
-
-                    <div className="mt-3 text-xs text-muted-foreground leading-relaxed">
-                      {bid.coverLetter}
-                    </div>
-
-                    {isOwner && assignment.status === "OPEN" && (
-                      <div className="mt-4 pt-3 border-t border-border/40 flex flex-wrap justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleMessageBidder(bid)}
-                          className="text-xs font-semibold"
-                        >
-                          Message Helper
-                        </Button>
-                        <Button
-                          size="sm"
-                          disabled={acceptingBidId === bid.id}
-                          onClick={() => handleAcceptBid(bid.id)}
-                          className="bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-semibold"
-                        >
-                          {acceptingBidId === bid.id ? (
-                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
-                          )}
-                          Accept Proposal &amp; Hire
-                        </Button>
-                      </div>
-                    )}
-                  </Card>
-                ))}
+                      {bid.sampleUrls && bid.sampleUrls.length > 0 && (
+                        <div className="mt-2 flex gap-2">
+                          {bid.sampleUrls.map((url, i) => (
+                            <a
+                              key={i}
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-medium"
+                            >
+                              <Download className="h-3 w-3" /> Sample {i + 1}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
               </div>
             ) : (
               <p className="text-xs text-muted-foreground py-4">

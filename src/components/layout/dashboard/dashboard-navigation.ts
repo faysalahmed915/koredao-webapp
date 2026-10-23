@@ -27,6 +27,7 @@ import {
   PenTool,
   PlusCircle,
   Receipt,
+  Settings,
   ShieldCheck,
   Sparkles,
   User,
@@ -406,6 +407,12 @@ const ADMIN_NAVIGATION: DashboardNavSection[] = [
         icon: Handshake,
         description: "Manage membership plans, pricing and benefits.",
       },
+      {
+        title: "Platform Settings",
+        href: "/admin/settings",
+        icon: Settings,
+        description: "Configure platform fee, auto-release hours and revisions.",
+      },
     ],
   },
   {
@@ -467,6 +474,12 @@ const SUPER_ADMIN_NAVIGATION: DashboardNavSection[] = [
         href: "/membership",
         icon: Handshake,
         description: "Manage membership plans, pricing and benefits.",
+      },
+      {
+        title: "Platform Settings",
+        href: "/admin/settings",
+        icon: Settings,
+        description: "Configure platform fee, auto-release hours and revisions.",
       },
     ],
   },

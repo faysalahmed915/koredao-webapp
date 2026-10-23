@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "@/lib/auth-client";
@@ -40,6 +41,9 @@ export default function AdminVerificationsPage() {
   const [applications, setApplications] = React.useState<VendorProfile[]>([]);
   const [total, setTotal] = React.useState(0);
   const [processingId, setProcessingId] = React.useState<string | null>(null);
+  const [filterUniversity, setFilterUniversity] = React.useState("");
+  const [filterDepartment, setFilterDepartment] = React.useState("");
+  const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
 
   // Reject Modal state
   const [rejectingProfile, setRejectingProfile] = React.useState<VendorProfile | null>(null);
@@ -53,12 +57,91 @@ export default function AdminVerificationsPage() {
       const data = await fetchPendingApplications();
       setApplications(data.items);
       setTotal(data.total);
+      setFilterUniversity("");
+      setFilterDepartment("");
+      setSelectedIds(new Set());
     } catch (err: any) {
       toast.error(err.message || "Failed to load pending applications");
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const filteredApplications = React.useMemo(
+    () =>
+      applications.filter((app) => {
+        if (filterUniversity && app.university !== filterUniversity)
+          return false;
+        if (filterDepartment && app.department !== filterDepartment)
+          return false;
+        return true;
+      }),
+    [applications, filterUniversity, filterDepartment],
+  );
+
+  const isSelectionEmpty = selectedIds.size === 0;
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    if (isSelectionEmpty) {
+      setSelectedIds(new Set(filteredApplications.map((a) => a.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    setProcessingId("bulk");
+    let ok = 0;
+    let fail = 0;
+    for (const id of ids) {
+      try {
+        await reviewVendorApplication(id, "APPROVED", undefined, undefined);
+        ok++;
+      } catch {
+        fail++;
+      }
+    }
+    setSelectedIds(new Set());
+    setProcessingId(null);
+    toast.success(
+      `Bulk approve complete: ${ok} approved${fail > 0 ? `, ${fail} failed` : ""}`,
+    );
+    void loadPending();
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.size === 0) return;
+    if (!window.confirm(`Reject ${selectedIds.size} selected applications?`)) return;
+    const ids = Array.from(selectedIds);
+    setProcessingId("bulk");
+    let ok = 0;
+    let fail = 0;
+    for (const id of ids) {
+      try {
+        await reviewVendorApplication(id, "REJECTED", "Bulk rejection by moderator", undefined);
+        ok++;
+      } catch {
+        fail++;
+      }
+    }
+    setSelectedIds(new Set());
+    setProcessingId(null);
+    toast.success(
+      `Bulk reject complete: ${ok} rejected${fail > 0 ? `, ${fail} failed` : ""}`,
+    );
+    void loadPending();
+  };
 
   React.useEffect(() => {
     if (session?.user) {
@@ -140,7 +223,7 @@ export default function AdminVerificationsPage() {
         </p>
       </div>
 
-      {applications.length === 0 ? (
+      {filteredApplications.length === 0 ? (
         <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 p-8 text-center">
           <CheckCircle2 className="h-12 w-12 text-emerald-500/50" />
           <h3 className="mt-4 text-lg font-semibold">Queue is Clear!</h3>
@@ -150,11 +233,100 @@ export default function AdminVerificationsPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {applications.map((app) => (
-            <Card key={app.id} className="overflow-hidden border-border/80">
+          {/* Filter bar */}
+          <div className="rounded-xl border border-border/60 bg-muted/40 p-4 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-y-0">
+            <div className="flex flex-wrap gap-3">
+              <Label htmlFor="filter-university" className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground block sm:hidden">
+                University
+              </Label>
+              <Input
+                id="filter-university"
+                value={filterUniversity}
+                onChange={(e) => setFilterUniversity(e.target.value)}
+                placeholder="Filter by university…"
+                className="h-9 w-48 text-xs sm:w-auto"
+              />
+              <Label htmlFor="filter-department" className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground block sm:hidden">
+                Department
+              </Label>
+              <Input
+                id="filter-department"
+                value={filterDepartment}
+                onChange={(e) => setFilterDepartment(e.target.value)}
+                placeholder="Filter by department…"
+                className="h-9 w-48 text-xs sm:w-auto"
+              />
+              {(filterUniversity || filterDepartment) && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setFilterUniversity("");
+                    setFilterDepartment("");
+                    setSelectedIds(new Set());
+                  }}
+                  className="text-xs"
+                >
+                  Clear filters
+                </Button>
+              )}
+            </div>
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 sm:border-l border-border/60">
+                <span className="text-xs font-semibold text-foreground">
+                  {selectedIds.size} selected
+                </span>
+                <Button
+                  size="sm"
+                  onClick={handleBulkApprove}
+                  disabled={processingId === "bulk"}
+                  className="bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 shadow-sm"
+                >
+                  {processingId === "bulk" ? (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="mr-1 h-3 w-3" />
+                  )}
+                  Bulk Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleBulkReject}
+                  disabled={processingId === "bulk"}
+                  className="text-xs font-semibold"
+                >
+                  Bulk Reject
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setSelectedIds(new Set())}
+                  className="text-xs"
+                >
+                  Clear selection
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {filteredApplications.map((app) => (
+            <Card
+              key={app.id}
+              className={`overflow-hidden border-border/80 ${
+                selectedIds.has(app.id) ? "ring-1 ring-indigo-500" : ""
+              }`}
+            >
               <CardHeader className="bg-muted/20 pb-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(app.id)}
+                      onChange={() => toggleSelect(app.id)}
+                      className="h-4 w-4 shrink-0 rounded border-border text-indigo-600 focus:ring-indigo-500"
+                      aria-label={`Select ${app.user?.name}`}
+                    />
                     <Avatar className="h-12 w-12 border">
                       <AvatarImage src={app.user?.image || ""} />
                       <AvatarFallback className="bg-indigo-500/10 text-indigo-600 font-bold">
