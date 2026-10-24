@@ -1,12 +1,15 @@
 "use client";
 
+import { useLanguage } from "@/components/providers/language-provider";
 import { ShieldCheck, Lock, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export function SecurityShowcase() {
+  const { t } = useLanguage();
+
   const securityControls = [
     {
-      category: "100% Bank-Grade Escrow Protection",
+      category: t.home.securityTitle,
       icon: ShieldCheck,
       badge: "Financial Shield",
       items: [

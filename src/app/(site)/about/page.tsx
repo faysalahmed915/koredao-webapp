@@ -8,16 +8,14 @@ import {
   Briefcase,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
-  Users,
-  Lock,
   Building2,
 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
+import { useLanguage } from "@/components/providers/language-provider";
 
 export const metadata: Metadata = {
   title: "About KoreDao - Bangladesh's Academic & Handwritten Project Platform",
@@ -31,6 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  const { t } = useLanguage();
   const leadershipTeam = [
     {
       name: "Tanvir Hasan",
@@ -109,48 +108,48 @@ export default function AboutPage() {
       {/* Top Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <Badge variant="outline" className="px-3 py-1 text-xs font-mono uppercase tracking-wider text-indigo-500 border-indigo-500/30">
-          The KoreDao Story
+          {t.aboutPages.badge}
         </Badge>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
-          Empowering Academic Excellence Across Bangladesh
+          {t.aboutPages.title}
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Built by students for students — eliminating ghosting, fraud, and poor grades with bank-grade escrow, verified campus peers, and authentic handwriting matching.
+          {t.aboutPages.subtitle}
         </p>
       </div>
 
       {/* The Origin & Mission Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-6">
-          <Badge className="bg-indigo-600 text-white text-xs">Our Mission</Badge>
-          <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
-            Why We Founded KoreDao
-          </h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Every semester, tens of thousands of university students in Bangladesh face grueling workloads across complex engineering lab reports, calculus problem sets, and massive handwritten term papers.
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            Until now, students relied on unregulated Facebook groups where fraud was rampant: advance payments were stolen, ghost helpers vanished before deadlines, and handwritten notes looked completely foreign.
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            KoreDao was engineered to change this forever. By introducing a formal dual freelance marketplace with 100% escrow protection, student ID card verification, and progressive milestone progress scans, we protect both students and hard-working peer helpers.
-          </p>
-          <div className="pt-2 flex flex-wrap gap-4">
-            <Link
-              href="/gigs"
-              className={cn(buttonVariants({ size: "lg" }), "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-600/30")}
-            >
-              <span>Explore Services</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/vendor/apply"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "gap-2")}
-            >
-              <span>Become a Helper</span>
-            </Link>
+          <div className="space-y-6">
+            <Badge className="bg-indigo-600 text-white text-xs">{t.aboutPages.whyFounded}</Badge>
+            <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
+              {t.aboutPages.missionTitle}
+            </h2>
+            <p className="text-muted-foreground leading-relaxed">
+              {t.aboutPages.para1}
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              {t.aboutPages.para2}
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              {t.aboutPages.para3}
+            </p>
+            <div className="pt-2 flex flex-wrap gap-4">
+              <Link
+                href="/gigs"
+                className={cn(buttonVariants({ size: "lg" }), "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-2 shadow-lg shadow-indigo-600/30")}
+              >
+                <span>{t.aboutPages.exploreServices}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/vendor/apply"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "gap-2")}
+              >
+                <span>{t.aboutPages.becomeHelper}</span>
+              </Link>
+            </div>
           </div>
-        </div>
 
         <div className="relative">
           <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/40 via-purple-950/20 to-card p-8 shadow-2xl space-y-6">
@@ -190,10 +189,10 @@ export default function AboutPage() {
       <div className="space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
-            Our Four Foundational Pillars
+            {t.aboutPages.pillarsTitle}
           </h2>
           <p className="text-sm text-muted-foreground">
-            The core principles powering our platform architecture and community trust.
+            {t.aboutPages.pillarsDesc}
           </p>
         </div>
 
@@ -224,11 +223,15 @@ export default function AboutPage() {
       <div className="rounded-2xl border border-border/60 bg-card/60 p-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Active Campus Network</h2>
-            <p className="text-xs text-muted-foreground mt-1">Verified helpers available across Bangladesh&apos;s leading universities</p>
+            <h2 className="text-2xl font-bold text-foreground">
+              {t.aboutPages.campusNetworkTitle}
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t.aboutPages.campusNetworkSubtitle}
+            </p>
           </div>
           <Badge variant="secondary" className="self-start sm:self-auto text-xs">
-            15+ Universities Connected
+            {t.aboutPages.universitiesConnected}
           </Badge>
         </div>
 
@@ -254,10 +257,10 @@ export default function AboutPage() {
             Student Leadership
           </Badge>
           <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
-            Academic Advisory & Leadership
+            {t.aboutPages.advisoryTitle}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Led by top university achievers committed to academic integrity, fairness, and student empowerment.
+            {t.aboutPages.advisorySubtitle}
           </p>
         </div>
 
@@ -288,24 +291,24 @@ export default function AboutPage() {
       {/* Bottom CTA */}
       <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-background p-8 sm:p-12 text-center space-y-6 shadow-xl">
         <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
-          Ready to experience stress-free academic help?
+          {t.aboutPages.readyTitle}
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
-          Join thousands of students and helpers from BUET, DU, IUT, and NSU on Bangladesh&apos;s safest academic marketplace.
+          {t.aboutPages.readyDesc}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/gigs"
             className={cn(buttonVariants({ size: "lg" }), "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg shadow-indigo-600/30 gap-2")}
           >
-            <span>Browse Services</span>
+            <span>{t.aboutPages.browseServices}</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/assignments/create"
             className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
           >
-            <span>Post an Assignment</span>
+            <span>{t.aboutPages.postAssignment}</span>
           </Link>
         </div>
       </div>

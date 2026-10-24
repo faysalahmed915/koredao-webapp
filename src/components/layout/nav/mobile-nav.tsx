@@ -63,7 +63,6 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
   const [expandedSection, setExpandedSection] = React.useState<string | null>(
     () => findActiveCategory(pathname, publicNavigation)
   );
-
   React.useEffect(() => {
     const next = findActiveCategory(pathname, publicNavigation);
     // Defer so this setState is not synchronous within the effect.
@@ -120,7 +119,7 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
               : "text-foreground hover:bg-accent/60"
           )}
         >
-          <span>Home</span>
+          <span>{t.nav.home}</span>
           <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-40" aria-hidden="true" />
         </Link>
 
@@ -139,7 +138,7 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   className="min-w-0 flex-1 py-2.5 pl-3 pr-2 text-sm font-semibold text-foreground"
                 >
-                  <span className="truncate">{item.title}</span>
+                  <span className="truncate">{(t.navItems as unknown as Record<string, string>)[item.title] || item.title}</span>
                 </Link>
                 <button
                   type="button"
@@ -160,11 +159,11 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                   id={sectionId}
                   className="space-y-3 border-t border-border/40 bg-background/50 px-3 pb-3 pt-2"
                 >
-                  {item.description && (
-                    <p className="px-1 text-xs leading-relaxed text-muted-foreground">
-                      {item.description}
-                    </p>
-                  )}
+                      {item.description && (
+                        <p className="px-1 text-xs leading-relaxed text-muted-foreground">
+                          {(t.navItems as unknown as Record<string, string>)[item.description] || item.description}
+                        </p>
+                      )}
 
                   {item.groups?.map((group, groupIndex) => (
                     <div
@@ -175,12 +174,12 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                         <div className="px-1 pt-1">
                           {group.title && (
                             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                              {group.title}
+                              {(t.navItems as unknown as Record<string, string>)[group.title] || group.title}
                             </h3>
                           )}
                           {group.description && (
                             <p className="mt-0.5 text-xs text-muted-foreground/80">
-                              {group.description}
+                              {(t.navItems as unknown as Record<string, string>)[group.description] || group.description}
                             </p>
                           )}
                         </div>
@@ -204,7 +203,7 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                       onClick={onNavigate}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                     >
-                      Browse all {item.title}
+                      Browse all {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
                       <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                     </Link>
                   </div>

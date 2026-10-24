@@ -81,14 +81,14 @@ export function isDropdownActive(
 
 export const publicNavigation: DropdownNavItem[] = [
   {
-    title: "Hire Assistance",
+    title: "navItems.hireAssistance",
     href: "/assistance",
-    description: "Discover academic assistance for your practicals and coursework.",
+    description: "navItems.hireAssistanceDesc",
     groups: [
       {
         items: [
           {
-            title: "Practical",
+            title: "navItems.studyGuides",
             href: "/assistance/practical",
             description: "Browse practical assistance by academic level.",
             children: [
@@ -167,10 +167,9 @@ export const publicNavigation: DropdownNavItem[] = [
     ],
   },
   {
-    title: "Find Work",
+    title: "navItems.findWork",
     href: "/assignments",
-    description:
-      "Browse academic jobs, submit bids, and monetise your skills as an assistant.",
+    description: "navItems.findWorkDesc",
     groups: [
       {
         title: "Browse Academic Jobs",
@@ -270,9 +269,9 @@ export const publicNavigation: DropdownNavItem[] = [
     ],
   },
   {
-    title: "Resources",
+    title: "navItems.resources",
     href: "/resources",
-    description: "Explore learning resources and platform information.",
+    description: "navItems.resourcesDesc",
     groups: [
       {
         title: "Explore",

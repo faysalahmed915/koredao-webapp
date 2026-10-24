@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Fraunces, Geist_Mono, Hanken_Grotesk, Instrument_Serif } from "next/font/google";
+import { Plus_Jakarta_Sans, Fraunces, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LanguageProvider } from "@/components/providers/language-provider";
 import { MembershipProvider } from "@/components/providers/membership-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -26,27 +27,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
 });
-
-
-// const hankenGrotesk = Hanken_Grotesk({
-//   variable: "--font-hanken",
-//   subsets: ["latin"],
-//   display: "swap",
-// });
-
-// const instrumentSerif = Instrument_Serif({
-//   variable: "--font-instrument",
-//   subsets: ["latin"],
-//   display: "swap",
-//   weight: "400",
-//   style: ["normal", "italic"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-//   display: "swap",
-// });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -122,17 +102,23 @@ export const viewport: Viewport = {
  * Keeping the root layout free of header/footer lets the dashboard shell own the
  * full viewport instead of fighting the marketing chrome for space.
  */
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get("preferred-language")?.value;
+  const isValidLocale = (v: string | undefined): v is "en" | "bn" =>
+    v === "en" || v === "bn";
+  const locale = isValidLocale(cookieLocale) ? cookieLocale : "en";
+
   return (
     <html
-      lang="en"
+      lang={locale}
+      dir={locale === "bn" ? "ltr" : "ltr"}
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${fraunces.variable} ${geistMono.variable}`}
-    // className={`${hankenGrotesk.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-emerald-500/20 selection:text-emerald-950 dark:selection:bg-emerald-500/30 dark:selection:text-emerald-100">
         <ThemeProvider
@@ -141,7 +127,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <LanguageProvider>
+          <LanguageProvider initialLocale={locale}>
             <MembershipProvider>
               {children}
               <Toaster position="top-right" richColors closeButton={true} duration={4000} />

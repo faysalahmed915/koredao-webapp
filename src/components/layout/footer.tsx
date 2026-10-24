@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { GraduationCap, ShieldCheck, Lock, CheckCircle2 } from "lucide-react";
+import { GraduationCap, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/language-provider";
 import { useSession } from "@/lib/auth-client";
 
@@ -36,7 +36,7 @@ export function Footer() {
           {/* Marketplace Discovery */}
           <div>
             <h4 className="text-sm font-semibold tracking-wider uppercase text-foreground mb-4 font-mono">
-              Marketplace
+              {t.footer.product}
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
@@ -70,7 +70,7 @@ export function Footer() {
           {/* Student & Helper Portals */}
           <div>
             <h4 className="text-sm font-semibold tracking-wider uppercase text-foreground mb-4 font-mono">
-              Workspace & Accounts
+              {t.footer.resources}
             </h4>
             <ul className="space-y-2.5 text-sm">
               {session?.user ? (
@@ -131,7 +131,7 @@ export function Footer() {
           {/* Campus Network & Trust */}
           <div>
             <h4 className="text-sm font-semibold tracking-wider uppercase text-foreground mb-4 font-mono">
-              Campus Coverage
+              {t.footer.legal}
             </h4>
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">

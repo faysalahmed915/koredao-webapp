@@ -5,10 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, ChevronDown, X } from "lucide-react";
 import { cn } from "cn";
+import { useLanguage } from "@/components/providers/language-provider";
 
 import {
   isDropdownActive,
-  isRouteActive,
   publicNavigation,
   type DropdownNavItem,
 } from "@/components/layout/navigation-data";
@@ -33,6 +33,7 @@ const HOVER_OPEN_DELAY_MS = 60;
  * heavyweight panel markup only exists while a menu is open.
  */
 export function DesktopNav() {
+  const { t } = useLanguage();
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLElement>(null);
@@ -131,7 +132,7 @@ export function DesktopNav() {
                   : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
               )}
             >
-              {item.title}
+              {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
               <ChevronDown
                 aria-hidden="true"
                 className={cn(
@@ -146,10 +147,12 @@ export function DesktopNav() {
                 <div className="w-[620px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-border bg-background shadow-xl">
                   <div className="flex items-start justify-between gap-4 border-b border-border/70 p-5">
                     <div>
-                      <h2 className="text-lg font-semibold">{item.title}</h2>
+                      <h2 className="text-lg font-semibold">
+                        {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
+                      </h2>
                       {item.description && (
                         <p className="mt-1 text-sm text-muted-foreground">
-                          {item.description}
+                          {(t.navItems as unknown as Record<string, string>)[item.description] || item.description}
                         </p>
                       )}
                     </div>
@@ -176,12 +179,12 @@ export function DesktopNav() {
                       >
                         {group.title && (
                           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            {group.title}
+                            {(t.navItems as unknown as Record<string, string>)[group.title] || group.title}
                           </h3>
                         )}
                         {group.description && (
                           <p className="mb-3 mt-1 text-xs text-muted-foreground">
-                            {group.description}
+                            {(t.navItems as unknown as Record<string, string>)[group.description] || group.description}
                           </p>
                         )}
                         <ul className="space-y-1">
@@ -204,7 +207,7 @@ export function DesktopNav() {
                       onClick={() => setOpenMenu(null)}
                       className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
                     >
-                      Browse all {item.title}
+                      Browse all {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </Link>
                   </div>

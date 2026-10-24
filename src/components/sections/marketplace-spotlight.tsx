@@ -21,11 +21,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLanguage } from "@/components/providers/language-provider";
 import { searchGigs, Gig } from "@/lib/gigs-api";
 import { searchAssignments, Assignment } from "@/lib/assignments-api";
 import { cn } from "cn";
 
 export function MarketplaceSpotlight() {
+  const { t } = useLanguage();
   const [gigs, setGigs] = React.useState<Gig[]>([]);
   const [assignments, setAssignments] = React.useState<Assignment[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -55,20 +57,20 @@ export function MarketplaceSpotlight() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-500 mb-2">
-                <Sparkles className="h-3.5 w-3.5" /> Verified Helper Services
+                <Sparkles className="h-3.5 w-3.5" /> {t.home.marketplaceVerifiedHelper}
               </div>
               <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-                Top Rated Academic Gigs
+                {t.home.marketplaceTopRated}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Fixed-price solutions from verified peer helpers at BUET, DU, IUT & SUST.
+                {t.home.marketplaceFixedPrice}
               </p>
             </div>
             <Link
               href="/gigs"
               className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5 self-start md:self-auto")}
             >
-              <span>Explore All {gigs.length > 0 ? "Services" : "Catalog"}</span>
+              <span>{t.home.marketplaceExploreAll}</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -148,10 +150,10 @@ export function MarketplaceSpotlight() {
                 <Send className="h-3.5 w-3.5" /> Live Job Board
               </div>
               <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-                Urgent Assignment Requests
+                {t.home.marketplaceUrgentRequests}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Post your custom project brief or place bids as an approved campus helper.
+                {t.home.marketplacePostProject}
               </p>
             </div>
             <div className="flex gap-2">
@@ -159,13 +161,13 @@ export function MarketplaceSpotlight() {
                 href="/assignments/create"
                 className={cn(buttonVariants({ size: "sm" }), "bg-indigo-600 hover:bg-indigo-700 text-white gap-1.5")}
               >
-                <span>Post Your Assignment</span>
+                <span>{t.home.marketplacePostAssignment}</span>
               </Link>
               <Link
                 href="/assignments"
                 className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
               >
-                <span>View Job Board</span>
+                <span>{t.home.marketplaceViewJobBoard}</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -217,7 +219,7 @@ export function MarketplaceSpotlight() {
                     href={`/assignments/${a.id}`}
                     className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs h-8")}
                   >
-                    View & Bid
+                    {t.home.marketplaceViewBid}
                   </Link>
                 </div>
               </Card>
@@ -229,20 +231,20 @@ export function MarketplaceSpotlight() {
         <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-900/30 via-purple-900/20 to-card p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
           <div className="space-y-2 max-w-xl">
             <Badge variant="outline" className="text-xs text-indigo-400 border-indigo-500/30 gap-1.5">
-              <PenTool className="h-3.5 w-3.5" /> AI Visual Alignment Engine
+              <PenTool className="h-3.5 w-3.5" /> {t.home.marketplaceMatcherBadge}
             </Badge>
             <h3 className="text-2xl font-bold text-foreground">
-              Need Hardcopy Notes in Your Handwriting Style?
+              {t.home.marketplaceMatcherTitle}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Upload a snapshot of your notebook or test sheet. Our handwriting engine compares cursive loops, slant angle, and equation neatness to find your closest campus match.
+              {t.home.marketplaceMatcherDesc}
             </p>
           </div>
           <Link
             href="/handwriting-matcher"
             className={cn(buttonVariants({ size: "lg" }), "h-12 px-6 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 shadow-lg shadow-indigo-600/30 font-semibold")}
           >
-            <span>Launch Handwriting Matcher</span>
+            <span>{t.home.marketplaceLaunchMatcher}</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
