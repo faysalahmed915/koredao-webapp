@@ -532,6 +532,36 @@ function VendorDashboardView({
         </div>
       </div>
 
+      {/* Pending Verification Call-to-Action */}
+      {!metrics.isApproved && (
+        <Card className="border-rose-500/30 bg-rose-500/10 rounded-2xl p-6 md:p-8">
+          <CardHeader className="flex flex-row items-start justify-between pb-2">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-rose-500" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-rose-500">
+                  Verification Required
+                </span>
+              </div>
+              <CardTitle className="text-lg font-bold">Complete Your Academic Helper Application</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Your helper account is created but not yet verified. Submit your academic credentials and handwriting
+                samples so moderators can review and approve you. You can create gigs and bid on assignments once approved.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href="/vendor/apply"
+              className={cn(buttonVariants({ size: "default" }), "bg-rose-600 hover:bg-rose-700 text-white font-semibold w-full md:w-auto gap-2 shadow-md shadow-rose-600/20 flex items-center justify-center")}
+            >
+              <PenTool className="h-4 w-4" />
+              Apply for Verification
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card className="border-border/60 bg-card p-5">
