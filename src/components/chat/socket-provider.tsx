@@ -74,9 +74,14 @@ class ChatSocketStore {
     this.started = true;
 
     const socket = io(`${getChatSocketBaseUrl()}/chat`, {
-      transports: ["websocket"],
+      transports: ["polling", "websocket"],
       withCredentials: true,
       query: { userId: this.userId },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
     });
 
     this.socket = socket;
