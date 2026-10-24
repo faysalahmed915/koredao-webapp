@@ -43,11 +43,61 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  // Detect and set locale cookie if not already set
-  const existingCookie = request.cookies.get(LOCALE_COOKIE)?.value;
-  if (!existingCookie || !isLocale(existingCookie)) {
-    const locale = detectLocale(request);
-    response.cookies.set(LOCALE_COOKIE, locale, {
+  // 1. Correlation ID: Inject or propagate unique request ID
+  const correlationId = request.headers.get("x-correlation-id") || crypto.randomUUID();
+  response.headers.set("x-correlation-id", correlationId);
+
+  // 2. Security Headers (Helmet-equivalent)
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+  );
+
+  // HSTS in production
+  if (process.env.NODE_ENV === "production") {
+    response.headers.set(
+      "Strict-Transport-Security",
+      "max-age=63072000; includeSubDomains; preload"
+    );
+  }
+
+  // 4. Content Security Policy (CSP)
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https:;
+    style-src 'self' 'unsafe-inline' https:;
+    img-src 'self' blob: data: https:;
+    font-src 'self' https: data:;
+    connect-src 'self' https://koredao-server.onrender.com http://localhost:3000 http://localhost:3001 ws: wss:;
+    frame-ancestors 'none';
+    form-action 'self';
+    base-uri 'self';
+  `.replace(/\s{2,}/g, " ").trim();
+
+  response.headers.set("Content-Security-Policy", cspHeader);
+
+  // 5. Locale detection and cookie persistence
+  const existingCookie = request.cookies.get("preferred-language")?.value;
+  if (!existingCookie || !["en", "bn"].includes(existingCookie)) {
+    // Detect locale from cookie or Accept-Language header
+    const cookieLocale = request.cookies.get("preferred-language")?.value;
+    let locale = "en";
+    if (cookieLocale && ["en", "bn"].includes(cookieLocale)) {
+      locale = cookieLocale;
+    } else {
+      const acceptLanguage = request.headers.get("accept-language");
+      if (acceptLanguage) {
+        const primary = acceptLanguage.split(",")[0].split("-")[0].trim().toLowerCase();
+        if (["en", "bn"].includes(primary)) {
+          locale = primary;
+        }
+      }
+    }
+    response.cookies.set("preferred-language", locale, {
       path: "/",
       maxAge: 60 * 60 * 24 * 365, // 1 year
       sameSite: "lax",
@@ -58,5 +108,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+  ],
 };
