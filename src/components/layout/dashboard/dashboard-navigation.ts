@@ -532,8 +532,15 @@ export const DASHBOARD_NAVIGATION: Record<UserRole, DashboardNavSection[]> = {
 };
 
 /**
- * Resolves the sidebar sections for a user, dropping items they cannot use yet
- * (`requiresMembership` / `requiresVerifiedHelper`) and any section left empty.
+ * Resolves the sidebar sections for a user.
+ *
+ * Gated items (`requiresMembership` / `requiresVerifiedHelper`) are KEPT in the
+ * menu so they render with a lock chip — users see what membership unlocks
+ * instead of the destination silently disappearing. Access is enforced at the
+ * sidebar click handler (`SidebarItem`) and by the API guards.
+ *
+ * @param role       the user's stored role
+ * @param ctx        { isMember, isVerifiedHelper } from the membership layer
  */
 export function getDashboardNavigation(
   role: UserRole | null,
@@ -546,10 +553,21 @@ export function getDashboardNavigation(
     .map((section) => ({
       ...section,
       items: section.items.filter((item) => {
-        if (item.requiresMembership && !ctx.isMember) return false;
-        if (item.requiresVerifiedHelper && !ctx.isVerifiedHelper) return false;
+        // Keep every item so locked ones are visible with a lock chip.
         return true;
       }),
     }))
     .filter((section) => section.items.length > 0);
+}
+
+/**
+ * Whether a navigation item is locked for the current user.
+ */
+export function isDashboardItemLocked(
+  item: DashboardNavItem,
+  ctx: DashboardNavContext
+): boolean {
+  if (item.requiresMembership && !ctx.isMember) return true;
+  if (item.requiresVerifiedHelper && !ctx.isVerifiedHelper) return true;
+  return false;
 }

@@ -36,7 +36,7 @@ import {
 import { useMembership } from "@/components/providers/membership-provider";
 import { signOut, useSession } from "@/lib/auth-client";
 import { fetchUnreadCount } from "@/lib/notifications-api";
-import { getUserRole, isAdmin, isVendor } from "@/lib/access-control";
+import { getUserRole, isAdmin, isMembershipExempt, isVendor } from "@/lib/access-control";
 import { ROLE_LABELS } from "@/types";
 
 /**
@@ -171,26 +171,31 @@ export function DashboardTopbar({
         )}
       </div>
 
-      {/* Membership status */}
-      {membership.isMember ? (
-        <Badge
-          variant="outline"
-          className="hidden border-emerald-500/30 text-[10px] text-emerald-600 sm:inline-flex dark:text-emerald-400"
-        >
-          <Sparkles className="mr-1 h-3 w-3" aria-hidden="true" />
-          Member
-        </Badge>
-      ) : (
-        <Link
-          href="/membership"
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-            "hidden gap-1 border-indigo-500/40 text-xs text-indigo-600 hover:bg-indigo-500/10 sm:inline-flex dark:text-indigo-400"
+      {/* Membership status — platform staff are membership-exempt, so never
+         upsell them or label them as members. */}
+      {isMembershipExempt(user) ? null : (
+        <>
+          {membership.isMember ? (
+            <Badge
+              variant="outline"
+              className="hidden border-emerald-500/30 text-[10px] text-emerald-600 sm:inline-flex dark:text-emerald-400"
+            >
+              <Sparkles className="mr-1 h-3 w-3" aria-hidden="true" />
+              Member
+            </Badge>
+          ) : (
+            <Link
+              href="/membership"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "hidden gap-1 border-indigo-500/40 text-xs text-indigo-600 hover:bg-indigo-500/10 sm:inline-flex dark:text-indigo-400"
+              )}
+            >
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              Become a Member
+            </Link>
           )}
-        >
-          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-          Become a Member
-        </Link>
+        </>
       )}
 
       <LanguageToggle />

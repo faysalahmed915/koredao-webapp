@@ -3,13 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Sparkles, ChevronRight } from "lucide-react";
+import { LogOut, Lock, Sparkles, ChevronRight } from "lucide-react";
 import { cn } from "cn";
 import { toast } from "sonner";
 
 import { BrandMark } from "@/components/layout/brand";
 import {
   getDashboardNavigation,
+  isDashboardItemLocked,
   type DashboardNavItem,
 } from "@/components/layout/dashboard/dashboard-navigation";
 import { Badge } from "@/components/ui/badge";
@@ -41,28 +42,50 @@ function SidebarItem({
   item,
   collapsed,
   onNavigate,
+  isMember,
+  isVerifiedHelper,
 }: {
   item: DashboardNavItem;
   collapsed: boolean;
   onNavigate?: () => void;
+  /** Whether the user holds an active paid membership. */
+  isMember: boolean;
+  /** Whether the user is a verified helper or platform staff. */
+  isVerifiedHelper: boolean;
 }) {
   const isActive = useIsActive();
   const active = isActive(item);
   const Icon = item.icon;
+  const locked = isDashboardItemLocked(item, { isMember, isVerifiedHelper });
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (locked) {
+      e.preventDefault();
+      toast.error(
+        item.requiresVerifiedHelper
+          ? "This action requires a verified helper account."
+          : "This action requires an active membership."
+      );
+      return;
+    }
+    onNavigate?.();
+  };
 
   return (
     <li>
       <Link
         href={item.href}
-        onClick={onNavigate}
+        onClick={handleClick}
         aria-current={active ? "page" : undefined}
         title={collapsed ? item.title : undefined}
         className={cn(
           "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/50",
           collapsed && "justify-center px-0",
-          active
-            ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-            : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+          locked
+            ? "opacity-60 text-muted-foreground hover:bg-transparent hover:text-muted-foreground cursor-not-allowed"
+            : active
+              ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+              : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
         )}
       >
         {/* Active rail */}
@@ -77,13 +100,32 @@ function SidebarItem({
           aria-hidden="true"
           className={cn(
             "h-4 w-4 shrink-0 transition-colors",
-            active ? "text-indigo-500" : "text-muted-foreground group-hover:text-foreground"
+            active
+              ? "text-indigo-500"
+              : locked
+                ? "text-muted-foreground"
+                : "text-muted-foreground group-hover:text-foreground"
           )}
         />
+        {locked && (
+          <Lock
+            aria-hidden="true"
+            className="h-3.5 w-3.5 shrink-0 text-indigo-600 dark:text-indigo-400"
+          />
+        )}
         {!collapsed && <span className="truncate">{item.title}</span>}
         {!collapsed && item.badge && (
           <Badge variant="secondary" className="ml-auto h-5 text-[10px]">
             {item.badge}
+          </Badge>
+        )}
+        {locked && (
+          <Badge
+            variant="outline"
+            className="ml-auto h-5 text-[10px] border-indigo-500/40 text-indigo-600 dark:text-indigo-400"
+            title="Requires active membership"
+          >
+            Members
           </Badge>
         )}
       </Link>
@@ -190,6 +232,8 @@ export function DashboardSidebar({
                   item={item}
                   collapsed={collapsed}
                   onNavigate={onNavigate}
+                  isMember={isMember}
+                  isVerifiedHelper={isVerifiedHelper}
                 />
               ))}
             </ul>

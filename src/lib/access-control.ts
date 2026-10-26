@@ -197,9 +197,11 @@ export function canAccessRoute(
   const isAuthenticated = Boolean(user);
   const role = getUserRole(user);
 
-  // /admin routes strictly require ADMIN or SUPER_ADMIN
+  // /admin routes require moderator or higher (moderation queue, verifications,
+  // settings, wallet). Destructive admin-only actions remain enforced by the
+  // API (@MinRole ADMIN/SUPER_ADMIN).
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    return role === UserRole.ADMIN || role === UserRole.SUPER_ADMIN;
+    return canAccessAdminArea(user);
   }
 
   // Authenticated protected areas
