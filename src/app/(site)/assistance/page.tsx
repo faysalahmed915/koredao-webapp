@@ -95,9 +95,11 @@ export default function HelpersDirectoryPage() {
 
           {/* University Filter */}
           <div className="relative sm:col-span-6">
+
             <GraduationCap className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Filter by university (e.g. Dhaka, BUET, BRAC)..."
+
               className="pl-9"
               value={university}
               onChange={(e) => setUniversity(e.target.value)}

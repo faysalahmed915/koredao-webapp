@@ -157,9 +157,25 @@ export default function HandwritingMatcherPage() {
             Handwriting Style & Campus Matcher
           </h1>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            Compare handwriting samples side-by-side and find verified academic peers on your campus
-            or nearby for fast, secure hardcopy handoffs.
+            Compare handwriting samples side-by-side and find verified academic
+            peers on your campus or nearby for legitimate handwriting practice,
+            document digitization and accessibility assistance.
           </p>
+
+          {/* Academic integrity notice */}
+          <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800 text-sm">
+            <p className="font-semibold mb-1">
+              Academic integrity boundary
+            </p>
+            <p className="text-sm">
+              This tool is for legitimate handwriting recognition, practice and
+              accessibility support only. It must not be used to disguise
+              ghostwritten work, impersonate a student&rsquo;s handwriting, or
+              make delivered academic work appear to be the student&rsquo; own.
+              Listings that misrepresent authorship are prohibited and can be
+              reported to moderation.
+            </p>
+          </div>
         </div>
 
         {/* Filter Configuration Panel */}

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import {
   publicNavigation,
+  resolveNavTitle,
   type DropdownNavItem,
 } from "@/components/layout/navigation-data";
 import { CollapsibleNavItem } from "@/components/layout/nav/collapsible-nav-item";
@@ -138,7 +139,7 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   className="min-w-0 flex-1 py-2.5 pl-3 pr-2 text-sm font-semibold text-foreground"
                 >
-                  <span className="truncate">{(t.navItems as unknown as Record<string, string>)[item.title] || item.title}</span>
+                  <span className="truncate">{resolveNavTitle(item.title, t.navItems)}</span>
                 </Link>
                 <button
                   type="button"
@@ -161,7 +162,7 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                 >
                       {item.description && (
                         <p className="px-1 text-xs leading-relaxed text-muted-foreground">
-                          {(t.navItems as unknown as Record<string, string>)[item.description] || item.description}
+                          {resolveNavTitle(item.description, t.navItems)}
                         </p>
                       )}
 
@@ -174,12 +175,12 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                         <div className="px-1 pt-1">
                           {group.title && (
                             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                              {(t.navItems as unknown as Record<string, string>)[group.title] || group.title}
+                              {resolveNavTitle(group.title, t.navItems)}
                             </h3>
                           )}
                           {group.description && (
                             <p className="mt-0.5 text-xs text-muted-foreground/80">
-                              {(t.navItems as unknown as Record<string, string>)[group.description] || group.description}
+                              {resolveNavTitle(group.description, t.navItems)}
                             </p>
                           )}
                         </div>
@@ -203,7 +204,7 @@ export function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
                       onClick={onNavigate}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                     >
-                      Browse all {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
+                      Browse all {resolveNavTitle(item.title, t.navItems)}
                       <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                     </Link>
                   </div>

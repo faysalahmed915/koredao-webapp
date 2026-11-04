@@ -9,11 +9,19 @@
  * explanatory chip or a "Become a Member" call to action instead of silently
  * removing the link.
  *
+ * The "Hire Assistance" section exposes the 11 marketplace categories defined
+ * in `@/config/marketplace`. Category slugs are taken from that configuration
+ * so navigation and category landing pages can never drift apart. Education
+ * tracks, academic levels and subject filters are exposed on the category
+ * landing pages rather than duplicated in the header.
+ *
  * Authenticated, role-specific navigation lives in
  * `@/components/layout/dashboard/dashboard-navigation`.
  */
 
 import type { UserRole } from "@/types";
+import type { NavItemsDictionary } from "@/i18n/types";
+import { ALL_MARKETPLACE_CATEGORIES } from "@/config/marketplace/categories";
 
 /** Small informational chip rendered next to a navigation item. */
 export type NavBadge = "members" | "helpers" | "signin";
@@ -79,90 +87,112 @@ export function isDropdownActive(
   );
 }
 
+/**
+ * Resolve a navigation title/description key to its translated string.
+ *
+ * Navigation data stores keys like `navItems.hireAssistance`, but the
+ * translation dictionary (`t.navItems`) uses flat keys like `hireAssistance`.
+ * Strip the `navItems.` prefix before lookup so the translation resolves;
+ * fall back to the raw key if no translation exists.
+ */
+export function resolveNavTitle(
+  key: string,
+  t: NavItemsDictionary
+): string {
+  const cleanKey = key.replace(/^navItems\./, "");
+  return ((t as unknown) as Record<string, string>)[cleanKey] || key;
+}
+
+/**
+ * Map a marketplace category slug to the navigation title/description keys
+ * used by the mega-menu. The slug is the single source of truth for the URL;
+ * the keys resolve to translated labels.
+ */
+function categoryNavKeys(slug: string): {
+  title: `navItems.${string}`;
+  description: `navItems.${string}`;
+} {
+  const keys: Record<string, { title: string; description: string }> = {
+    assignments: {
+      title: "navItems.categoryAssignments",
+      description: "navItems.categoryAssignmentsDesc",
+    },
+    "practical-lab": {
+      title: "navItems.categoryPracticalLab",
+      description: "navItems.categoryPracticalLabDesc",
+    },
+    "research-thesis": {
+      title: "navItems.categoryResearchThesis",
+      description: "navItems.categoryResearchThesisDesc",
+    },
+    tutoring: {
+      title: "navItems.categoryTutoring",
+      description: "navItems.categoryTutoringDesc",
+    },
+    "study-materials": {
+      title: "navItems.categoryStudyMaterials",
+      description: "navItems.categoryStudyMaterialsDesc",
+    },
+    "data-analysis": {
+      title: "navItems.categoryDataAnalysis",
+      description: "navItems.categoryDataAnalysisDesc",
+    },
+    "programming-technical": {
+      title: "navItems.categoryProgrammingTechnical",
+      description: "navItems.categoryProgrammingTechnicalDesc",
+    },
+    "presentations-reports": {
+      title: "navItems.categoryPresentationsReports",
+      description: "navItems.categoryPresentationsReportsDesc",
+    },
+    "editing-proofreading": {
+      title: "navItems.categoryEditingProofreading",
+      description: "navItems.categoryEditingProofreadingDesc",
+    },
+    "translation-transcription": {
+      title: "navItems.categoryTranslationTranscription",
+      description: "navItems.categoryTranslationTranscriptionDesc",
+    },
+    "exam-admission": {
+      title: "navItems.categoryExamAdmission",
+      description: "navItems.categoryExamAdmissionDesc",
+    },
+  };
+  const resolved = keys[slug];
+  if (!resolved) {
+    throw new Error(
+      `No navigation keys defined for marketplace category slug "${slug}". Add them to navItems in the translation dictionaries.`
+    );
+  }
+  return resolved as {
+    title: `navItems.${string}`;
+    description: `navItems.${string}`;
+  };
+}
+
+/** Build the "Hire Assistance" category items from the marketplace config. */
+function hireAssistanceItems(): NavItem[] {
+  return ALL_MARKETPLACE_CATEGORIES.filter((category) => category.enabled).map(
+    (category) => {
+      const { title, description } = categoryNavKeys(category.slug);
+      return {
+        title,
+        href: `/categories?category=${category.slug}`,
+        description,
+      };
+    }
+  );
+}
+
 export const publicNavigation: DropdownNavItem[] = [
   {
     title: "navItems.hireAssistance",
-    href: "/assistance",
+    href: "/categories",
     description: "navItems.hireAssistanceDesc",
     groups: [
       {
-        items: [
-          {
-            title: "navItems.studyGuides",
-            href: "/assistance/practical",
-            description: "Browse practical assistance by academic level.",
-            children: [
-              {
-                title: "SSC Practical",
-                href: "/assistance/practical/ssc",
-                description: "Practical assistance for SSC students.",
-                children: [
-                  {
-                    title: "SSC Science",
-                    href: "/assistance/practical/ssc/science",
-                  },
-                  { title: "SSC ICT", href: "/assistance/practical/ssc/ict" },
-                ],
-              },
-              {
-                title: "HSC Practical",
-                href: "/assistance/practical/hsc",
-                description: "Practical assistance for HSC students.",
-                children: [
-                  {
-                    title: "HSC Physics",
-                    href: "/assistance/practical/hsc/physics",
-                  },
-                  {
-                    title: "HSC Chemistry",
-                    href: "/assistance/practical/hsc/chemistry",
-                  },
-                  {
-                    title: "HSC Biology",
-                    href: "/assistance/practical/hsc/biology",
-                  },
-                ],
-              },
-              {
-                title: "University Practical",
-                href: "/assistance/practical/university",
-                description: "Practical support for university students.",
-                children: [
-                  {
-                    title: "Engineering Lab",
-                    href: "/assistance/practical/university/engineering",
-                  },
-                  {
-                    title: "Computer Science Lab",
-                    href: "/assistance/practical/university/cse",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            title: "Research and Survey",
-            href: "/assistance/research-and-survey",
-            description: "Browse research and survey assistance by academic level.",
-            children: [
-              {
-                title: "Research",
-                href: "/assistance/research-and-survey/research",
-              },
-              { title: "Survey", href: "/assistance/research-and-survey/survey" },
-            ],
-          },
-          {
-            title: "Thesis",
-            href: "/assistance/thesis",
-            description: "Browse thesis assistance by academic level.",
-          },
-          {
-            title: "Assignment",
-            href: "/assistance/assignments",
-            description: "Browse assignment assistance by academic level.",
-          },
-        ],
+        title: "All categories",
+        items: hireAssistanceItems(),
       },
     ],
   },
@@ -173,7 +203,8 @@ export const publicNavigation: DropdownNavItem[] = [
     groups: [
       {
         title: "Browse Academic Jobs",
-        description: "Find open student requests and submit proposals to earn money.",
+        description:
+          "Find open student requests and submit proposals to earn money.",
         items: [
           {
             title: "Open Assignments Feed",
@@ -236,12 +267,6 @@ export const publicNavigation: DropdownNavItem[] = [
               "Publish custom service packages and pricing tiers for student buyers.",
             badge: "members",
             requiresMembership: true,
-          },
-          {
-            title: "Handwriting Matcher",
-            href: "/handwriting-matcher",
-            description:
-              "AI-powered tool to replicate student handwriting styles for authentic deliverables.",
           },
           {
             title: "Active Orders & Contracts",

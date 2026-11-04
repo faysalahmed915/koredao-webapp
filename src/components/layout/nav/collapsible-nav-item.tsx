@@ -5,9 +5,12 @@ import Link from "next/link";
 import { ArrowRight, ChevronDown, Lock } from "lucide-react";
 import { cn } from "cn";
 
+import { useLanguage } from "@/components/providers/language-provider";
+
 import {
   isRouteActive,
   NAV_BADGE_LABELS,
+  resolveNavTitle,
   type NavItem,
 } from "@/components/layout/navigation-data";
 
@@ -48,6 +51,7 @@ export function CollapsibleNavItem({
   onNavigate,
   depth = 0,
 }: CollapsibleNavItemProps) {
+  const { t } = useLanguage();
   const hasChildren = Boolean(item.children?.length);
   const isActive = isRouteActive(pathname, item);
   const isCurrentPage = pathname === item.href;
@@ -83,12 +87,14 @@ export function CollapsibleNavItem({
         >
           <span className="min-w-0">
             <span className="flex flex-wrap items-center gap-1.5">
-              <span className="text-sm font-medium">{item.title}</span>
+              <span className="text-sm font-medium">
+                {resolveNavTitle(item.title, t.navItems)}
+              </span>
               <BadgeChip item={item} />
             </span>
             {item.description && (
               <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
-                {item.description}
+                {resolveNavTitle(item.description, t.navItems)}
               </span>
             )}
           </span>

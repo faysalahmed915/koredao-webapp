@@ -50,13 +50,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/assistance" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/categories" className="text-muted-foreground hover:text-foreground transition-colors">
                   Find Academic Helpers
-                </Link>
-              </li>
-              <li>
-                <Link href="/handwriting-matcher" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Handwriting Style Matcher
                 </Link>
               </li>
               <li>

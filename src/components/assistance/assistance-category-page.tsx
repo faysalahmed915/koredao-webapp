@@ -112,7 +112,7 @@ export function AssistanceCategoryPage({
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href="/assistance" className="hover:text-foreground">
+            <Link href="/categories" className="hover:text-foreground">
               Hire Assistance
             </Link>
           </li>

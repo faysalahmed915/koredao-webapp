@@ -3,36 +3,33 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, ChevronDown, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { cn } from "cn";
 import { useLanguage } from "@/components/providers/language-provider";
-
+import {
+  getPublicNavForContext,
+  type PublicNavContext,
+} from "@/components/layout/nav/public-nav-context";
+import { CollapsibleNavItem } from "@/components/layout/nav/collapsible-nav-item";
 import {
   isDropdownActive,
   publicNavigation,
-  type DropdownNavItem,
+  resolveNavTitle,
 } from "@/components/layout/navigation-data";
-import { CollapsibleNavItem } from "@/components/layout/nav/collapsible-nav-item";
 
 /** Small hover-intent delay so the panel does not flash while the pointer travels. */
 const HOVER_CLOSE_DELAY_MS = 120;
 const HOVER_OPEN_DELAY_MS = 60;
 
-/** Direct links that are useful to everyone and need no dropdown. */
-// const PUBLIC_DIRECT_LINKS = [
-//   { title: "Membership", href: "/membership" },
-//   { title: "About", href: "/about" },
-// ] as const;
-
 /**
  * Desktop mega-menu.
  *
- * Deliberately session-free: the public navigation is identical for guests and
- * signed-in users, so this component never re-renders when the auth state
- * changes. Opening is instant on click, with hover intent on desktop, and the
- * heavyweight panel markup only exists while a menu is open.
+ * Accepts a `context` prop so the public header can render the correct
+ * buy-side (customer), sell-side (helper), or guest-focused navigation.
+ * Guests still get the full classic three-column menu; members get their
+ * role-specific view.
  */
-export function DesktopNav() {
+export function DesktopNav({ context = "guest" }: { context?: PublicNavContext }) {
   const { t } = useLanguage();
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
@@ -52,7 +49,7 @@ export function DesktopNav() {
       clearTimers();
       openTimer.current = setTimeout(() => setOpenMenu(title), HOVER_OPEN_DELAY_MS);
     },
-    [clearTimers]
+    [clearTimers],
   );
 
   const scheduleClose = React.useCallback(() => {
@@ -81,13 +78,15 @@ export function DesktopNav() {
 
   // Close any open panel on navigation.
   React.useEffect(() => {
-    // Defer so this setState is not synchronous within the effect.
     queueMicrotask(() => setOpenMenu(null));
   }, [pathname]);
 
+  const navItems: { label: string; href: string; context: PublicNavContext[] }[] =
+    getPublicNavForContext(context);
+
   const isActiveItem = React.useCallback(
-    (item: DropdownNavItem) => isDropdownActive(pathname, item),
-    [pathname]
+    (item: { href: string }) => isDropdownActive(pathname, { href: item.href, title: "" }),
+    [pathname],
   );
 
   return (
@@ -104,113 +103,105 @@ export function DesktopNav() {
           "rounded-md px-3 py-2 text-sm font-medium transition-colors",
           pathname === "/"
             ? "bg-accent text-primary"
-            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
         )}
       >
         Home
       </Link>
 
-      {publicNavigation.map((item) => {
-        const isOpen = openMenu === item.title;
-        const active = isActiveItem(item);
+      {navItems.map((item) => {
+        const isOpen = openMenu === item.label;
+        const active = isActiveItem({ href: item.href });
+        const matchedEntry = publicNavigation.find((n) => n.href === item.href);
+        const matchedGroups = matchedEntry?.groups ?? [];
 
         return (
-          <div
-            key={item.title}
-            className="relative"
-            onMouseEnter={() => scheduleOpen(item.title)}
-          >
-            <button
-              type="button"
-              aria-expanded={isOpen}
-              aria-haspopup="true"
-              onClick={() => setOpenMenu(isOpen ? null : item.title)}
+          <div key={item.href} className="relative" onMouseEnter={() => scheduleOpen(item.label)}>
+            <Link
+              href={item.href}
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                active || isOpen
-                  ? "bg-accent/70 text-primary"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                active
+                  ? "bg-accent text-primary"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
               )}
             >
-              {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
-              <ChevronDown
-                aria-hidden="true"
-                className={cn(
-                  "h-4 w-4 transition-transform duration-200",
-                  isOpen && "rotate-180"
-                )}
-              />
-            </button>
+              {item.label}
+              {item.context.includes("member") && (
+                <span className="rounded-full bg-indigo-500/10 px-1.5 py-0.5 text-[10px] font-medium text-indigo-500">
+                  Member
+                </span>
+              )}
+            </Link>
 
             {isOpen && (
-              <div className="absolute left-0 top-full z-50 pt-3">
-                <div className="w-[620px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-border bg-background shadow-xl">
-                  <div className="flex items-start justify-between gap-4 border-b border-border/70 p-5">
-                    <div>
-                      <h2 className="text-lg font-semibold">
-                        {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
-                      </h2>
-                      {item.description && (
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {(t.navItems as unknown as Record<string, string>)[item.description] || item.description}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="Close navigation menu"
-                      onClick={() => setOpenMenu(null)}
-                      className="shrink-0 cursor-pointer rounded-md p-2 hover:bg-accent"
-                    >
-                      <X className="h-4 w-4" aria-hidden="true" />
-                    </button>
+              <div className="absolute top-full left-0 z-50 w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-border bg-background shadow-xl">
+                <div className="flex items-start justify-between gap-4 border-b border-border/70 p-5">
+                  <div>
+                    <h2 className="text-lg font-semibold">{item.label}</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">{item.label}</p>
                   </div>
-
-                  <div
-                    className={cn(
-                      "grid max-h-[70vh] gap-6 overflow-y-auto p-5",
-                      (item.groups?.length ?? 0) > 1 ? "grid-cols-2" : "grid-cols-1"
-                    )}
+                  <button
+                    type="button"
+                    aria-label="Close navigation menu"
+                    onClick={() => setOpenMenu(null)}
+                    className="shrink-0 cursor-pointer rounded-md p-2 hover:bg-accent"
                   >
-                    {item.groups?.map((group, groupIndex) => (
-                      <section
-                        key={group.title || `${item.href}-group-${groupIndex}`}
-                        className="min-w-0"
-                      >
-                        {group.title && (
-                          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            {(t.navItems as unknown as Record<string, string>)[group.title] || group.title}
-                          </h3>
-                        )}
-                        {group.description && (
-                          <p className="mb-3 mt-1 text-xs text-muted-foreground">
-                            {(t.navItems as unknown as Record<string, string>)[group.description] || group.description}
-                          </p>
-                        )}
-                        <ul className="space-y-1">
-                          {group.items.map((child) => (
-                            <CollapsibleNavItem
-                              key={child.href}
-                              item={child}
-                              pathname={pathname}
-                              onNavigate={() => setOpenMenu(null)}
-                            />
-                          ))}
-                        </ul>
-                      </section>
-                    ))}
-                  </div>
+                    <X className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
 
-                  <div className="border-t border-border/70 bg-muted/30 p-4">
-                    <Link
-                      href={item.href}
-                      onClick={() => setOpenMenu(null)}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                <div className="grid max-h-[60vh] gap-4 overflow-y-auto p-5 grid-cols-1">
+                  {matchedGroups.map((group) => (
+                    <div
+                      key={group.title ?? group.items[0]?.href}
+                      className="space-y-2"
                     >
-                      Browse all {(t.navItems as unknown as Record<string, string>)[item.title] || item.title}
-                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </Link>
-                  </div>
+                      {(group.title || group.description) && (
+                        <div className="px-1 pt-1">
+                          {group.title && (
+                            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                              {resolveNavTitle(group.title, t.navItems)}
+                            </h3>
+                          )}
+                          {group.description && (
+                            <p className="mt-0.5 text-xs text-muted-foreground/80">
+                              {resolveNavTitle(
+                                group.description,
+                                t.navItems,
+                              )}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      <ul className="space-y-1">
+                        {group.items.map((child) => (
+                          <CollapsibleNavItem
+                            key={child.href}
+                            item={child}
+                            pathname={pathname}
+                          />
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                  {matchedGroups.length === 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      No categories available for this section.
+                    </p>
+                  )}
+                </div>
+
+                <div className="border-t border-border/70 bg-muted/30 p-4">
+                  <Link
+                    href={item.href}
+                    onClick={() => setOpenMenu(null)}
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                  >
+                    {item.label}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
                 </div>
               </div>
             )}
@@ -218,25 +209,7 @@ export function DesktopNav() {
         );
       })}
 
-      {/* Direct links that are useful to everyone and need no dropdown */}
-      {/* {PUBLIC_DIRECT_LINKS.map((link) => {
-        const active = isRouteActive(pathname, link);
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              active
-                ? "bg-accent text-primary"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-            )}
-          >
-            {link.title}
-          </Link>
-        );
-      })} */}
+      {/** Direct links that are useful to everyone and need no dropdown */}
     </nav>
   );
 }

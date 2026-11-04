@@ -63,7 +63,7 @@ export function LanguageProvider({
   initialLocale?: SupportedLanguage;
 }) {
   const language = useSyncExternalStore(
-    () => subscribe(() => {}),
+    subscribe,
     () => getSnapshot(initialLocale),
     getServerSnapshot
   );
